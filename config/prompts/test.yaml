@@ -1,0 +1,64 @@
+system: |
+  You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+user: |
+  I need you to translate Python test assertions into Dafny test methods.
+
+  **The Method to Test:**
+  The Dafny method you need to test is named `{entry_point}`.
+
+  **Python Test Code:**
+  ```python
+  {test_code}
+  ```
+
+  **Dafny Solution Code (that these tests should test):**
+  ```dafny
+  {dafny_solution_code}
+  ```
+
+  **Your Task:**
+  1. **Analyze the tests and solution:**
+     - Note the exact name (`{entry_point}`) and signature of the Dafny method from the provided solution code.
+
+  2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+     - Create a dummy version of the `{entry_point}` Dafny method.
+     - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+     - This dummy is ONLY for validating that the test code compiles correctly.
+
+  3. **Translate the tests** (in a ```dafny ... ``` block):
+     - For each `assert` statement in the Python code, create a Dafny test method with `{{:test}}` attribute.
+     - **All generated test methods must have a complete body and be runnable.**
+     - Name them `test_0`, `test_1`, etc.
+     - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+     - Each test method should:
+       a. Call the `{entry_point}` Dafny method and assign the result to a variable.
+       b. Use `expect` to check if the result matches the expected value.
+
+  **Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+  <dummy>
+  function add(a: int, b: int): int
+  {{
+      0
+  }}
+  </dummy>
+
+  ```dafny
+  method {{:test}} test_0()
+  {{
+      var result := add(2, 3);
+      expect result == 5;
+  }}
+  ```
+
+correction: |
+  Your previous attempt failed to generate valid, compilable Dafny code.
+
+  Here is the compilation error that occurred when your generated tests were combined with your generated dummy method:
+  <compilation_error>
+  {compilation_error}
+  </compilation_error>
+
+  Please analyze the error and provide a complete, fixed response.
+  You MUST provide BOTH the corrected dummy implementation in a `<dummy>` block AND the corrected, complete test code in a ```dafny ... ``` block.
+  {missing_dummy_note} 

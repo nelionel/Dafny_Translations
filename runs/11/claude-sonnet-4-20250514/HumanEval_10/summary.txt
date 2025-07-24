@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/10
-Entry Point: make_palindrome
-Stop Reason: end_turn
-Input Tokens: 207
-Output Tokens: 598

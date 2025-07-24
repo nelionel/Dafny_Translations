@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/109
-Entry Point: move_one_ball
-Stop Reason: end_turn
-Input Tokens: 374
-Output Tokens: 1178

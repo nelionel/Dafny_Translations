@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/112
-Entry Point: reverse_delete
-Stop Reason: end_turn
-Input Tokens: 221
-Output Tokens: 657

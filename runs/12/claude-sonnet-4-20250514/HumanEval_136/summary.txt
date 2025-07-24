@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/136
-Entry Point: largest_smallest_integers
-Stop Reason: end_turn
-Input Tokens: 219
-Output Tokens: 985

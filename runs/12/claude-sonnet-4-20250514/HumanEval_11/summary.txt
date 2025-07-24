@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/11
-Entry Point: string_xor
-Stop Reason: end_turn
-Input Tokens: 156
-Output Tokens: 448

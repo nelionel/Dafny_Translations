@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/62
-Entry Point: derivative
-Stop Reason: end_turn
-Input Tokens: 189
-Output Tokens: 835

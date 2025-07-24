@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/21
-Entry Point: rescale_to_unit
-Stop Reason: end_turn
-Input Tokens: 203
-Output Tokens: 1064

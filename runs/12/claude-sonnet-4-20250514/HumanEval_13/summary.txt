@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/13
-Entry Point: greatest_common_divisor
-Stop Reason: end_turn
-Input Tokens: 149
-Output Tokens: 664

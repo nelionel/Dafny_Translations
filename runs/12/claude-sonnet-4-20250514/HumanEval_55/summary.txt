@@ -1,6 +1,0 @@
-Model: claude-sonnet-4-20250514
-Task ID: HumanEval/55
-Entry Point: fib
-Stop Reason: end_turn
-Input Tokens: 131
-Output Tokens: 649

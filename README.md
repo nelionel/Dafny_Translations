@@ -32,8 +32,10 @@ This framework provides a complete pipeline for:
 ### Installation
 
 ```bash
-# Install Python dependencies
-pip install -r dafny_translation/requirements.txt
+# Install Python dependencies (use pip3 if you have both Python 2 and 3)
+pip install -r Dafny_Translations/requirements.txt
+# OR if you need to specify Python 3 explicitly:
+pip3 install -r Dafny_Translations/requirements.txt
 
 # Set API key
 export ANTHROPIC_API_KEY=your_key_here
@@ -41,30 +43,87 @@ export ANTHROPIC_API_KEY=your_key_here
 
 ### Usage
 
+#### Start Small: Test with a Few Problems
+
+Before running the full evaluation, it's recommended to test with a small number of problems to verify everything works correctly:
+
 ```bash
-# Full translation pipeline
-python3 -m dafny_translation.main <run_id>
+# Test with just 5 problems (evaluation only, using existing translations)
+python -m Dafny_Translations.main 10 --eval-only --max-problems 5
+# OR if you need to specify Python 3:
+python3 -m Dafny_Translations.main 10 --eval-only --max-problems 5
+```
 
-# Evaluation only (skip translation)
-python3 -m dafny_translation.main <run_id> --eval-only
+**What to expect after running this test:**
+- **Terminal output**: You'll see a progress bar and summary statistics (compilation rate, test passing rate, verification rate)
+- **Generated files**: Look in `Dafny_Translations/runs/10/claude-sonnet-4-20250514/` for:
+  - `dafny_evaluation_summary.png` - Visual summary of results
+  - `dafny_summary/compiled.txt` - List of successfully compiled problems
+  - `dafny_summary/tested.txt` - Test results summary
+  - `dafny_summary/verified.txt` - Formal verification results
 
-# With specification validation
-python3 -m dafny_translation.main <run_id> --validate-specs
+#### Full Evaluation
 
-# Advanced usage
-python3 -m dafny_translation.main <run_id> \
+Once you've verified the small test works, run the complete evaluation:
+
+```bash
+# Evaluate all 164 existing translations
+python -m Dafny_Translations.main 10 --eval-only
+# OR with Python 3:
+python3 -m Dafny_Translations.main 10 --eval-only
+```
+
+#### Generate New Translations
+
+To create new Dafny translations from Python problems:
+
+```bash
+# Full translation pipeline for a new run (start with a few problems)
+python -m Dafny_Translations.main 11 --max-problems 5
+# OR with Python 3:
+python3 -m Dafny_Translations.main 11 --max-problems 5
+
+# Full translation pipeline (all problems)
+python -m Dafny_Translations.main 11
+# OR with Python 3:
+python3 -m Dafny_Translations.main 11
+
+# With specification validation (more thorough but slower)
+python -m Dafny_Translations.main 11 --validate-specs
+# OR with Python 3:
+python3 -m Dafny_Translations.main 11 --validate-specs
+```
+
+#### Advanced Configuration
+
+```bash
+# Custom settings example
+python -m Dafny_Translations.main 11 \
+    --parallel 3 \
+    --max-retries 5 \
+    --max-problems 10 \
+    --validate-specs
+# OR with Python 3:
+python3 -m Dafny_Translations.main 11 \
     --parallel 3 \
     --max-retries 5 \
     --max-problems 10 \
     --validate-specs
 ```
 
+**Command Options:**
+- `--eval-only`: Skip translation, only evaluate existing Dafny files
+- `--max-problems N`: Limit to first N problems (useful for testing)
+- `--parallel N`: Number of parallel workers (default: 5)
+- `--max-retries N`: Maximum retry attempts for translations
+- `--validate-specs`: Include specification validation (slower but more thorough)
+
 ## Data Structure
 
 The framework is **completely self-contained** with internal data:
 
 ```
-dafny_translation/
+Dafny_Translations/
 ├── runs/                       # 🎯 INTERNAL RUN DATA
 │   ├── 10/
 │   │   └── claude-sonnet-4-20250514/
@@ -117,7 +176,7 @@ Key settings in `config/settings.py`:
 ## Output Structure
 
 ```
-dafny_translation/runs/{run_id}/{model}/HumanEval_X/dafny_files/
+Dafny_Translations/runs/{run_id}/{model}/HumanEval_X/dafny_files/
 ├── actual_dafny_files/
 │   ├── solution.dfy              # Final/improved solution
 │   ├── test.dfy                  # Test methods + dummy

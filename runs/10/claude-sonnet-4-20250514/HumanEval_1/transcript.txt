@@ -1,0 +1,75 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Parse a string containing multiple groups of parentheses
+2. Separate each balanced group into individual strings
+3. Ignore spaces in the input
+4. Return a list of these separated groups
+
+My approach will be to:
+- Remove all spaces from the input string
+- Track the balance of parentheses (count of open vs closed)
+- When the balance reaches 0, I've found a complete group
+- Collect each complete group as a separate string
+
+```python
+from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """ Input to this function is a string containing multiple groups of nested parentheses. Your goal is to
+    separate those group into separate strings and return the list of those.
+    Separate groups are balanced (each open brace is properly closed) and not nested within each other
+    Ignore any spaces in the input string.
+    >>> separate_paren_groups('( ) (( )) (( )( ))')
+    ['()', '(())', '(()())']
+    """
+    # Remove all spaces from the input string
+    paren_string = paren_string.replace(' ', '')
+    
+    result = []
+    current_group = ""
+    balance = 0
+    
+    for char in paren_string:
+        if char == '(':
+            balance += 1
+            current_group += char
+        elif char == ')':
+            balance -= 1
+            current_group += char
+            
+            # When balance reaches 0, we have a complete group
+            if balance == 0:
+                result.append(current_group)
+                current_group = ""
+    
+    return result
+```
+
+The algorithm works by:
+1. First removing all spaces from the input string
+2. Iterating through each character in the cleaned string
+3. For each opening parenthesis '(', increment the balance counter and add to current group
+4. For each closing parenthesis ')', decrement the balance counter and add to current group
+5. When balance reaches 0, we have a complete balanced group, so we add it to the result list and reset the current group
+6. Return the list of separated groups
+
+This handles nested parentheses correctly because the balance counter ensures we only consider a group complete when all nested levels have been properly closed.

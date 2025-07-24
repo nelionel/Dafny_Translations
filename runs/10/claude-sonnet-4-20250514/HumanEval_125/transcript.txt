@@ -1,0 +1,73 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def split_words(txt):
+    '''
+    Given a string of words, return a list of words split on whitespace, if no whitespaces exists in the text you
+    should split on commas ',' if no commas exists you should return the number of lower-case letters with odd order in the
+    alphabet, ord('a') = 0, ord('b') = 1, ... ord('z') = 25
+    Examples
+    split_words("Hello world!") ➞ ["Hello", "world!"]
+    split_words("Hello,world!") ➞ ["Hello", "world!"]
+    split_words("abcdef") == 3 
+    '''
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement a function that:
+
+1. First tries to split on whitespace
+2. If no whitespace, tries to split on commas
+3. If neither, counts lowercase letters with odd alphabetical positions
+
+Let me break down the logic:
+- Whitespace splitting is straightforward
+- For comma splitting, I need to check if there are any commas
+- For counting odd-positioned lowercase letters: a=0, b=1, c=2, etc., so I need letters at positions 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 (b, d, f, h, j, l, n, p, r, t, v, x, z)
+
+```python
+def split_words(txt):
+    '''
+    Given a string of words, return a list of words split on whitespace, if no whitespaces exists in the text you
+    should split on commas ',' if no commas exists you should return the number of lower-case letters with odd order in the
+    alphabet, ord('a') = 0, ord('b') = 1, ... ord('z') = 25
+    Examples
+    split_words("Hello world!") ➞ ["Hello", "world!"]
+    split_words("Hello,world!") ➞ ["Hello", "world!"]
+    split_words("abcdef") == 3 
+    '''
+    # First, try to split on whitespace
+    if ' ' in txt:
+        return txt.split()
+    
+    # If no whitespace, try to split on commas
+    if ',' in txt:
+        return txt.split(',')
+    
+    # If neither whitespace nor commas, count lowercase letters with odd positions
+    count = 0
+    for char in txt:
+        if char.islower() and char.isalpha():
+            # Calculate position: a=0, b=1, c=2, etc.
+            position = ord(char) - ord('a')
+            # Check if position is odd (1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25)
+            if position % 2 == 1:
+                count += 1
+    
+    return count
+```
+
+The implementation works as follows:
+
+1. **Whitespace check**: Uses `' ' in txt` to check for spaces, then `txt.split()` to split on any whitespace
+2. **Comma check**: Uses `',' in txt` to check for commas, then `txt.split(',')` to split on commas
+3. **Odd position counting**: 
+   - Iterates through each character
+   - Checks if it's a lowercase letter using `char.islower()` and `char.isalpha()`
+   - Calculates the alphabetical position using `ord(char) - ord('a')`
+   - Checks if the position is odd using modulo operator `% 2 == 1`
+   - Counts and returns the total
+
+For the example "abcdef": a(0-even), b(1-odd), c(2-even), d(3-odd), e(4-even), f(5-odd) → 3 odd positions (b, d, f).

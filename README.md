@@ -1,136 +1,167 @@
-# Dafny Translation Module
+# Dafny Translation Framework
 
-A modular, refactored implementation of the Python to Dafny translation pipeline.
+A comprehensive framework for automatically translating HumanEval Python problems to formally verified Dafny code.
 
-## Architecture Overview
+## Overview
 
-The module is organized into several key components:
+This framework provides a complete pipeline for:
+- **Translation**: Python → Dafny (solutions and tests)
+- **Evaluation**: Compilation, testing, and verification
+- **Specification Validation**: Iterative improvement of formal specifications
+- **Reporting**: Comprehensive visualizations and summaries
 
-### Core Components
+## Features
 
-- **`core/orchestrator.py`**: Main coordinator that manages the entire translation and evaluation pipeline
-- **`core/models.py`**: Data models and types used throughout the module
-- **`core/exceptions.py`**: Custom exception types
+- ✅ **Fully self-contained module** - includes data, code, and runs
+- ✅ **Parallel processing** with configurable workers
+- ✅ **Retry logic** with compilation feedback for translation improvement
+- ✅ **Spec validation** with fresh conversations for unbiased evaluation
+- ✅ **Comprehensive evaluation** (compile → test → verify → validate specs)
+- ✅ **Rich reporting** with visualizations and categorized summaries
+- ✅ **Two execution modes**: Full translation vs. Eval-only
+- ✅ **Token tracking** and usage limits
 
-### Translation Components
+## Quick Start
 
-- **`translators/base.py`**: Abstract base class for all translators
-- **`translators/solution.py`**: Translates Python functions to Dafny methods
-- **`translators/test.py`**: Translates Python test assertions to Dafny test methods
+### Requirements
 
-### Evaluation Components
+1. **Python 3.8+** with pip
+2. **Dafny** installed and accessible (default: `/opt/homebrew/bin/dafny`)
+3. **API Key**: Set `ANTHROPIC_API_KEY` environment variable
 
-- **`evaluators/compiler.py`**: Handles Dafny compilation
-- **`evaluators/runner.py`**: Executes Dafny tests
-- **`evaluators/verifier.py`**: Performs Dafny verification
+### Installation
 
-### Utility Components
-
-- **`utils/llm.py`**: LLM interaction utilities (code extraction, response parsing)
-- **`utils/paths.py`**: Path manipulation and file discovery utilities
-
-### Reporting Components
-
-- **`reporting/transcript.py`**: Generates conversation transcripts
-- **`reporting/visualizer.py`**: Creates visualization plots
-- **`reporting/summary.py`**: Generates summary reports and categorized lists
-
-### Configuration
-
-- **`config/settings.py`**: Configuration management
-- **`config/prompts/`**: YAML files containing LLM prompts
-
-## Usage
-
-### As a Module
-
-```python
-from dafny_translation import DafnyTranslationOrchestrator, Config
-
-# Create configuration
-config = Config(
-    model="claude-3-5-sonnet-20240620",
-    parallel_workers=10,
-    api_key="your-api-key"
-)
-
-# Create orchestrator and process a run
-orchestrator = DafnyTranslationOrchestrator(config)
-results = orchestrator.process_run(run_id=14, max_problems=5)
-```
-
-### From Command Line
-
-#### Full Translation and Evaluation
-Using the wrapper script:
 ```bash
-python translate_run_dafny_refactored.py 14 --model claude-3-5-sonnet-20240620 --parallel 10 --max-problems 5
+# Install Python dependencies
+pip install -r dafny_translation/requirements.txt
+
+# Set API key
+export ANTHROPIC_API_KEY=your_key_here
 ```
 
-Or as a module:
+### Usage
+
 ```bash
-python -m dafny_translation.main 14 --model claude-3-5-sonnet-20240620 --parallel 10 --max-problems 5
+# Full translation pipeline
+python3 -m dafny_translation.main <run_id>
+
+# Evaluation only (skip translation)
+python3 -m dafny_translation.main <run_id> --eval-only
+
+# With specification validation
+python3 -m dafny_translation.main <run_id> --validate-specs
+
+# Advanced usage
+python3 -m dafny_translation.main <run_id> \
+    --parallel 3 \
+    --max-retries 5 \
+    --max-problems 10 \
+    --validate-specs
 ```
 
-#### Evaluation Only Mode
-Skip translation and only run compilation, testing, and verification on existing Dafny files:
-```bash
-python -m dafny_translation.main 14 --eval-only --max-problems 5
-```
+## Data Structure
 
-This mode is useful when:
-- You want to re-evaluate existing translations with different timeout settings
-- You've manually fixed some Dafny files and want to check the results
-- You want to get a quick overview of evaluation results without re-running expensive translations
-- You want to test different evaluation configurations
-
-#### Targeting Specific Problems
-You can combine `--eval-only` with `--only` to evaluate specific problems:
-```bash
-python -m dafny_translation.main 14 --eval-only --only 1,5,23,45
-```
-
-## Key Improvements
-
-1. **Separation of Concerns**: Each component has a single, well-defined responsibility
-2. **Testability**: Components can be easily unit tested in isolation
-3. **Extensibility**: Easy to add new translators or evaluators
-4. **Configuration**: All settings and prompts are externalized
-5. **Error Handling**: Proper exception hierarchy and error propagation
-6. **Reusability**: Components can be used independently
-7. **Evaluation Modes**: Support for both full translation+evaluation and evaluation-only workflows
-
-## Directory Structure
+The framework is **completely self-contained** with internal data:
 
 ```
 dafny_translation/
-├── __init__.py              # Module exports
-├── main.py                  # CLI entry point
-├── config/
-│   ├── settings.py         # Configuration management
-│   └── prompts/           # LLM prompt templates
-│       ├── solution.yaml
-│       └── test.yaml
-├── core/
-│   ├── orchestrator.py    # Main workflow coordinator
-│   ├── models.py         # Data models
-│   └── exceptions.py     # Custom exceptions
-├── translators/
-│   ├── base.py          # Abstract base translator
-│   ├── solution.py      # Python → Dafny solution
-│   └── test.py         # Python test → Dafny test
-├── evaluators/
-│   ├── compiler.py     # Compilation logic
-│   ├── runner.py      # Test execution
-│   └── verifier.py    # Verification logic
-├── utils/
-│   ├── llm.py        # LLM utilities
-│   └── paths.py      # Path utilities
-└── reporting/
-    ├── transcript.py  # Conversation logs
-    ├── visualizer.py # Charts/plots
-    └── summary.py   # Result summaries
-``` 
+├── runs/                       # 🎯 INTERNAL RUN DATA
+│   ├── 10/
+│   │   └── claude-sonnet-4-20250514/
+│   │       ├── HumanEval_0/
+│   │       │   ├── model_solution.py
+│   │       │   ├── problem_statement.txt
+│   │       │   └── tests.py
+│   │       ├── HumanEval_1/
+│   │       └── ...
+│   ├── 11/
+│   └── 12/
+├── dataset/                    # HumanEval problem definitions
+├── providers/                  # API abstraction
+├── core/                       # Main logic
+├── translators/               # Translation components
+├── evaluators/                # Evaluation components
+├── reporting/                 # Visualization & summaries
+├── config/                    # Settings & prompts
+├── utils/                     # Helper functions
+└── ...
+```
 
-# Create a .env file or set environment variable:
-# export ANTHROPIC_API_KEY=your_actual_api_key_here
+## Architecture
+
+### Core Components
+- **`main.py`** - CLI entry point
+- **`core/orchestrator.py`** - Main pipeline controller  
+- **`core/models.py`** - Data structures
+- **`translators/`** - Python → Dafny translation logic
+- **`evaluators/`** - Compilation, testing, verification, spec validation
+- **`reporting/`** - Summary generation and visualizations
+
+### Internal Dependencies
+- **`providers/`** - API abstraction layer (Anthropic)
+- **`dataset/`** - HumanEval problem data utilities
+- **`config/`** - Settings and prompt templates
+- **`utils/`** - Helper functions
+- **`runs/`** - 🎯 **RUN DATA STORAGE**
+
+## Configuration
+
+Key settings in `config/settings.py`:
+- **Model**: `claude-sonnet-4-20250514` (locked)
+- **Max retries**: 3 (unified for translation + spec validation)
+- **Max tokens**: 16,384
+- **Thinking budget**: 6,000 tokens
+- **Parallel workers**: 5
+- **Timeouts**: 100s each for compilation/testing/verification
+
+## Output Structure
+
+```
+dafny_translation/runs/{run_id}/{model}/HumanEval_X/dafny_files/
+├── actual_dafny_files/
+│   ├── solution.dfy              # Final/improved solution
+│   ├── test.dfy                  # Test methods + dummy
+│   └── old_spec_solution.dfy     # Original before improvement
+├── transcripts/
+│   ├── solution_transcript.txt   # Translation conversation
+│   ├── test_transcript.txt       # Test translation
+│   ├── spec_validation_transcript.txt
+│   └── tldr.txt                  # Summary with token usage
+└── evaluations/
+    └── dafny_outputs.txt         # Compilation/test logs
+```
+
+## Pipeline Logic
+
+### Translation Mode
+1. **Solution Translation** (cumulative context with retry logic)
+2. **Test Translation** (cumulative context with retry logic)  
+3. **Evaluation**: Compile → Test → Verify
+4. **Optional**: Spec Validation (fresh conversation each attempt)
+
+### Eval-Only Mode  
+1. **Read existing** `solution.dfy` + `test.dfy` files from internal storage
+2. **Evaluation**: Compile → Test → Verify
+3. **Optional**: Spec Validation (fresh conversation each attempt)
+
+## Key Design Features
+
+### Translation Retries (Cumulative Context)
+- Conversation grows across attempts for iterative refinement
+- Compilation errors inform next translation attempt
+- Debugging mindset - learn from previous failures
+
+### Spec Validation Retries (Fresh Context)  
+- New conversation each attempt with improved code
+- Independent evaluation prevents contamination
+- Unbiased perspective on specification quality
+
+## Portability
+
+The module is **100% self-contained**:
+- ✅ **No external dependencies** beyond Python packages
+- ✅ **Internal data storage** in `runs/` directory
+- ✅ **All logic contained** within the module
+- ✅ **Portable anywhere** - just copy the directory
+
+For development, all configuration, prompts, data, and logic are contained within the module structure.

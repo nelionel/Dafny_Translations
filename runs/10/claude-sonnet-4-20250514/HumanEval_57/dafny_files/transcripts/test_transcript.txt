@@ -1,0 +1,216 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `monotonic`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate([1, 2, 4, 10]) == True
+    assert candidate([1, 2, 4, 20]) == True
+    assert candidate([1, 20, 4, 10]) == False
+    assert candidate([4, 1, 0, -10]) == True
+    assert candidate([4, 1, 1, 0]) == True
+    assert candidate([1, 2, 3, 2, 5, 60]) == False
+    assert candidate([1, 2, 3, 4, 5, 60]) == True
+    assert candidate([9, 9, 9, 9]) == True
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+predicate IsNonDecreasing(s: seq<int>)
+{
+  forall i :: 0 <= i < |s| - 1 ==> s[i] <= s[i + 1]
+}
+
+predicate IsNonIncreasing(s: seq<int>)
+{
+  forall i :: 0 <= i < |s| - 1 ==> s[i] >= s[i + 1]
+}
+
+method CheckNonDecreasing(s: seq<int>) returns (result: bool)
+  ensures result <==> IsNonDecreasing(s)
+{
+  if |s| <= 1 {
+    return true;
+  }
+  
+  var i := 0;
+  while i < |s| - 1
+    invariant 0 <= i <= |s| - 1
+    invariant forall j :: 0 <= j < i ==> s[j] <= s[j + 1]
+  {
+    if s[i] > s[i + 1] {
+      return false;
+    }
+    i := i + 1;
+  }
+  return true;
+}
+
+method CheckNonIncreasing(s: seq<int>) returns (result: bool)
+  ensures result <==> IsNonIncreasing(s)
+{
+  if |s| <= 1 {
+    return true;
+  }
+  
+  var i := 0;
+  while i < |s| - 1
+    invariant 0 <= i <= |s| - 1
+    invariant forall j :: 0 <= j < i ==> s[j] >= s[j + 1]
+  {
+    if s[i] < s[i + 1] {
+      return false;
+    }
+    i := i + 1;
+  }
+  return true;
+}
+
+method monotonic(l: seq<int>) returns (result: bool)
+  ensures result <==> (|l| <= 1 || IsNonDecreasing(l) || IsNonIncreasing(l))
+{
+  if |l| <= 1 {
+    return true;
+  }
+  
+  var increasing := CheckNonDecreasing(l);
+  var decreasing := CheckNonIncreasing(l);
+  
+  return increasing || decreasing;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`monotonic`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `monotonic` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `monotonic` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python test code to understand what the `monotonic` method should do.
+
+Looking at the Python test assertions:
+- `candidate([1, 2, 4, 10])` returns `True` - this is non-decreasing
+- `candidate([1, 2, 4, 20])` returns `True` - this is non-decreasing
+- `candidate([1, 20, 4, 10])` returns `False` - this is neither non-decreasing nor non-increasing
+- `candidate([4, 1, 0, -10])` returns `True` - this is non-increasing
+- `candidate([4, 1, 1, 0])` returns `True` - this is non-increasing
+- `candidate([1, 2, 3, 2, 5, 60])` returns `False` - this is neither non-decreasing nor non-increasing
+- `candidate([1, 2, 3, 4, 5, 60])` returns `True` - this is non-decreasing
+- `candidate([9, 9, 9, 9])` returns `True` - this is both non-decreasing and non-increasing (constant sequence)
+
+So the function should return True if the sequence is monotonic (either non-decreasing or non-increasing), and False otherwise.
+
+Looking at the Dafny solution, the method signature is:
+```dafny
+method monotonic(l: seq<int>) returns (result: bool)
+```
+
+So I need to create a dummy with this same signature, and then create test methods that call this method and check the results.
+
+--- RESPONSE ---
+Looking at the Python tests and the Dafny solution, I can see that the `monotonic` method takes a sequence of integers and returns a boolean indicating whether the sequence is monotonic (either non-decreasing or non-increasing).
+
+<dummy>
+method monotonic(l: seq<int>) returns (result: bool)
+{
+    return false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := monotonic([1, 2, 4, 10]);
+    expect result == true;
+}
+
+method {:test} test_1()
+{
+    var result := monotonic([1, 2, 4, 20]);
+    expect result == true;
+}
+
+method {:test} test_2()
+{
+    var result := monotonic([1, 20, 4, 10]);
+    expect result == false;
+}
+
+method {:test} test_3()
+{
+    var result := monotonic([4, 1, 0, -10]);
+    expect result == true;
+}
+
+method {:test} test_4()
+{
+    var result := monotonic([4, 1, 1, 0]);
+    expect result == true;
+}
+
+method {:test} test_5()
+{
+    var result := monotonic([1, 2, 3, 2, 5, 60]);
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := monotonic([1, 2, 3, 4, 5, 60]);
+    expect result == true;
+}
+
+method {:test} test_7()
+{
+    var result := monotonic([9, 9, 9, 9]);
+    expect result == true;
+}
+```
+

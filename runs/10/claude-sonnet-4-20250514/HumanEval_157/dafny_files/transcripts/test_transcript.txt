@@ -1,0 +1,233 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `right_angle_triangle`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate(3, 4, 5) == True, "This prints if this assert fails 1 (good for debugging!)"
+    assert candidate(1, 2, 3) == False
+    assert candidate(10, 6, 8) == True
+    assert candidate(2, 2, 2) == False
+    assert candidate(7, 24, 25) == True
+    assert candidate(10, 5, 7) == False
+    assert candidate(5, 12, 13) == True
+    assert candidate(15, 8, 17) == True
+    assert candidate(48, 55, 73) == True
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate(1, 1, 1) == False, "This prints if this assert fails 2 (also good for debugging!)"
+    assert candidate(2, 2, 10) == False
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method right_angle_triangle(a: real, b: real, c: real) returns (result: bool)
+    ensures result <==> (
+        // Valid triangle conditions
+        a > 0.0 && b > 0.0 && c > 0.0 &&
+        a + b > c && a + c > b && b + c > a &&
+        // Pythagorean theorem for some ordering of the sides
+        (a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a)
+    )
+{
+    // First check if the sides can form a valid triangle
+    // Triangle inequality: sum of any two sides must be greater than the third side
+    if a + b <= c || a + c <= b || b + c <= a {
+        return false;
+    }
+    
+    // Check if any side is non-positive
+    if a <= 0.0 || b <= 0.0 || c <= 0.0 {
+        return false;
+    }
+    
+    // Sort the sides to identify the longest side (hypotenuse)
+    // Manual sorting of three values
+    var side1, side2, side3: real;
+    
+    if a >= b && a >= c {
+        side3 := a; // a is largest
+        if b >= c {
+            side1 := c;
+            side2 := b;
+        } else {
+            side1 := b;
+            side2 := c;
+        }
+    } else if b >= a && b >= c {
+        side3 := b; // b is largest
+        if a >= c {
+            side1 := c;
+            side2 := a;
+        } else {
+            side1 := a;
+            side2 := c;
+        }
+    } else {
+        side3 := c; // c is largest
+        if a >= b {
+            side1 := b;
+            side2 := a;
+        } else {
+            side1 := a;
+            side2 := b;
+        }
+    }
+    
+    // Apply Pythagorean theorem: side1² + side2² = side3²
+    // Where side3 is the longest side (hypotenuse)
+    return side1 * side1 + side2 * side2 == side3 * side3;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`right_angle_triangle`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `right_angle_triangle` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `right_angle_triangle` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the tests and solution:
+
+1. The method is named `right_angle_triangle` and has signature `method right_angle_triangle(a: real, b: real, c: real) returns (result: bool)`
+
+2. The Python tests are:
+   - candidate(3, 4, 5) == True
+   - candidate(1, 2, 3) == False  
+   - candidate(10, 6, 8) == True
+   - candidate(2, 2, 2) == False
+   - candidate(7, 24, 25) == True
+   - candidate(10, 5, 7) == False
+   - candidate(5, 12, 13) == True
+   - candidate(15, 8, 17) == True
+   - candidate(48, 55, 73) == True
+   - candidate(1, 1, 1) == False
+   - candidate(2, 2, 10) == False
+
+3. I need to create a dummy implementation with the same signature that returns a default bool value (false).
+
+4. Then I need to translate each assert into a Dafny test method.
+
+Let me write this out:
+
+--- RESPONSE ---
+Looking at the tests and solution, I can see the method `right_angle_triangle` takes three `real` parameters and returns a `bool`.
+
+<dummy>
+method right_angle_triangle(a: real, b: real, c: real) returns (result: bool)
+{
+    result := false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := right_angle_triangle(3.0, 4.0, 5.0);
+    expect result == true;
+}
+
+method {:test} test_1()
+{
+    var result := right_angle_triangle(1.0, 2.0, 3.0);
+    expect result == false;
+}
+
+method {:test} test_2()
+{
+    var result := right_angle_triangle(10.0, 6.0, 8.0);
+    expect result == true;
+}
+
+method {:test} test_3()
+{
+    var result := right_angle_triangle(2.0, 2.0, 2.0);
+    expect result == false;
+}
+
+method {:test} test_4()
+{
+    var result := right_angle_triangle(7.0, 24.0, 25.0);
+    expect result == true;
+}
+
+method {:test} test_5()
+{
+    var result := right_angle_triangle(10.0, 5.0, 7.0);
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := right_angle_triangle(5.0, 12.0, 13.0);
+    expect result == true;
+}
+
+method {:test} test_7()
+{
+    var result := right_angle_triangle(15.0, 8.0, 17.0);
+    expect result == true;
+}
+
+method {:test} test_8()
+{
+    var result := right_angle_triangle(48.0, 55.0, 73.0);
+    expect result == true;
+}
+
+method {:test} test_9()
+{
+    var result := right_angle_triangle(1.0, 1.0, 1.0);
+    expect result == false;
+}
+
+method {:test} test_10()
+{
+    var result := right_angle_triangle(2.0, 2.0, 10.0);
+    expect result == false;
+}
+```
+

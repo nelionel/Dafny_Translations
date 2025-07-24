@@ -1,0 +1,73 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def pairs_sum_to_zero(l):
+    """
+    pairs_sum_to_zero takes a list of integers as an input.
+    it returns True if there are two distinct elements in the list that
+    sum to zero, and False otherwise.
+    >>> pairs_sum_to_zero([1, 3, 5, 0])
+    False
+    >>> pairs_sum_to_zero([1, 3, -2, 1])
+    False
+    >>> pairs_sum_to_zero([1, 2, 3, 7])
+    False
+    >>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])
+    True
+    >>> pairs_sum_to_zero([1])
+    False
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find if there are two distinct elements in the list that sum to zero.
+
+Let me analyze the examples:
+- `[1, 3, 5, 0]` → False (no two elements sum to 0)
+- `[1, 3, -2, 1]` → False (no two elements sum to 0)
+- `[1, 2, 3, 7]` → False (no two elements sum to 0)
+- `[2, 4, -5, 3, 5, 7]` → True (-5 + 5 = 0)
+- `[1]` → False (only one element)
+
+The most efficient approach is to use a set to store elements we've seen, and for each element, check if its negative counterpart exists in the set.
+
+```python
+def pairs_sum_to_zero(l):
+    """
+    pairs_sum_to_zero takes a list of integers as an input.
+    it returns True if there are two distinct elements in the list that
+    sum to zero, and False otherwise.
+    >>> pairs_sum_to_zero([1, 3, 5, 0])
+    False
+    >>> pairs_sum_to_zero([1, 3, -2, 1])
+    False
+    >>> pairs_sum_to_zero([1, 2, 3, 7])
+    False
+    >>> pairs_sum_to_zero([2, 4, -5, 3, 5, 7])
+    True
+    >>> pairs_sum_to_zero([1])
+    False
+    """
+    seen = set()
+    
+    for num in l:
+        # Check if the negative of current number exists in seen set
+        if -num in seen:
+            return True
+        # Add current number to seen set
+        seen.add(num)
+    
+    return False
+```
+
+This solution works by:
+1. Creating a set to store numbers we've already seen
+2. For each number in the list, checking if its negative is already in the set
+3. If we find a pair that sums to zero, we immediately return True
+4. If we complete the loop without finding such a pair, we return False
+
+Time complexity: O(n) where n is the length of the list
+Space complexity: O(n) for the set storage

@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/89
+Entry Point: encrypt
+Stop Reason: end_turn
+Input Tokens: 173
+Output Tokens: 441

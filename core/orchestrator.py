@@ -8,8 +8,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, List, Optional
 from tqdm import tqdm
 
-from human_eval.data import read_problems
-from api_providers import get_provider
+from ..dataset.human_eval import read_problems
+from ..providers.api_providers import get_provider
 
 from .models import (
     TranslationTask, EvaluationResult, ProblemPaths,
@@ -230,6 +230,29 @@ class DafnyTranslationOrchestrator:
             # Setup paths
             self._log_debug(f"[{problem_name}] Setting up paths...")
             paths = ProblemPaths.from_problem_dir(problem_dir)
+            
+            # For spec validation, clean only leftover artifacts from previous runs
+            if self.config.validate_specs:
+                import shutil
+                # Clean only leftover spec validation files, keep original solution.dfy and test.dfy
+                leftover_files = [
+                    "old_spec_solution.dfy",
+                    "new_spec_solution.dfy", 
+                    "base_spec_solution.dfy",
+                    "solution_new_spec.dfy",
+                    "solution_in_dafny.dfy"
+                ]
+                
+                for filename in leftover_files:
+                    leftover_path = paths.actual_dafny_files_dir / filename
+                    if leftover_path.exists():
+                        leftover_path.unlink()
+                        
+                # Clean evaluation directory if it exists
+                if paths.evaluations_dir.exists():
+                    shutil.rmtree(paths.evaluations_dir)
+                
+                self._log_debug(f"[{problem_name}] Cleaned leftover spec validation artifacts...")
             
             # Check if Dafny files exist
             if not paths.dafny_solution_path.exists():
@@ -561,12 +584,10 @@ class DafnyTranslationOrchestrator:
                 f.write("=== DAFNY TESTING ===\nSkipped due to compilation failure.\n")
                 f.write("=== DAFNY VERIFICATION ===\nSkipped due to compilation failure.\n")
             
-            # Specification validation (if enabled and compilation+tests passed)
+            # Specification validation (if enabled and compilation passed)
             if (self.config.validate_specs and self.spec_validator and 
                 python_code and results.get('compilation') and 
-                results['compilation'].status == CompilationStatus.PASSED and
-                results.get('testing') and results['testing'].total > 0 and
-                results['testing'].passed == results['testing'].total):
+                results['compilation'].status == CompilationStatus.PASSED):
                 
                 f.write("=== SPEC VALIDATION ===\n")
                 spec_start = time.time()
@@ -593,7 +614,7 @@ class DafnyTranslationOrchestrator:
                     f.write(f"Spec validation failed: {e}\n")
                     results['spec_validation'] = None
             elif self.config.validate_specs and self.spec_validator and python_code:
-                f.write("=== SPEC VALIDATION ===\nSkipped (compilation failed or no tests passed)\n")
+                f.write("=== SPEC VALIDATION ===\nSkipped (compilation failed)\n")
                 results['spec_validation'] = None
         
         return results

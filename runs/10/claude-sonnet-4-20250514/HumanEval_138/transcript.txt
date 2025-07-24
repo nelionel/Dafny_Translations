@@ -1,0 +1,50 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def is_equal_to_sum_even(n):
+    """Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers
+    Example
+    is_equal_to_sum_even(4) == False
+    is_equal_to_sum_even(6) == False
+    is_equal_to_sum_even(8) == True
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to determine if a number `n` can be written as the sum of exactly 4 positive even numbers.
+
+Let me think about this:
+- Positive even numbers are: 2, 4, 6, 8, 10, ...
+- The smallest possible sum of 4 positive even numbers would be: 2 + 2 + 2 + 2 = 8
+- Any sum of 4 even numbers will always be even (since even + even = even)
+
+So for a number to be expressible as the sum of 4 positive even numbers:
+1. It must be even
+2. It must be at least 8
+
+Let me verify with the examples:
+- `is_equal_to_sum_even(4)` should return `False` because 4 < 8
+- `is_equal_to_sum_even(6)` should return `False` because 6 < 8  
+- `is_equal_to_sum_even(8)` should return `True` because 8 = 2+2+2+2
+
+For any even number ≥ 8, we can always find a combination. For example:
+- 8 = 2+2+2+2
+- 10 = 2+2+2+4
+- 12 = 2+2+2+6 or 2+2+4+4
+- And so on...
+
+```python
+def is_equal_to_sum_even(n):
+    """Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers
+    Example
+    is_equal_to_sum_even(4) == False
+    is_equal_to_sum_even(6) == False
+    is_equal_to_sum_even(8) == True
+    """
+    # A number can be written as sum of 4 positive even numbers if:
+    # 1. It's even (sum of even numbers is always even)
+    # 2. It's at least 8 (minimum sum: 2+2+2+2 = 8)
+    return n % 2 == 0 and n >= 8
+```

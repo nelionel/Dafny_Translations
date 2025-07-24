@@ -12,13 +12,6 @@ from .core.exceptions import DafnyTranslationError
 
 def main():
     """Main entry point with CLI"""
-    # Print warning about hardcoded API key
-    print("\n" + "="*60, flush=True)
-    print("WARNING: API KEY HARDCODED IN dafny_translation/config/settings.py", flush=True)
-    print("Do not commit or share this file with the hardcoded key.", flush=True)
-    print("="*60 + "\n", flush=True)
-    time.sleep(1)  # Pause to ensure the message is visible
-
     parser = argparse.ArgumentParser(
         description="Translate and evaluate a full HumanEval run to Dafny."
     )
@@ -72,7 +65,7 @@ def main():
         "--max-retries",
         type=int,
         default=3,
-        help="Maximum number of retries for failed translations (default: 3)."
+        help="Maximum number of retries for failed translations and spec validation attempts (default: 3)."
     )
     parser.add_argument(
         "--max-tokens",

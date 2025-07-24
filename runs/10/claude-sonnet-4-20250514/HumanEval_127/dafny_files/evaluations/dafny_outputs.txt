@@ -1,0 +1,41 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 3
+STDOUT:
+
+Dafny program verifier did not attempt verification
+test_0: PASSED
+test_1: FAILED
+	temp_test.dfy(55,4): expectation violation
+test_2: PASSED
+test_3: PASSED
+test_4: PASSED
+test_5: PASSED
+test_6: FAILED
+	temp_test.dfy(85,4): expectation violation
+test_7: PASSED
+[Program halted] temp_test.dfy(1,0): Test failures occurred: see above.
+
+
+STDERR:
+
+Testing result: 6/8 passed
+
+=== DAFNY VERIFICATION ===
+Skipped due to failing tests.
+=== SPEC VALIDATION ===
+Spec validation attempts: 2
+Has proper specs: True
+- Attempt 1: Specs need improvement
+- Attempt 2: Proper specs found

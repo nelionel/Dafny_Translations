@@ -1,0 +1,63 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def largest_prime_factor(n: int):
+    """Return the largest prime factor of n. Assume n > 1 and is not a prime.
+    >>> largest_prime_factor(13195)
+    29
+    >>> largest_prime_factor(2048)
+    2
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the largest prime factor of a given number `n`. The approach is to systematically divide `n` by potential factors starting from 2, and keep track of the largest factor found.
+
+Here's my implementation:
+
+```python
+def largest_prime_factor(n: int):
+    """Return the largest prime factor of n. Assume n > 1 and is not a prime.
+    >>> largest_prime_factor(13195)
+    29
+    >>> largest_prime_factor(2048)
+    2
+    """
+    largest_factor = 1
+    
+    # Check for factor 2
+    while n % 2 == 0:
+        largest_factor = 2
+        n = n // 2
+    
+    # Check for odd factors starting from 3
+    factor = 3
+    while factor * factor <= n:
+        while n % factor == 0:
+            largest_factor = factor
+            n = n // factor
+        factor += 2
+    
+    # If n is still greater than 1, then it's a prime factor
+    if n > 1:
+        largest_factor = n
+    
+    return largest_factor
+```
+
+The algorithm works as follows:
+
+1. **Handle factor 2**: First, I divide out all factors of 2 from `n`, updating `largest_factor` to 2 if any are found.
+
+2. **Handle odd factors**: Starting from 3, I check all odd numbers up to √n. For each factor found, I divide it out completely and update `largest_factor`.
+
+3. **Handle remaining prime**: If after all divisions `n` is still greater than 1, then `n` itself is a prime factor and must be the largest one.
+
+4. **Optimization**: I only check up to √n because if a number has a factor greater than √n, it must also have a corresponding factor less than √n. By the time we reach √n, any remaining value of `n` must be prime.
+
+Let me verify with the examples:
+- `largest_prime_factor(13195)`: 13195 = 5 × 7 × 13 × 29, so the largest prime factor is 29 ✓
+- `largest_prime_factor(2048)`: 2048 = 2^11, so the largest prime factor is 2 ✓

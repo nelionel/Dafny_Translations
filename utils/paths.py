@@ -57,7 +57,9 @@ def get_dafny_test_file_path(problem_num: str, entry_point: str) -> Optional[Pat
 
 def find_run_directory(run_id: int) -> Optional[Path]:
     """Find the run directory for a given run ID"""
-    runs_dir = Path("runs")
+    # Look for runs directory within the dafny_translation module
+    module_root = Path(__file__).parent.parent  # Go up from utils/ to dafny_translation/
+    runs_dir = module_root / "runs"
     run_id_str = str(run_id)
     
     possible_run_path = runs_dir / run_id_str

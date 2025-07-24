@@ -1,0 +1,58 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def generate_integers(a, b):
+    """
+    Given two positive integers a and b, return the even digits between a
+    and b, in ascending order.
+
+    For example:
+    generate_integers(2, 8) => [2, 4, 6, 8]
+    generate_integers(8, 2) => [2, 4, 6, 8]
+    generate_integers(10, 14) => []
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Handle the case where `a` and `b` might be in any order
+2. Find all integers between `a` and `b` (inclusive)
+3. Filter for even digits (0, 2, 4, 6, 8)
+4. Return them in ascending order
+
+From the examples, I can see that:
+- `generate_integers(2, 8)` returns `[2, 4, 6, 8]` - even single digits between 2 and 8
+- `generate_integers(8, 2)` returns `[2, 4, 6, 8]` - same result regardless of order
+- `generate_integers(10, 14)` returns `[]` - no single even digits in this range
+
+This suggests the function should return single-digit even numbers that fall within the range.
+
+```python
+def generate_integers(a, b):
+    """
+    Given two positive integers a and b, return the even digits between a
+    and b, in ascending order.
+
+    For example:
+    generate_integers(2, 8) => [2, 4, 6, 8]
+    generate_integers(8, 2) => [2, 4, 6, 8]
+    generate_integers(10, 14) => []
+    """
+    # Ensure we have the correct range regardless of order
+    min_val = min(a, b)
+    max_val = max(a, b)
+    
+    # Even digits are 0, 2, 4, 6, 8
+    even_digits = [0, 2, 4, 6, 8]
+    
+    # Find even digits that fall within the range [min_val, max_val]
+    result = []
+    for digit in even_digits:
+        if min_val <= digit <= max_val:
+            result.append(digit)
+    
+    return result
+```

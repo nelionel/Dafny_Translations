@@ -1,0 +1,36 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def strlen(string: str) -> int:
+    """ Return length of given string
+    >>> strlen('')
+    0
+    >>> strlen('abc')
+    3
+    """
+
+
+======MODEL OUTPUT======
+Here's the implementation of the `strlen` function:
+
+```python
+def strlen(string: str) -> int:
+    """ Return length of given string
+    >>> strlen('')
+    0
+    >>> strlen('abc')
+    3
+    """
+    return len(string)
+```
+
+This implementation uses Python's built-in `len()` function to return the length of the given string. The function works by:
+
+1. Taking a string as input parameter
+2. Using `len()` to count the number of characters in the string
+3. Returning the count as an integer
+
+The function handles both empty strings (returning 0) and non-empty strings (returning the actual character count), as demonstrated in the doctests.

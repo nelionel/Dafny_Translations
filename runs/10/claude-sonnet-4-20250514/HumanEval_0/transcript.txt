@@ -1,0 +1,48 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers closer to each other than
+    given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to check if any two numbers in the list are closer to each other than the given threshold.
+
+Here's my implementation:
+
+```python
+from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """ Check if in given list of numbers, are any two numbers closer to each other than
+    given threshold.
+    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+    False
+    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+    True
+    """
+    for i in range(len(numbers)):
+        for j in range(i + 1, len(numbers)):
+            if abs(numbers[i] - numbers[j]) < threshold:
+                return True
+    return False
+```
+
+The function works by:
+1. Using nested loops to compare each pair of numbers in the list
+2. For each pair, calculating the absolute difference between the two numbers
+3. If any pair has a difference less than the threshold, returning `True`
+4. If no pairs are found with a difference less than the threshold, returning `False`
+
+The time complexity is O(n²) where n is the length of the list, as we need to check all possible pairs of numbers.

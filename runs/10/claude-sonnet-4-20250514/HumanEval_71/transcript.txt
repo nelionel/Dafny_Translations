@@ -1,0 +1,63 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def triangle_area(a, b, c):
+    '''
+    Given the lengths of the three sides of a triangle. Return the area of
+    the triangle rounded to 2 decimal points if the three sides form a valid triangle. 
+    Otherwise return -1
+    Three sides make a valid triangle when the sum of any two sides is greater 
+    than the third side.
+    Example:
+    triangle_area(3, 4, 5) == 6.00
+    triangle_area(1, 2, 10) == -1
+    '''
+
+
+======MODEL OUTPUT======
+Here's the implementation of the `triangle_area` function:
+
+```python
+def triangle_area(a, b, c):
+    '''
+    Given the lengths of the three sides of a triangle. Return the area of
+    the triangle rounded to 2 decimal points if the three sides form a valid triangle. 
+    Otherwise return -1
+    Three sides make a valid triangle when the sum of any two sides is greater 
+    than the third side.
+    Example:
+    triangle_area(3, 4, 5) == 6.00
+    triangle_area(1, 2, 10) == -1
+    '''
+    # Check if the three sides form a valid triangle
+    # The triangle inequality states that the sum of any two sides must be greater than the third side
+    if a + b > c and a + c > b and b + c > a:
+        # Calculate the semi-perimeter
+        s = (a + b + c) / 2
+        
+        # Use Heron's formula to calculate the area
+        # Area = sqrt(s * (s-a) * (s-b) * (s-c))
+        area = (s * (s - a) * (s - b) * (s - c)) ** 0.5
+        
+        # Round to 2 decimal places
+        return round(area, 2)
+    else:
+        # Invalid triangle
+        return -1
+```
+
+The function works as follows:
+
+1. **Triangle Validation**: First, it checks if the three sides form a valid triangle using the triangle inequality theorem. For a valid triangle, the sum of any two sides must be greater than the third side.
+
+2. **Heron's Formula**: If the triangle is valid, it calculates the area using Heron's formula:
+   - Calculate the semi-perimeter: `s = (a + b + c) / 2`
+   - Calculate the area: `Area = √(s × (s-a) × (s-b) × (s-c))`
+
+3. **Return Value**: The function returns the area rounded to 2 decimal places for valid triangles, or -1 for invalid triangles.
+
+The examples work correctly:
+- `triangle_area(3, 4, 5)` returns `6.00` (a valid right triangle)
+- `triangle_area(1, 2, 10)` returns `-1` (invalid since 1 + 2 = 3 < 10)

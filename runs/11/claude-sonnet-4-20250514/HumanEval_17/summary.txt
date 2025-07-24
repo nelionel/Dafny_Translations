@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/17
+Entry Point: parse_music
+Stop Reason: end_turn
+Input Tokens: 224
+Output Tokens: 576

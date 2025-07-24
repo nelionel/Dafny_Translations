@@ -1,0 +1,65 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def cycpattern_check(a , b):
+    """You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word
+    cycpattern_check("abcd","abd") => False
+    cycpattern_check("hello","ell") => True
+    cycpattern_check("whassup","psus") => False
+    cycpattern_check("abab","baa") => True
+    cycpattern_check("efef","eeff") => False
+    cycpattern_check("himenss","simen") => True
+
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Check if the second word `b` or any of its rotations is a substring of the first word `a`
+2. A rotation means moving characters from the beginning to the end (or vice versa)
+3. For a string of length n, there are n possible rotations
+
+Let me trace through the examples:
+- `cycpattern_check("abcd","abd")` => False: "abd", "bda", "dab" - none are substrings of "abcd"
+- `cycpattern_check("hello","ell")` => True: "ell" is directly a substring of "hello"
+- `cycpattern_check("abab","baa")` => True: rotations of "baa" are "baa", "aab", "aba" - "aba" is a substring of "abab"
+
+```python
+def cycpattern_check(a, b):
+    """You are given 2 words. You need to return True if the second word or any of its rotations is a substring in the first word
+    cycpattern_check("abcd","abd") => False
+    cycpattern_check("hello","ell") => True
+    cycpattern_check("whassup","psus") => False
+    cycpattern_check("abab","baa") => True
+    cycpattern_check("efef","eeff") => False
+    cycpattern_check("himenss","simen") => True
+    """
+    
+    # If b is empty, it's considered a substring of any string
+    if not b:
+        return True
+    
+    # If b is longer than a, no rotation of b can be a substring of a
+    if len(b) > len(a):
+        return False
+    
+    # Generate all rotations of b and check if any is a substring of a
+    for i in range(len(b)):
+        rotation = b[i:] + b[:i]
+        if rotation in a:
+            return True
+    
+    return False
+```
+
+The algorithm works as follows:
+1. Handle edge cases: empty `b` returns True, if `b` is longer than `a` returns False
+2. Generate all possible rotations of string `b` by taking substrings from position `i` to end, plus substring from start to position `i`
+3. Check if each rotation is a substring of `a`
+4. Return True if any rotation is found, False otherwise
+
+Time complexity: O(n² × m) where n is length of `b` and m is length of `a`
+Space complexity: O(n) for storing rotations

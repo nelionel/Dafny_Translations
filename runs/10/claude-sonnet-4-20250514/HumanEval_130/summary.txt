@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/130
+Entry Point: tri
+Stop Reason: end_turn
+Input Tokens: 311
+Output Tokens: 1961

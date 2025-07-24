@@ -171,5 +171,11 @@ class Reporter:
             else:
                 f.write("Verification: skipped\n")
 
+            # Add spec validation section
+            if result.spec_validation:
+                f.write(f"Validation: {'proper specs' if result.spec_validation.has_proper_specs else 'improper specs'} (Attempts: {result.spec_validation.attempts})\n")
+            else:
+                f.write("Validation: skipped\n")
+
             if result.error_message:
                 f.write(f"Overall Error: {result.error_message}\n") 

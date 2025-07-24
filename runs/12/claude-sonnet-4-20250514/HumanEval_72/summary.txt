@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/72
+Entry Point: will_it_fly
+Stop Reason: end_turn
+Input Tokens: 329
+Output Tokens: 814

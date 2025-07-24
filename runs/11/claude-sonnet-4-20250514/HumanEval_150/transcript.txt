@@ -1,0 +1,67 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def x_or_y(n, x, y):
+    """A simple program which should return the value of x if n is 
+    a prime number and should return the value of y otherwise.
+
+    Examples:
+    for x_or_y(7, 34, 12) == 34
+    for x_or_y(15, 8, 5) == 5
+    
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+I need to implement a function that returns `x` if `n` is prime, and `y` otherwise. First, I'll need a helper function to check if a number is prime.
+
+```python
+def x_or_y(n, x, y):
+    """A simple program which should return the value of x if n is 
+    a prime number and should return the value of y otherwise.
+
+    Examples:
+    for x_or_y(7, 34, 12) == 34
+    for x_or_y(15, 8, 5) == 5
+    
+    """
+    def is_prime(num):
+        """Helper function to check if a number is prime"""
+        if num < 2:
+            return False
+        if num == 2:
+            return True
+        if num % 2 == 0:
+            return False
+        
+        # Check odd divisors up to sqrt(num)
+        for i in range(3, int(num**0.5) + 1, 2):
+            if num % i == 0:
+                return False
+        return True
+    
+    # Return x if n is prime, otherwise return y
+    if is_prime(n):
+        return x
+    else:
+        return y
+```
+
+The function works as follows:
+
+1. **Helper function `is_prime(num)`**: 
+   - Returns `False` for numbers less than 2
+   - Returns `True` for 2 (the only even prime)
+   - Returns `False` for other even numbers
+   - For odd numbers ≥ 3, checks divisibility by odd numbers from 3 to √num
+
+2. **Main function**: Uses the helper function to determine if `n` is prime and returns `x` if true, `y` if false.
+
+The examples work correctly:
+- `x_or_y(7, 34, 12)` returns `34` because 7 is prime
+- `x_or_y(15, 8, 5)` returns `5` because 15 is not prime (15 = 3 × 5)

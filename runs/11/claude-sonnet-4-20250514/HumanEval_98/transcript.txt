@@ -1,0 +1,48 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def count_upper(s):
+    """
+    Given a string s, count the number of uppercase vowels in even indices.
+    
+    For example:
+    count_upper('aBCdEf') returns 1
+    count_upper('abcdefg') returns 0
+    count_upper('dBBE') returns 0
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+1. Check characters at even indices (0, 2, 4, ...)
+2. Count how many of those characters are uppercase vowels (A, E, I, O, U)
+
+Let me trace through the examples:
+- `count_upper('aBCdEf')`: indices 0,2,4 have 'a','C','E' → only 'E' is uppercase vowel → returns 1
+- `count_upper('abcdefg')`: indices 0,2,4,6 have 'a','c','e','g' → none are uppercase vowels → returns 0  
+- `count_upper('dBBE')`: indices 0,2 have 'd','B' → none are uppercase vowels → returns 0
+
+```python
+def count_upper(s):
+    """
+    Given a string s, count the number of uppercase vowels in even indices.
+    
+    For example:
+    count_upper('aBCdEf') returns 1
+    count_upper('abcdefg') returns 0
+    count_upper('dBBE') returns 0
+    """
+    uppercase_vowels = 'AEIOU'
+    count = 0
+    
+    for i in range(0, len(s), 2):  # iterate through even indices
+        if s[i] in uppercase_vowels:
+            count += 1
+    
+    return count
+```

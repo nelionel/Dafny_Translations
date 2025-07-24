@@ -1,0 +1,59 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def solve(N):
+    """Given a positive integer N, return the total sum of its digits in binary.
+    
+    Example
+        For N = 1000, the sum of digits will be 1 the output should be "1".
+        For N = 150, the sum of digits will be 6 the output should be "110".
+        For N = 147, the sum of digits will be 12 the output should be "1100".
+    
+    Variables:
+        @N integer
+             Constraints: 0 ≤ N ≤ 10000.
+    Output:
+         a string of binary number
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Calculate the sum of all digits in the given integer N
+2. Convert that sum to binary representation
+3. Return the binary as a string
+
+Let me trace through the examples:
+- N = 1000: digits are 1, 0, 0, 0 → sum = 1 → binary of 1 is "1"
+- N = 150: digits are 1, 5, 0 → sum = 6 → binary of 6 is "110"
+- N = 147: digits are 1, 4, 7 → sum = 12 → binary of 12 is "1100"
+
+```python
+def solve(N):
+    """Given a positive integer N, return the total sum of its digits in binary.
+    
+    Example
+        For N = 1000, the sum of digits will be 1 the output should be "1".
+        For N = 150, the sum of digits will be 6 the output should be "110".
+        For N = 147, the sum of digits will be 12 the output should be "1100".
+    
+    Variables:
+        @N integer
+             Constraints: 0 ≤ N ≤ 10000.
+    Output:
+         a string of binary number
+    """
+    # Calculate sum of digits
+    digit_sum = sum(int(digit) for digit in str(N))
+    
+    # Convert sum to binary and remove '0b' prefix
+    binary_result = bin(digit_sum)[2:]
+    
+    return binary_result
+```

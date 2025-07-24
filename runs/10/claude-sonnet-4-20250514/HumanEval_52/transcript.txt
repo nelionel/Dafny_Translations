@@ -1,0 +1,38 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def below_threshold(l: list, t: int):
+    """Return True if all numbers in the list l are below threshold t.
+    >>> below_threshold([1, 2, 4, 10], 100)
+    True
+    >>> below_threshold([1, 20, 4, 10], 5)
+    False
+    """
+
+
+======MODEL OUTPUT======
+Looking at the function signature and docstring, I need to implement a function that checks if all numbers in a list are below a given threshold.
+
+```python
+def below_threshold(l: list, t: int):
+    """Return True if all numbers in the list l are below threshold t.
+    >>> below_threshold([1, 2, 4, 10], 100)
+    True
+    >>> below_threshold([1, 20, 4, 10], 5)
+    False
+    """
+    return all(num < t for num in l)
+```
+
+This implementation:
+1. Uses the built-in `all()` function which returns `True` if all elements in the iterable are truthy
+2. Creates a generator expression `(num < t for num in l)` that checks if each number in the list is below the threshold
+3. Returns `True` only if all numbers are below the threshold, `False` otherwise
+
+The function handles edge cases naturally:
+- Empty list returns `True` (vacuous truth - all zero elements satisfy the condition)
+- Single element list works correctly
+- Works with any numeric types that support comparison

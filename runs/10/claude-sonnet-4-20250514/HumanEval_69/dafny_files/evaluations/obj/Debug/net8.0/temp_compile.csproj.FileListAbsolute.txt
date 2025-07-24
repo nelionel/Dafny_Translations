@@ -1,0 +1,11 @@
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/temp_compile.GeneratedMSBuildEditorConfig.editorconfig
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/temp_compile.AssemblyInfoInputs.cache
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/temp_compile.AssemblyInfo.cs
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/temp_compile.csproj.CoreCompileInputs.cache
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/temp_compile.dll
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/refint/temp_compile.dll
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/temp_compile.pdb
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/temp_compile.deps.json
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/temp_compile.dll
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/obj/Debug/net8.0/ref/temp_compile.dll
+/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_69/dafny_files/evaluations/temp_compile.pdb

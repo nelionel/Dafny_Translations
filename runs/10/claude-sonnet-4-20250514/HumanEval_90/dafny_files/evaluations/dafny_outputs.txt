@@ -1,0 +1,48 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+temp_compile.dfy(2,27): Warning: unusual indentation in body of exists (which ends at line 4, column 51); do you perhaps need parentheses?
+  |
+2 |   ensures result == -1 || (exists i, j :: 0 <= i < j < |lst| && lst[i] != lst[j] && 
+  |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 3
+STDOUT:
+temp_test.dfy(2,27): Warning: unusual indentation in body of exists (which ends at line 4, column 51); do you perhaps need parentheses?
+  |
+2 |   ensures result == -1 || (exists i, j :: 0 <= i < j < |lst| && lst[i] != lst[j] && 
+  |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier did not attempt verification
+Translation was aborted because warnings were found and --allow-warnings was not specified
+
+STDERR:
+
+Testing result: 0/0 passed
+
+=== DAFNY VERIFICATION ===
+Skipped due to failing tests.
+=== SPEC VALIDATION ===
+Spec validation attempts: 5
+Has proper specs: False
+- Attempt 1: Specs need improvement
+- Attempt 1: Improved code failed to compile
+- Attempt 2: Specs need improvement
+- Attempt 2: Improved code failed to compile
+- Attempt 3: Specs need improvement
+- Attempt 3: Improved code failed to compile
+- Attempt 4: Specs need improvement
+- Attempt 4: Improved code failed to compile
+- Attempt 5: Specs need improvement
+- Attempt 5: Improved code failed to compile

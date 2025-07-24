@@ -1,0 +1,49 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def sum_to_n(n: int):
+    """sum_to_n is a function that sums numbers from 1 to n.
+    >>> sum_to_n(30)
+    465
+    >>> sum_to_n(100)
+    5050
+    >>> sum_to_n(5)
+    15
+    >>> sum_to_n(10)
+    55
+    >>> sum_to_n(1)
+    1
+    """
+
+
+======MODEL OUTPUT======
+Here's the implementation of the `sum_to_n` function:
+
+```python
+def sum_to_n(n: int):
+    """sum_to_n is a function that sums numbers from 1 to n.
+    >>> sum_to_n(30)
+    465
+    >>> sum_to_n(100)
+    5050
+    >>> sum_to_n(5)
+    15
+    >>> sum_to_n(10)
+    55
+    >>> sum_to_n(1)
+    1
+    """
+    return n * (n + 1) // 2
+```
+
+This implementation uses the mathematical formula for the sum of the first n positive integers: n × (n + 1) / 2. This is more efficient than using a loop as it runs in O(1) constant time regardless of the value of n.
+
+The formula works because:
+- The sum 1 + 2 + 3 + ... + n can be calculated by pairing numbers from opposite ends
+- For example, with n=5: (1+5) + (2+4) + 3 = 6 + 6 + 3 = 15
+- In general, this gives us n × (n + 1) / 2
+
+I used integer division (`//`) to ensure the result is always an integer, which is appropriate since we're summing integers.

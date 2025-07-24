@@ -1,0 +1,182 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `any_int`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate(2, 3, 1)==True, "This prints if this assert fails 1 (good for debugging!)"
+    assert candidate(2.5, 2, 3)==False, "This prints if this assert fails 2 (good for debugging!)"
+    assert candidate(1.5, 5, 3.5)==False, "This prints if this assert fails 3 (good for debugging!)"
+    assert candidate(2, 6, 2)==False, "This prints if this assert fails 4 (good for debugging!)"
+    assert candidate(4, 2, 2)==True, "This prints if this assert fails 5 (good for debugging!)"
+    assert candidate(2.2, 2.2, 2.2)==False, "This prints if this assert fails 6 (good for debugging!)"
+    assert candidate(-4, 6, 2)==True, "This prints if this assert fails 7 (good for debugging!)"
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate(2,1,1)==True, "This prints if this assert fails 8 (also good for debugging!)"
+    assert candidate(3,4,7)==True, "This prints if this assert fails 9 (also good for debugging!)"
+    assert candidate(3.0,4,7)==False, "This prints if this assert fails 10 (also good for debugging!)"
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method any_int(x: real, y: real, z: real) returns (result: bool)
+{
+    // Check if all numbers are integers
+    if !(x as int as real == x && y as int as real == y && z as int as real == z) {
+        return false;
+    }
+    
+    // Check if any number equals the sum of the other two
+    if x == y + z || y == x + z || z == x + y {
+        return true;
+    }
+    
+    return false;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`any_int`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `any_int` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `any_int` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the tests and solution:
+
+1. The method to test is `any_int` with signature `method any_int(x: real, y: real, z: real) returns (result: bool)`
+
+2. Looking at the Python tests, I need to translate these assert statements:
+   - `assert candidate(2, 3, 1)==True`
+   - `assert candidate(2.5, 2, 3)==False`
+   - `assert candidate(1.5, 5, 3.5)==False`
+   - `assert candidate(2, 6, 2)==False`
+   - `assert candidate(4, 2, 2)==True`
+   - `assert candidate(2.2, 2.2, 2.2)==False`
+   - `assert candidate(-4, 6, 2)==True`
+   - `assert candidate(2,1,1)==True`
+   - `assert candidate(3,4,7)==True`
+   - `assert candidate(3.0,4,7)==False`
+
+3. For the dummy implementation, I need to create a method that has the same signature but returns a default value (false for bool).
+
+4. For each test, I need to:
+   - Call the `any_int` method
+   - Use `expect` to check the result
+
+Let me create the dummy and tests:
+
+--- RESPONSE ---
+<dummy>
+method any_int(x: real, y: real, z: real) returns (result: bool)
+{
+    return false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := any_int(2.0, 3.0, 1.0);
+    expect result == true;
+}
+
+method {:test} test_1()
+{
+    var result := any_int(2.5, 2.0, 3.0);
+    expect result == false;
+}
+
+method {:test} test_2()
+{
+    var result := any_int(1.5, 5.0, 3.5);
+    expect result == false;
+}
+
+method {:test} test_3()
+{
+    var result := any_int(2.0, 6.0, 2.0);
+    expect result == false;
+}
+
+method {:test} test_4()
+{
+    var result := any_int(4.0, 2.0, 2.0);
+    expect result == true;
+}
+
+method {:test} test_5()
+{
+    var result := any_int(2.2, 2.2, 2.2);
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := any_int(-4.0, 6.0, 2.0);
+    expect result == true;
+}
+
+method {:test} test_7()
+{
+    var result := any_int(2.0, 1.0, 1.0);
+    expect result == true;
+}
+
+method {:test} test_8()
+{
+    var result := any_int(3.0, 4.0, 7.0);
+    expect result == true;
+}
+
+method {:test} test_9()
+{
+    var result := any_int(3.0, 4.0, 7.0);
+    expect result == false;
+}
+```
+

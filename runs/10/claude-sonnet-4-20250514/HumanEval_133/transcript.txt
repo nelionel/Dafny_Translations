@@ -1,0 +1,56 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def sum_squares(lst):
+    """You are given a list of numbers.
+    You need to return the sum of squared numbers in the given list,
+    round each element in the list to the upper int(Ceiling) first.
+    Examples:
+    For lst = [1,2,3] the output should be 14
+    For lst = [1,4,9] the output should be 98
+    For lst = [1,3,5,7] the output should be 84
+    For lst = [1.4,4.2,0] the output should be 29
+    For lst = [-2.4,1,1] the output should be 6
+    
+
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Take each number in the list
+2. Round it up to the nearest integer (ceiling)
+3. Square that rounded number
+4. Sum all the squared values
+
+Let me trace through the examples to verify my understanding:
+- `[1,2,3]` → ceil: `[1,2,3]` → squares: `[1,4,9]` → sum: `14` ✓
+- `[1,4,9]` → ceil: `[1,4,9]` → squares: `[1,16,81]` → sum: `98` ✓
+- `[1,3,5,7]` → ceil: `[1,3,5,7]` → squares: `[1,9,25,49]` → sum: `84` ✓
+- `[1.4,4.2,0]` → ceil: `[2,5,0]` → squares: `[4,25,0]` → sum: `29` ✓
+- `[-2.4,1,1]` → ceil: `[-2,1,1]` → squares: `[4,1,1]` → sum: `6` ✓
+
+```python
+import math
+
+def sum_squares(lst):
+    """You are given a list of numbers.
+    You need to return the sum of squared numbers in the given list,
+    round each element in the list to the upper int(Ceiling) first.
+    Examples:
+    For lst = [1,2,3] the output should be 14
+    For lst = [1,4,9] the output should be 98
+    For lst = [1,3,5,7] the output should be 84
+    For lst = [1.4,4.2,0] the output should be 29
+    For lst = [-2.4,1,1] the output should be 6
+    """
+    total = 0
+    for num in lst:
+        ceiling_num = math.ceil(num)
+        total += ceiling_num ** 2
+    return total
+```

@@ -1,0 +1,816 @@
+=============== SYSTEM ===============
+You are an expert in formal verification and Dafny specifications. Your task is to analyze whether Dafny method specifications properly describe the behavior of the corresponding Python function.
+
+You will be given:
+1. A Python function with its behavior
+2. A Dafny method translation with specifications (requires, ensures clauses)
+
+Your job is to determine if the Dafny specifications fully and accurately capture the Python function's behavior. If not, you should improve the specifications.
+
+IMPORTANT: You must respond with EXACTLY one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" - if the specifications correctly describe the function
+- "THE SCRIPT HAD NOT A PROPER SPEC" - if the specifications need improvement
+
+After this phrase, provide the complete Dafny code (either unchanged or with improved specifications).
+
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def closest_integer(value):
+    '''
+    Create a function that takes a value (string) representing a number
+    and returns the closest integer to it. If the number is equidistant
+    from two integers, round it away from zero.
+
+    Examples
+    >>> closest_integer("10")
+    10
+    >>> closest_integer("15.3")
+    15
+
+    Note:
+    Rounding away from zero means that if the given number is equidistant
+    from two integers, the one you should return is the one that is the
+    farthest from zero. For example closest_integer("14.5") should
+    return 15 and closest_integer("-14.5") should return -15.
+    '''
+    # Convert string to float
+    num = float(value)
+    
+    # Check if the number is equidistant from two integers
+    # This happens when the fractional part is exactly 0.5
+    fractional_part = abs(num - int(num))
+    
+    if fractional_part == 0.5:
+        # Round away from zero
+        if num > 0:
+            return int(num) + 1
+        else:
+            return int(num) - 1
+    else:
+        # Use normal rounding
+        return round(num)
+```
+
+**Current Dafny Code:**
+```dafny
+// Helper function to convert a single digit character to integer
+function CharToDigit(c: char): int
+  requires '0' <= c <= '9'
+  ensures 0 <= CharToDigit(c) <= 9
+{
+  (c as int) - ('0' as int)
+}
+
+// Helper function to check if character is a digit
+predicate IsDigit(c: char)
+{
+  '0' <= c <= '9'
+}
+
+// Helper function to parse integer part of string
+function ParseIntegerPart(s: string, start: int, end: int): int
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0
+  else ParseIntegerPart(s, start, end - 1) * 10 + CharToDigit(s[end - 1])
+}
+
+// Helper function to parse fractional part of string
+function ParseFractionalPart(s: string, start: int, end: int): real
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0.0
+  else (CharToDigit(s[start]) as real) / (Power10(end - start) as real) + ParseFractionalPart(s, start + 1, end)
+}
+
+// Helper function to compute powers of 10
+function Power10(n: int): int
+  requires n >= 0
+  decreases n
+{
+  if n == 0 then 1 else 10 * Power10(n - 1)
+}
+
+// Helper function to find decimal point position
+function FindDecimalPoint(s: string): int
+  ensures -1 <= FindDecimalPoint(s) < |s|
+  ensures FindDecimalPoint(s) == -1 ==> forall i :: 0 <= i < |s| ==> s[i] != '.'
+  ensures FindDecimalPoint(s) >= 0 ==> s[FindDecimalPoint(s)] == '.'
+{
+  FindDecimalPointHelper(s, 0)
+}
+
+function FindDecimalPointHelper(s: string, pos: int): int
+  requires 0 <= pos <= |s|
+  decreases |s| - pos
+{
+  if pos == |s| then -1
+  else if s[pos] == '.' then pos
+  else FindDecimalPointHelper(s, pos + 1)
+}
+
+// Main string to real conversion function
+function StringToReal(s: string): real
+  requires |s| > 0
+  requires s[0] == '-' || IsDigit(s[0]) || s[0] == '.'
+  requires forall i :: 1 <= i < |s| ==> IsDigit(s[i]) || s[i] == '.'
+{
+  var isNegative := s[0] == '-';
+  var startPos := if isNegative then 1 else 0;
+  var decimalPos := FindDecimalPoint(s);
+  
+  if decimalPos == -1 then
+    // No decimal point, integer only
+    var intPart := ParseIntegerPart(s, startPos, |s|);
+    if isNegative then -(intPart as real) else (intPart as real)
+  else
+    // Has decimal point
+    var intPart := if decimalPos == startPos then 0 else ParseIntegerPart(s, startPos, decimalPos);
+    var fracPart := if decimalPos == |s| - 1 then 0.0 else ParseFractionalPart(s, decimalPos + 1, |s|);
+    var result := (intPart as real) + fracPart;
+    if isNegative then -result else result
+}
+
+// Helper function to get integer part of a real number (truncation towards zero)
+function RealToInt(r: real): int
+{
+  if r >= 0.0 then r.Floor else -(-r).Floor
+}
+
+// Helper function to get absolute value of real
+function AbsReal(r: real): real
+  ensures AbsReal(r) >= 0.0
+  ensures AbsReal(r) == r || AbsReal(r) == -r
+{
+  if r >= 0.0 then r else -r
+}
+
+method closest_integer(value: string) returns (result: int)
+  requires |value| > 0
+  requires value[0] == '-' || IsDigit(value[0]) || value[0] == '.'
+  requires forall i :: 1 <= i < |value| ==> IsDigit(value[i]) || value[i] == '.'
+{
+  // Convert string to real number
+  var num := StringToReal(value);
+  
+  // Get integer part (truncation towards zero)
+  var int_part := RealToInt(num);
+  
+  // Calculate fractional part
+  var fractional_part := AbsReal(num - (int_part as real));
+  
+  // Apply rounding logic
+  if fractional_part == 0.5 {
+    // Round away from zero
+    if num > 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else if fractional_part > 0.5 {
+    // Round away from zero
+    if num >= 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else {
+    // Round towards zero (fractional_part < 0.5)
+    result := int_part;
+  }
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+ 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the Dafny code:
+
+**Python Function Behavior:**
+- Takes a string value representing a number
+- Converts it to float
+- Rounds to the closest integer
+- Special case: if the number is equidistant from two integers (fractional part is 0.5), round away from zero
+- Examples: "14.5" -> 15, "-14.5" -> -15
+
+**Dafny Code Analysis:**
+The Dafny code has:
+1. Helper functions for string parsing and conversion
+2. A method `closest_integer` that takes a string and returns an int
+3. Preconditions (requires):
+   - `|value| > 0` - string is not empty
+   - `value[0] == '-' || IsDigit(value[0]) || value[0] == '.'` - first character is valid
+   - `forall i :: 1 <= i < |value| ==> IsDigit(value[i]) || value[i] == '.'` - rest are digits or decimal points
+
+But I notice there are NO ensures clauses in the main method! This is a major issue. The specifications don't describe what the function should return or what behavior it should have.
+
+The method implementation looks correct - it converts string to real, calculates fractional part, and applies the rounding logic correctly. But without ensures clauses, we can't verify that the implementation matches the intended behavior.
+
+What ensures clauses should we have?
+1. The result should be the closest integer to the parsed number
+2. When the fractional part is exactly 0.5, it should round away from zero
+3. The result should match the expected rounding behavior
+
+Let me think about how to specify this properly:
+- We need to relate the result to the parsed real number
+- We need to specify the rounding behavior correctly
+- We need to handle the special case of 0.5 fractional part
+
+The main issue is that there are NO ensures clauses at all, which means the specification is incomplete.
+
+--- RESPONSE ---
+THE SCRIPT HAD NOT A PROPER SPEC
+
+```dafny
+// Helper function to convert a single digit character to integer
+function CharToDigit(c: char): int
+  requires '0' <= c <= '9'
+  ensures 0 <= CharToDigit(c) <= 9
+{
+  (c as int) - ('0' as int)
+}
+
+// Helper function to check if character is a digit
+predicate IsDigit(c: char)
+{
+  '0' <= c <= '9'
+}
+
+// Helper function to parse integer part of string
+function ParseIntegerPart(s: string, start: int, end: int): int
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0
+  else ParseIntegerPart(s, start, end - 1) * 10 + CharToDigit(s[end - 1])
+}
+
+// Helper function to parse fractional part of string
+function ParseFractionalPart(s: string, start: int, end: int): real
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0.0
+  else (CharToDigit(s[start]) as real) / (Power10(end - start) as real) + ParseFractionalPart(s, start + 1, end)
+}
+
+// Helper function to compute powers of 10
+function Power10(n: int): int
+  requires n >= 0
+  decreases n
+{
+  if n == 0 then 1 else 10 * Power10(n - 1)
+}
+
+// Helper function to find decimal point position
+function FindDecimalPoint(s: string): int
+  ensures -1 <= FindDecimalPoint(s) < |s|
+  ensures FindDecimalPoint(s) == -1 ==> forall i :: 0 <= i < |s| ==> s[i] != '.'
+  ensures FindDecimalPoint(s) >= 0 ==> s[FindDecimalPoint(s)] == '.'
+{
+  FindDecimalPointHelper(s, 0)
+}
+
+function FindDecimalPointHelper(s: string, pos: int): int
+  requires 0 <= pos <= |s|
+  decreases |s| - pos
+{
+  if pos == |s| then -1
+  else if s[pos] == '.' then pos
+  else FindDecimalPointHelper(s, pos + 1)
+}
+
+// Main string to real conversion function
+function StringToReal(s: string): real
+  requires |s| > 0
+  requires s[0] == '-' || IsDigit(s[0]) || s[0] == '.'
+  requires forall i :: 1 <= i < |s| ==> IsDigit(s[i]) || s[i] == '.'
+{
+  var isNegative := s[0] == '-';
+  var startPos := if isNegative then 1 else 0;
+  var decimalPos := FindDecimalPoint(s);
+  
+  if decimalPos == -1 then
+    // No decimal point, integer only
+    var intPart := ParseIntegerPart(s, startPos, |s|);
+    if isNegative then -(intPart as real) else (intPart as real)
+  else
+    // Has decimal point
+    var intPart := if decimalPos == startPos then 0 else ParseIntegerPart(s, startPos, decimalPos);
+    var fracPart := if decimalPos == |s| - 1 then 0.0 else ParseFractionalPart(s, decimalPos + 1, |s|);
+    var result := (intPart as real) + fracPart;
+    if isNegative then -result else result
+}
+
+// Helper function to get integer part of a real number (truncation towards zero)
+function RealToInt(r: real): int
+{
+  if r >= 0.0 then r.Floor else -(-r).Floor
+}
+
+// Helper function to get absolute value of real
+function AbsReal(r: real): real
+  ensures AbsReal(r) >= 0.0
+  ensures AbsReal(r) == r || AbsReal(r) == -r
+{
+  if r >= 0.0 then r else -r
+}
+
+method closest_integer(value: string) returns (result: int)
+  requires |value| > 0
+  requires value[0] == '-' || IsDigit(value[0]) || value[0] == '.'
+  requires forall i :: 1 <= i < |value| ==> IsDigit(value[i]) || value[i] == '.'
+  ensures var num := StringToReal(value);
+          var int_part := RealToInt(num);
+          var fractional_part := AbsReal(num - (int_part as real));
+          // If exactly equidistant (fractional part = 0.5), round away from zero
+          if fractional_part == 0.5 then
+            (num > 0.0 ==> result == int_part + 1) &&
+            (num < 0.0 ==> result == int_part - 1) &&
+            (num == 0.0 ==> result == 0)
+          // If closer to next integer (fractional part > 0.5), round away from zero
+          else if fractional_part > 0.5 then
+            (num >= 0.0 ==> result == int_part + 1) &&
+            (num < 0.0 ==> result == int_part - 1)
+          // If closer to current integer (fractional part < 0.5), truncate
+          else
+            result == int_part
+{
+  // Convert string to real number
+  var num := StringToReal(value);
+  
+  // Get integer part (truncation towards zero)
+  var int_part := RealToInt(num);
+  
+  // Calculate fractional part
+  var fractional_part := AbsReal(num - (int_part as real));
+  
+  // Apply rounding logic
+  if fractional_part == 0.5 {
+    // Round away from zero
+    if num > 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else if fractional_part > 0.5 {
+    // Round away from zero
+    if num >= 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else {
+    // Round towards zero (fractional_part < 0.5)
+    result := int_part;
+  }
+}
+```
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def closest_integer(value):
+    '''
+    Create a function that takes a value (string) representing a number
+    and returns the closest integer to it. If the number is equidistant
+    from two integers, round it away from zero.
+
+    Examples
+    >>> closest_integer("10")
+    10
+    >>> closest_integer("15.3")
+    15
+
+    Note:
+    Rounding away from zero means that if the given number is equidistant
+    from two integers, the one you should return is the one that is the
+    farthest from zero. For example closest_integer("14.5") should
+    return 15 and closest_integer("-14.5") should return -15.
+    '''
+    # Convert string to float
+    num = float(value)
+    
+    # Check if the number is equidistant from two integers
+    # This happens when the fractional part is exactly 0.5
+    fractional_part = abs(num - int(num))
+    
+    if fractional_part == 0.5:
+        # Round away from zero
+        if num > 0:
+            return int(num) + 1
+        else:
+            return int(num) - 1
+    else:
+        # Use normal rounding
+        return round(num)
+```
+
+**Current Dafny Code:**
+```dafny
+// Helper function to convert a single digit character to integer
+function CharToDigit(c: char): int
+  requires '0' <= c <= '9'
+  ensures 0 <= CharToDigit(c) <= 9
+{
+  (c as int) - ('0' as int)
+}
+
+// Helper function to check if character is a digit
+predicate IsDigit(c: char)
+{
+  '0' <= c <= '9'
+}
+
+// Helper function to parse integer part of string
+function ParseIntegerPart(s: string, start: int, end: int): int
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0
+  else ParseIntegerPart(s, start, end - 1) * 10 + CharToDigit(s[end - 1])
+}
+
+// Helper function to parse fractional part of string
+function ParseFractionalPart(s: string, start: int, end: int): real
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0.0
+  else (CharToDigit(s[start]) as real) / (Power10(end - start) as real) + ParseFractionalPart(s, start + 1, end)
+}
+
+// Helper function to compute powers of 10
+function Power10(n: int): int
+  requires n >= 0
+  decreases n
+{
+  if n == 0 then 1 else 10 * Power10(n - 1)
+}
+
+// Helper function to find decimal point position
+function FindDecimalPoint(s: string): int
+  ensures -1 <= FindDecimalPoint(s) < |s|
+  ensures FindDecimalPoint(s) == -1 ==> forall i :: 0 <= i < |s| ==> s[i] != '.'
+  ensures FindDecimalPoint(s) >= 0 ==> s[FindDecimalPoint(s)] == '.'
+{
+  FindDecimalPointHelper(s, 0)
+}
+
+function FindDecimalPointHelper(s: string, pos: int): int
+  requires 0 <= pos <= |s|
+  decreases |s| - pos
+{
+  if pos == |s| then -1
+  else if s[pos] == '.' then pos
+  else FindDecimalPointHelper(s, pos + 1)
+}
+
+// Main string to real conversion function
+function StringToReal(s: string): real
+  requires |s| > 0
+  requires s[0] == '-' || IsDigit(s[0]) || s[0] == '.'
+  requires forall i :: 1 <= i < |s| ==> IsDigit(s[i]) || s[i] == '.'
+{
+  var isNegative := s[0] == '-';
+  var startPos := if isNegative then 1 else 0;
+  var decimalPos := FindDecimalPoint(s);
+  
+  if decimalPos == -1 then
+    // No decimal point, integer only
+    var intPart := ParseIntegerPart(s, startPos, |s|);
+    if isNegative then -(intPart as real) else (intPart as real)
+  else
+    // Has decimal point
+    var intPart := if decimalPos == startPos then 0 else ParseIntegerPart(s, startPos, decimalPos);
+    var fracPart := if decimalPos == |s| - 1 then 0.0 else ParseFractionalPart(s, decimalPos + 1, |s|);
+    var result := (intPart as real) + fracPart;
+    if isNegative then -result else result
+}
+
+// Helper function to get integer part of a real number (truncation towards zero)
+function RealToInt(r: real): int
+{
+  if r >= 0.0 then r.Floor else -(-r).Floor
+}
+
+// Helper function to get absolute value of real
+function AbsReal(r: real): real
+  ensures AbsReal(r) >= 0.0
+  ensures AbsReal(r) == r || AbsReal(r) == -r
+{
+  if r >= 0.0 then r else -r
+}
+
+method closest_integer(value: string) returns (result: int)
+  requires |value| > 0
+  requires value[0] == '-' || IsDigit(value[0]) || value[0] == '.'
+  requires forall i :: 1 <= i < |value| ==> IsDigit(value[i]) || value[i] == '.'
+  ensures var num := StringToReal(value);
+          var int_part := RealToInt(num);
+          var fractional_part := AbsReal(num - (int_part as real));
+          // If exactly equidistant (fractional part = 0.5), round away from zero
+          if fractional_part == 0.5 then
+            (num > 0.0 ==> result == int_part + 1) &&
+            (num < 0.0 ==> result == int_part - 1) &&
+            (num == 0.0 ==> result == 0)
+          // If closer to next integer (fractional part > 0.5), round away from zero
+          else if fractional_part > 0.5 then
+            (num >= 0.0 ==> result == int_part + 1) &&
+            (num < 0.0 ==> result == int_part - 1)
+          // If closer to current integer (fractional part < 0.5), truncate
+          else
+            result == int_part
+{
+  // Convert string to real number
+  var num := StringToReal(value);
+  
+  // Get integer part (truncation towards zero)
+  var int_part := RealToInt(num);
+  
+  // Calculate fractional part
+  var fractional_part := AbsReal(num - (int_part as real));
+  
+  // Apply rounding logic
+  if fractional_part == 0.5 {
+    // Round away from zero
+    if num > 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else if fractional_part > 0.5 {
+    // Round away from zero
+    if num >= 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else {
+    // Round towards zero (fractional_part < 0.5)
+    result := int_part;
+  }
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+
+
+This is attempt 2 to improve the specifications. Please analyze the current version and improve it further if needed. 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the Dafny specifications carefully.
+
+Python function behavior:
+1. Takes a string value representing a number
+2. Converts it to float
+3. Checks if the fractional part is exactly 0.5 (equidistant from two integers)
+4. If fractional part is 0.5:
+   - If num > 0: returns int(num) + 1 (round away from zero)
+   - If num <= 0: returns int(num) - 1 (round away from zero)
+5. Otherwise: uses normal rounding (round(num))
+
+Now let me examine the Dafny specifications:
+
+The ensures clause says:
+```dafny
+ensures var num := StringToReal(value);
+        var int_part := RealToInt(num);
+        var fractional_part := AbsReal(num - (int_part as real));
+        // If exactly equidistant (fractional part = 0.5), round away from zero
+        if fractional_part == 0.5 then
+          (num > 0.0 ==> result == int_part + 1) &&
+          (num < 0.0 ==> result == int_part - 1) &&
+          (num == 0.0 ==> result == 0)
+        // If closer to next integer (fractional part > 0.5), round away from zero
+        else if fractional_part > 0.5 then
+          (num >= 0.0 ==> result == int_part + 1) &&
+          (num < 0.0 ==> result == int_part - 1)
+        // If closer to current integer (fractional part < 0.5), truncate
+        else
+          result == int_part
+```
+
+Let me check if this matches the Python behavior:
+
+1. When fractional_part == 0.5:
+   - Python: if num > 0, return int(num) + 1; else return int(num) - 1
+   - Dafny spec handles zero as a special case, explicitly returning 0
+   - The zero scenario reveals a subtle difference in handling edge cases
+
+I notice a nuanced distinction in zero handling. The Dafny specification explicitly addresses the 0.0 case, preventing any potential rounding away from zero. This ensures mathematical precision by treating zero as a unique scenario with its own rounding rule.
+
+The Python implementation introduces a specific branch for the 0.5 fractional part, carefully managing rounding direction based on the number's sign. This approach ensures consistent behavior across positive and negative numbers, rounding away from zero when the fractional part is exactly 0.5.
+
+For other cases, the standard round() function handles rounding with predictable behavior. Positive numbers above 0.5 round up, while those below round down. Negative numbers follow a symmetrical pattern, with numbers like -15.3 rounding to -15 and -15.7 rounding to -16.
+
+The logic elegantly captures the nuanced rounding requirements, providing a precise mechanism for handling different numeric scenarios. For 15.7, the integer part is 15, with a fractional part over 0.5, so the result rounds to 16. For -15.7, the integer part is -15, and with a fractional part over 0.5, it rounds to -16. Similarly, 15.3 and -15.3 round to their respective integer parts since their fractional parts are below 0.5.
+
+I'm curious about the edge case of 0.0 with a fractional part of 0.5. This scenario seems mathematically improbable given how integer parts and fractional parts are calculated.
+
+The Python implementation handles 0.0 by returning 0 through the else branch, which aligns with the Dafny specification. The spec's requires clauses elegantly define valid number string representations, allowing for negative numbers, decimal points, and digits while maintaining robust input validation.
+
+--- RESPONSE ---
+THE SCRIPT HAS PROPER SPECS
+
+```dafny
+// Helper function to convert a single digit character to integer
+function CharToDigit(c: char): int
+  requires '0' <= c <= '9'
+  ensures 0 <= CharToDigit(c) <= 9
+{
+  (c as int) - ('0' as int)
+}
+
+// Helper function to check if character is a digit
+predicate IsDigit(c: char)
+{
+  '0' <= c <= '9'
+}
+
+// Helper function to parse integer part of string
+function ParseIntegerPart(s: string, start: int, end: int): int
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0
+  else ParseIntegerPart(s, start, end - 1) * 10 + CharToDigit(s[end - 1])
+}
+
+// Helper function to parse fractional part of string
+function ParseFractionalPart(s: string, start: int, end: int): real
+  requires 0 <= start <= end <= |s|
+  requires forall i :: start <= i < end ==> IsDigit(s[i])
+  decreases end - start
+{
+  if start == end then 0.0
+  else (CharToDigit(s[start]) as real) / (Power10(end - start) as real) + ParseFractionalPart(s, start + 1, end)
+}
+
+// Helper function to compute powers of 10
+function Power10(n: int): int
+  requires n >= 0
+  decreases n
+{
+  if n == 0 then 1 else 10 * Power10(n - 1)
+}
+
+// Helper function to find decimal point position
+function FindDecimalPoint(s: string): int
+  ensures -1 <= FindDecimalPoint(s) < |s|
+  ensures FindDecimalPoint(s) == -1 ==> forall i :: 0 <= i < |s| ==> s[i] != '.'
+  ensures FindDecimalPoint(s) >= 0 ==> s[FindDecimalPoint(s)] == '.'
+{
+  FindDecimalPointHelper(s, 0)
+}
+
+function FindDecimalPointHelper(s: string, pos: int): int
+  requires 0 <= pos <= |s|
+  decreases |s| - pos
+{
+  if pos == |s| then -1
+  else if s[pos] == '.' then pos
+  else FindDecimalPointHelper(s, pos + 1)
+}
+
+// Main string to real conversion function
+function StringToReal(s: string): real
+  requires |s| > 0
+  requires s[0] == '-' || IsDigit(s[0]) || s[0] == '.'
+  requires forall i :: 1 <= i < |s| ==> IsDigit(s[i]) || s[i] == '.'
+{
+  var isNegative := s[0] == '-';
+  var startPos := if isNegative then 1 else 0;
+  var decimalPos := FindDecimalPoint(s);
+  
+  if decimalPos == -1 then
+    // No decimal point, integer only
+    var intPart := ParseIntegerPart(s, startPos, |s|);
+    if isNegative then -(intPart as real) else (intPart as real)
+  else
+    // Has decimal point
+    var intPart := if decimalPos == startPos then 0 else ParseIntegerPart(s, startPos, decimalPos);
+    var fracPart := if decimalPos == |s| - 1 then 0.0 else ParseFractionalPart(s, decimalPos + 1, |s|);
+    var result := (intPart as real) + fracPart;
+    if isNegative then -result else result
+}
+
+// Helper function to get integer part of a real number (truncation towards zero)
+function RealToInt(r: real): int
+{
+  if r >= 0.0 then r.Floor else -(-r).Floor
+}
+
+// Helper function to get absolute value of real
+function AbsReal(r: real): real
+  ensures AbsReal(r) >= 0.0
+  ensures AbsReal(r) == r || AbsReal(r) == -r
+{
+  if r >= 0.0 then r else -r
+}
+
+method closest_integer(value: string) returns (result: int)
+  requires |value| > 0
+  requires value[0] == '-' || IsDigit(value[0]) || value[0] == '.'
+  requires forall i :: 1 <= i < |value| ==> IsDigit(value[i]) || value[i] == '.'
+  ensures var num := StringToReal(value);
+          var int_part := RealToInt(num);
+          var fractional_part := AbsReal(num - (int_part as real));
+          // If exactly equidistant (fractional part = 0.5), round away from zero
+          if fractional_part == 0.5 then
+            (num > 0.0 ==> result == int_part + 1) &&
+            (num < 0.0 ==> result == int_part - 1) &&
+            (num == 0.0 ==> result == 0)
+          // If closer to next integer (fractional part > 0.5), round away from zero
+          else if fractional_part > 0.5 then
+            (num >= 0.0 ==> result == int_part + 1) &&
+            (num < 0.0 ==> result == int_part - 1)
+          // If closer to current integer (fractional part < 0.5), truncate
+          else
+            result == int_part
+{
+  // Convert string to real number
+  var num := StringToReal(value);
+  
+  // Get integer part (truncation towards zero)
+  var int_part := RealToInt(num);
+  
+  // Calculate fractional part
+  var fractional_part := AbsReal(num - (int_part as real));
+  
+  // Apply rounding logic
+  if fractional_part == 0.5 {
+    // Round away from zero
+    if num > 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else if fractional_part > 0.5 {
+    // Round away from zero
+    if num >= 0.0 {
+      result := int_part + 1;
+    } else {
+      result := int_part - 1;
+    }
+  } else {
+    // Round towards zero (fractional_part < 0.5)
+    result := int_part;
+  }
+}
+```
+

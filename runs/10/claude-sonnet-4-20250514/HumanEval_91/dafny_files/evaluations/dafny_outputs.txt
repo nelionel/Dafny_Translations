@@ -1,0 +1,60 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+test_0: PASSED
+test_1: PASSED
+test_2: PASSED
+test_3: PASSED
+test_4: PASSED
+test_5: PASSED
+test_6: PASSED
+
+STDERR:
+
+Testing result: 7/7 passed
+
+=== DAFNY VERIFICATION ===
+VERIFYING: runs/10/claude-sonnet-4-20250514/HumanEval_91/dafny_files/actual_dafny_files/solution.dfy
+COMMAND: dafny verify solution.dfy
+Return code: 4
+STDOUT:
+temp_verify.dfy(45,33): Error: upper bound below lower bound or above length of sequence
+   |
+45 |     if start == -1 then "" else s[start..end+1]
+   |                                 ^^^^^^^^^^^^^^^
+
+temp_verify.dfy(84,25): Error: a postcondition could not be proved on this return path
+   |
+84 |     if start >= |s| then acc
+   |                          ^^^
+
+temp_verify.dfy(81,12): Related location: this is the postcondition that could not be proved
+   |
+81 |     ensures forall word :: word in splitBySpacesHelper(s, start, acc) ==> |word| > 0
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier finished with 5 verified, 2 errors
+
+STDERR:
+
+Verification result: failed
+=== SPEC VALIDATION ===
+Spec validation attempts: 2
+Has proper specs: True
+- Attempt 1: Specs need improvement
+- Attempt 2: Proper specs found

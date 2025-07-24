@@ -1,0 +1,71 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_72/dafny_files/evaluations/temp_compile.csproj": {}
+  },
+  "projects": {
+    "/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_72/dafny_files/evaluations/temp_compile.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_72/dafny_files/evaluations/temp_compile.csproj",
+        "projectName": "temp_compile",
+        "projectPath": "/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_72/dafny_files/evaluations/temp_compile.csproj",
+        "packagesPath": "/Users/lonel-emilionichiosa/.nuget/packages/",
+        "outputPath": "/Users/lonel-emilionichiosa/Desktop/Testing_Benchmarks/runs/10/claude-sonnet-4-20250514/HumanEval_72/dafny_files/evaluations/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/lonel-emilionichiosa/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "System.Collections.Immutable": {
+              "target": "Package",
+              "version": "[1.7.1, )"
+            },
+            "System.Runtime.Numerics": {
+              "target": "Package",
+              "version": "[4.3.0, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/opt/homebrew/Cellar/dotnet@8/8.0.16/libexec/sdk/8.0.116/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

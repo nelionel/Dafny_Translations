@@ -1,0 +1,153 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `filter_by_prefix`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([], 'john') == []
+    assert candidate(['xxx', 'asd', 'xxy', 'john doe', 'xxxAAA', 'xxx'], 'xxx') == ['xxx', 'xxxAAA', 'xxx']
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+predicate StartsWith(s: string, prefix: string)
+{
+    |s| >= |prefix| && (|prefix| == 0 || s[0..|prefix|] == prefix)
+}
+
+method filter_by_prefix(strings: seq<string>, prefix: string) returns (result: seq<string>)
+    ensures forall i :: 0 <= i < |result| ==> StartsWith(result[i], prefix)
+    ensures forall s :: s in result ==> s in strings
+    ensures forall s :: s in strings && StartsWith(s, prefix) ==> s in result
+{
+    result := [];
+    for i := 0 to |strings|
+        invariant 0 <= i <= |strings|
+        invariant forall j :: 0 <= j < |result| ==> StartsWith(result[j], prefix)
+        invariant forall s :: s in result ==> s in strings[0..i]
+        invariant forall s :: s in strings[0..i] && StartsWith(s, prefix) ==> s in result
+    {
+        if StartsWith(strings[i], prefix) {
+            result := result + [strings[i]];
+        }
+    }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`filter_by_prefix`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `filter_by_prefix` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `filter_by_prefix` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the provided code:
+
+1. The method to test is `filter_by_prefix`
+2. From the Dafny solution, I can see the signature is:
+   ```dafny
+   method filter_by_prefix(strings: seq<string>, prefix: string) returns (result: seq<string>)
+   ```
+
+3. The Python tests are:
+   - `candidate([], 'john') == []`
+   - `candidate(['xxx', 'asd', 'xxy', 'john doe', 'xxxAAA', 'xxx'], 'xxx') == ['xxx', 'xxxAAA', 'xxx']`
+
+4. I need to create a dummy implementation first that has the same signature and returns a default value (empty sequence for seq<string>).
+
+5. Then I need to translate the tests. Each test should:
+   - Call the method with the given parameters
+   - Use `expect` to check the result matches the expected value
+
+Let me write this:
+
+For the dummy:
+```dafny
+method filter_by_prefix(strings: seq<string>, prefix: string) returns (result: seq<string>)
+{
+    result := [];
+}
+```
+
+For the tests:
+Test 0: `filter_by_prefix([], "john")` should return `[]`
+Test 1: `filter_by_prefix(["xxx", "asd", "xxy", "john doe", "xxxAAA", "xxx"], "xxx")` should return `["xxx", "xxxAAA", "xxx"]`
+
+--- RESPONSE ---
+Looking at the provided code:
+
+1. **Method Analysis**: The Dafny method `filter_by_prefix` takes a sequence of strings and a prefix string, returning a sequence of strings that start with the given prefix.
+
+2. **Test Analysis**: The Python tests check:
+   - Empty list with any prefix returns empty list
+   - Filtering strings that start with "xxx" from a list of mixed strings
+
+<dummy>
+method filter_by_prefix(strings: seq<string>, prefix: string) returns (result: seq<string>)
+{
+    result := [];
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := filter_by_prefix([], "john");
+    expect result == [];
+}
+
+method {:test} test_1()
+{
+    var result := filter_by_prefix(["xxx", "asd", "xxy", "john doe", "xxxAAA", "xxx"], "xxx");
+    expect result == ["xxx", "xxxAAA", "xxx"];
+}
+```
+

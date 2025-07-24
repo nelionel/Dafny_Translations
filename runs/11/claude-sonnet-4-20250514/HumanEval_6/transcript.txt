@@ -1,0 +1,79 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """ Input to this function is a string represented multiple groups for nested parentheses separated by spaces.
+    For each of the group, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three.
+
+    >>> parse_nested_parens('(()()) ((())) () ((())()())')
+    [2, 3, 1, 3]
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Split the input string by spaces to get individual groups of parentheses
+2. For each group, find the maximum depth of nested parentheses
+3. Return a list of these maximum depths
+
+To find the maximum depth for each group, I'll track the current depth as I iterate through each character:
+- When I encounter '(', I increase the current depth
+- When I encounter ')', I decrease the current depth
+- I keep track of the maximum depth seen so far
+
+```python
+from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """ Input to this function is a string represented multiple groups for nested parentheses separated by spaces.
+    For each of the group, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three.
+
+    >>> parse_nested_parens('(()()) ((())) () ((())()())')
+    [2, 3, 1, 3]
+    """
+    # Split the string by spaces to get individual groups
+    groups = paren_string.split()
+    
+    result = []
+    
+    for group in groups:
+        max_depth = 0
+        current_depth = 0
+        
+        for char in group:
+            if char == '(':
+                current_depth += 1
+                max_depth = max(max_depth, current_depth)
+            elif char == ')':
+                current_depth -= 1
+        
+        result.append(max_depth)
+    
+    return result
+```
+
+The algorithm works as follows:
+1. Split the input string by spaces to separate each group of parentheses
+2. For each group, initialize `max_depth` and `current_depth` to 0
+3. Iterate through each character in the group:
+   - If it's '(', increment `current_depth` and update `max_depth` if needed
+   - If it's ')', decrement `current_depth`
+4. Add the `max_depth` for this group to the result list
+5. Return the list of maximum depths
+
+For the example `'(()()) ((())) () ((())()())'`:
+- `(()())`: max depth is 2 (at positions with double nesting)
+- `((()))`: max depth is 3 (triple nesting)
+- `()`: max depth is 1 (single level)
+- `((())()())`: max depth is 3 (triple nesting in the first part)

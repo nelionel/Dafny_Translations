@@ -1,0 +1,247 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `is_sorted`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate([5]) == True
+    assert candidate([1, 2, 3, 4, 5]) == True
+    assert candidate([1, 3, 2, 4, 5]) == False
+    assert candidate([1, 2, 3, 4, 5, 6]) == True
+    assert candidate([1, 2, 3, 4, 5, 6, 7]) == True
+    assert candidate([1, 3, 2, 4, 5, 6, 7]) == False, "This prints if this assert fails 1 (good for debugging!)"
+    assert candidate([]) == True, "This prints if this assert fails 2 (good for debugging!)"
+    assert candidate([1]) == True, "This prints if this assert fails 3 (good for debugging!)"
+    assert candidate([3, 2, 1]) == False, "This prints if this assert fails 4 (good for debugging!)"
+    
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate([1, 2, 2, 2, 3, 4]) == False, "This prints if this assert fails 5 (good for debugging!)"
+    assert candidate([1, 2, 3, 3, 3, 4]) == False, "This prints if this assert fails 6 (good for debugging!)"
+    assert candidate([1, 2, 2, 3, 3, 4]) == True, "This prints if this assert fails 7 (good for debugging!)"
+    assert candidate([1, 2, 3, 4]) == True, "This prints if this assert fails 8 (good for debugging!)"
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method is_sorted(lst: seq<int>) returns (result: bool)
+    requires forall i :: 0 <= i < |lst| ==> lst[i] >= 0  // assume no negative numbers
+    ensures result <==> (|lst| <= 1 || (IsSortedAscending(lst) && NoMoreThanTwoDuplicates(lst)))
+{
+    // Handle empty list or single element
+    if |lst| <= 1 {
+        return true;
+    }
+    
+    // Check if list is sorted in ascending order
+    var i := 1;
+    while i < |lst|
+        invariant 1 <= i <= |lst|
+        invariant forall j :: 1 <= j < i ==> lst[j-1] <= lst[j]
+        decreases |lst| - i
+    {
+        if lst[i] < lst[i-1] {
+            return false;
+        }
+        i := i + 1;
+    }
+    
+    // Check if any number appears more than twice
+    i := 0;
+    while i < |lst|
+        invariant 0 <= i <= |lst|
+        invariant forall j :: 0 <= j < i ==> CountOccurrences(lst, lst[j]) <= 2
+        decreases |lst| - i
+    {
+        var count := CountOccurrences(lst, lst[i]);
+        if count > 2 {
+            return false;
+        }
+        i := i + 1;
+    }
+    
+    return true;
+}
+
+function CountOccurrences(s: seq<int>, x: int): int
+    ensures CountOccurrences(s, x) >= 0
+    decreases s
+{
+    if |s| == 0 then 0
+    else if s[0] == x then 1 + CountOccurrences(s[1..], x)
+    else CountOccurrences(s[1..], x)
+}
+
+predicate IsSortedAscending(s: seq<int>)
+{
+    forall i :: 1 <= i < |s| ==> s[i-1] <= s[i]
+}
+
+predicate NoMoreThanTwoDuplicates(s: seq<int>)
+{
+    forall i :: 0 <= i < |s| ==> CountOccurrences(s, s[i]) <= 2
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`is_sorted`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `is_sorted` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `is_sorted` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the provided test code and Dafny solution:
+
+1. **Method signature:** The Dafny method is `is_sorted(lst: seq<int>) returns (result: bool)`
+
+2. **Test cases analysis:**
+   - `candidate([5]) == True` - single element should return true
+   - `candidate([1, 2, 3, 4, 5]) == True` - sorted ascending, no duplicates > 2
+   - `candidate([1, 3, 2, 4, 5]) == False` - not sorted
+   - `candidate([1, 2, 3, 4, 5, 6]) == True` - sorted ascending, no duplicates > 2
+   - `candidate([1, 2, 3, 4, 5, 6, 7]) == True` - sorted ascending, no duplicates > 2
+   - `candidate([1, 3, 2, 4, 5, 6, 7]) == False` - not sorted
+   - `candidate([]) == True` - empty list should return true
+   - `candidate([1]) == True` - single element should return true
+   - `candidate([3, 2, 1]) == False` - not sorted (descending)
+   - `candidate([1, 2, 2, 2, 3, 4]) == False` - has more than 2 occurrences of 2
+   - `candidate([1, 2, 3, 3, 3, 4]) == False` - has more than 2 occurrences of 3
+   - `candidate([1, 2, 2, 3, 3, 4]) == True` - sorted and no more than 2 duplicates
+   - `candidate([1, 2, 3, 4]) == True` - sorted ascending, no duplicates
+
+3. **Dummy implementation:** I need to create a minimal dummy version of `is_sorted` that has the same signature and returns a default value (false for bool).
+   
+I'll craft test methods to validate the `is_sorted` function across various input scenarios. Each test will use `expect` to verify the method's behavior with different sequence inputs. I'll systematically cover edge cases like empty lists, single-element lists, sorted sequences, and sequences with multiple duplicate elements.
+
+--- RESPONSE ---
+Looking at the test code and Dafny solution, I can see that the method to test is `is_sorted` with signature `method is_sorted(lst: seq<int>) returns (result: bool)`.
+
+<dummy>
+method is_sorted(lst: seq<int>) returns (result: bool)
+{
+    return false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := is_sorted([5]);
+    expect result == true;
+}
+
+method {:test} test_1()
+{
+    var result := is_sorted([1, 2, 3, 4, 5]);
+    expect result == true;
+}
+
+method {:test} test_2()
+{
+    var result := is_sorted([1, 3, 2, 4, 5]);
+    expect result == false;
+}
+
+method {:test} test_3()
+{
+    var result := is_sorted([1, 2, 3, 4, 5, 6]);
+    expect result == true;
+}
+
+method {:test} test_4()
+{
+    var result := is_sorted([1, 2, 3, 4, 5, 6, 7]);
+    expect result == true;
+}
+
+method {:test} test_5()
+{
+    var result := is_sorted([1, 3, 2, 4, 5, 6, 7]);
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := is_sorted([]);
+    expect result == true;
+}
+
+method {:test} test_7()
+{
+    var result := is_sorted([1]);
+    expect result == true;
+}
+
+method {:test} test_8()
+{
+    var result := is_sorted([3, 2, 1]);
+    expect result == false;
+}
+
+method {:test} test_9()
+{
+    var result := is_sorted([1, 2, 2, 2, 3, 4]);
+    expect result == false;
+}
+
+method {:test} test_10()
+{
+    var result := is_sorted([1, 2, 3, 3, 3, 4]);
+    expect result == false;
+}
+
+method {:test} test_11()
+{
+    var result := is_sorted([1, 2, 2, 3, 3, 4]);
+    expect result == true;
+}
+
+method {:test} test_12()
+{
+    var result := is_sorted([1, 2, 3, 4]);
+    expect result == true;
+}
+```
+

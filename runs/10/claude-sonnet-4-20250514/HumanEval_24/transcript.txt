@@ -1,0 +1,43 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def largest_divisor(n: int) -> int:
+    """ For a given number n, find the largest number that divides n evenly, smaller than n
+    >>> largest_divisor(15)
+    5
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the largest divisor of `n` that is smaller than `n` itself.
+
+The most efficient approach is to iterate from `n-1` down to 1 and return the first number that divides `n` evenly. However, I can optimize this by only checking up to `n//2` since no number greater than `n//2` (except `n` itself) can divide `n` evenly.
+
+```python
+def largest_divisor(n: int) -> int:
+    """ For a given number n, find the largest number that divides n evenly, smaller than n
+    >>> largest_divisor(15)
+    5
+    """
+    # Check divisors from n//2 down to 1
+    for i in range(n // 2, 0, -1):
+        if n % i == 0:
+            return i
+    
+    # This should never be reached for positive integers > 1
+    return 1
+```
+
+The algorithm works as follows:
+1. Start from `n//2` and work downward to 1
+2. For each number `i`, check if `n % i == 0` (i.e., if `i` divides `n` evenly)
+3. Return the first (and therefore largest) such divisor found
+4. If no divisor is found (which shouldn't happen for positive integers > 1), return 1
+
+For the example `largest_divisor(15)`:
+- We check 7: 15 % 7 = 1 (not divisible)
+- We check 6: 15 % 6 = 3 (not divisible)  
+- We check 5: 15 % 5 = 0 (divisible!) → return 5

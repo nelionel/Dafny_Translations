@@ -1,0 +1,72 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def correct_bracketing(brackets: str):
+    """ brackets is a string of "(" and ")".
+    return True if every opening bracket has a corresponding closing bracket.
+
+    >>> correct_bracketing("(")
+    False
+    >>> correct_bracketing("()")
+    True
+    >>> correct_bracketing("(()())")
+    True
+    >>> correct_bracketing(")(()")
+    False
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to check if brackets are properly balanced. Each opening bracket "(" must have a corresponding closing bracket ")" that comes after it.
+
+The key insight is to use a counter:
+- Increment for each opening bracket "("
+- Decrement for each closing bracket ")"
+- If the counter ever goes negative, we have a closing bracket without a matching opening bracket
+- At the end, the counter should be zero (all brackets matched)
+
+```python
+def correct_bracketing(brackets: str):
+    """ brackets is a string of "(" and ")".
+    return True if every opening bracket has a corresponding closing bracket.
+
+    >>> correct_bracketing("(")
+    False
+    >>> correct_bracketing("()")
+    True
+    >>> correct_bracketing("(()())")
+    True
+    >>> correct_bracketing(")(()")
+    False
+    """
+    count = 0
+    
+    for bracket in brackets:
+        if bracket == "(":
+            count += 1
+        elif bracket == ")":
+            count -= 1
+            # If count goes negative, we have more closing than opening brackets
+            if count < 0:
+                return False
+    
+    # All brackets should be matched (count should be 0)
+    return count == 0
+```
+
+The algorithm works as follows:
+1. Initialize a counter to 0
+2. For each character in the string:
+   - If it's "(", increment the counter
+   - If it's ")", decrement the counter
+   - If the counter becomes negative, return False (more closing than opening brackets)
+3. After processing all characters, return True if counter is 0 (all brackets matched), False otherwise
+
+This handles all the test cases:
+- "(" → count ends at 1, returns False
+- "()" → count goes 1→0, returns True  
+- "(()())" → count goes 1→2→1→2→1→0, returns True
+- ")((" → count goes -1, returns False immediately

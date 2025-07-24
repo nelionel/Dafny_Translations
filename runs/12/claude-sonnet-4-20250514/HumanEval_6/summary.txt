@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/6
+Entry Point: parse_nested_parens
+Stop Reason: end_turn
+Input Tokens: 204
+Output Tokens: 1062

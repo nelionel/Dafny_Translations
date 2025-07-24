@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/91
+Entry Point: is_bored
+Stop Reason: end_turn
+Input Tokens: 166
+Output Tokens: 487

@@ -60,7 +60,8 @@ class BaseTranslator(ABC):
         compilation_error = ""
         max_tokens_exceeded = False
         
-        # Add initial user message to conversation
+        # Add system prompt and initial user message to conversation
+        conversation_history.append(("system", system_prompt))
         conversation_history.append(("user", messages[0]["content"]))
         
         for attempt in range(self.max_retries + 1):

@@ -1,0 +1,84 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List
+
+
+def parse_music(music_string: str) -> List[int]:
+    """ Input to this function is a string representing musical notes in a special ASCII format.
+    Your task is to parse this string and return list of integers corresponding to how many beats does each
+    not last.
+
+    Here is a legend:
+    'o' - whole note, lasts four beats
+    'o|' - half note, lasts two beats
+    '.|' - quater note, lasts one beat
+
+    >>> parse_music('o o| .| o| o| .| .| .| .| o o')
+    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Parse a string containing musical notes in ASCII format
+2. Convert each note to its corresponding beat count
+3. Return a list of integers representing the beats
+
+The legend shows:
+- 'o' = whole note = 4 beats
+- 'o|' = half note = 2 beats  
+- '.|' = quarter note = 1 beat
+
+I need to be careful about the order of checking since 'o|' contains 'o', so I should check for the longer patterns first.
+
+```python
+from typing import List
+
+def parse_music(music_string: str) -> List[int]:
+    """ Input to this function is a string representing musical notes in a special ASCII format.
+    Your task is to parse this string and return list of integers corresponding to how many beats does each
+    not last.
+
+    Here is a legend:
+    'o' - whole note, lasts four beats
+    'o|' - half note, lasts two beats
+    '.|' - quater note, lasts one beat
+
+    >>> parse_music('o o| .| o| o| .| .| .| .| o o')
+    [4, 2, 1, 2, 2, 1, 1, 1, 1, 4, 4]
+    """
+    if not music_string.strip():
+        return []
+    
+    # Split by spaces to get individual notes
+    notes = music_string.split()
+    beats = []
+    
+    for note in notes:
+        if note == 'o|':
+            beats.append(2)  # half note
+        elif note == '.|':
+            beats.append(1)  # quarter note
+        elif note == 'o':
+            beats.append(4)  # whole note
+    
+    return beats
+```
+
+The solution works by:
+
+1. First checking if the input string is empty (after stripping whitespace)
+2. Splitting the string by spaces to get individual notes
+3. For each note, checking against the three possible patterns:
+   - 'o|' (half note) = 2 beats
+   - '.|' (quarter note) = 1 beat  
+   - 'o' (whole note) = 4 beats
+4. Adding the corresponding beat count to the result list
+
+Note that I check for 'o|' before 'o' to avoid incorrect matches, since 'o|' contains the character 'o'.

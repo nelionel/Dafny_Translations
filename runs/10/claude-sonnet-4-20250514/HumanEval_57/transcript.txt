@@ -1,0 +1,56 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def monotonic(l: list):
+    """Return True is list elements are monotonically increasing or decreasing.
+    >>> monotonic([1, 2, 4, 20])
+    True
+    >>> monotonic([1, 20, 4, 10])
+    False
+    >>> monotonic([4, 1, 0, -10])
+    True
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to check if a list is either monotonically increasing (non-decreasing) or monotonically decreasing (non-increasing).
+
+Let me analyze the examples:
+- `[1, 2, 4, 20]` - increasing, returns True
+- `[1, 20, 4, 10]` - neither increasing nor decreasing, returns False  
+- `[4, 1, 0, -10]` - decreasing, returns True
+
+Here's the implementation:
+
+```python
+def monotonic(l: list):
+    """Return True is list elements are monotonically increasing or decreasing.
+    >>> monotonic([1, 2, 4, 20])
+    True
+    >>> monotonic([1, 20, 4, 10])
+    False
+    >>> monotonic([4, 1, 0, -10])
+    True
+    """
+    if len(l) <= 1:
+        return True
+    
+    # Check if monotonically increasing (non-decreasing)
+    increasing = all(l[i] <= l[i + 1] for i in range(len(l) - 1))
+    
+    # Check if monotonically decreasing (non-increasing)
+    decreasing = all(l[i] >= l[i + 1] for i in range(len(l) - 1))
+    
+    return increasing or decreasing
+```
+
+The function works by:
+1. Handling edge cases (empty list or single element) - these are trivially monotonic
+2. Checking if the list is non-decreasing by comparing each adjacent pair
+3. Checking if the list is non-increasing by comparing each adjacent pair
+4. Returning True if either condition is met
+
+The `all()` function with generator expressions efficiently checks all adjacent pairs without creating intermediate lists.

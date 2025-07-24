@@ -1,0 +1,114 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def order_by_points(nums):
+    """
+    Write a function which sorts the given list of integers
+    in ascending order according to the sum of their digits.
+    Note: if there are several items with similar sum of their digits,
+    order them based on their index in original list.
+
+    For example:
+    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]
+    >>> order_by_points([]) == []
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Sort integers by the sum of their digits in ascending order
+2. If two numbers have the same digit sum, maintain their original order (stable sort)
+3. Handle negative numbers correctly when calculating digit sum
+
+Let me think about how to calculate the sum of digits for negative numbers. Looking at the example:
+- `-1` and `-11` both seem to have digit sum of 1 and 11 respectively
+- This suggests we should treat the negative sign separately and sum the absolute values of the digits
+
+Here's my implementation:
+
+```python
+def order_by_points(nums):
+    """
+    Write a function which sorts the given list of integers
+    in ascending order according to the sum of their digits.
+    Note: if there are several items with similar sum of their digits,
+    order them based on their index in original list.
+
+    For example:
+    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]
+    >>> order_by_points([]) == []
+    """
+    def digit_sum(n):
+        # Convert to string to handle digits
+        s = str(abs(n))  # Use absolute value to get digits
+        total = sum(int(digit) for digit in s)
+        
+        # For negative numbers, subtract the first digit once more
+        # This accounts for the negative sign affecting the first digit
+        if n < 0:
+            total -= 2 * int(s[0])
+        
+        return total
+    
+    # Create list of (original_index, number, digit_sum) tuples
+    indexed_nums = [(i, num, digit_sum(num)) for i, num in enumerate(nums)]
+    
+    # Sort by digit sum first, then by original index for stability
+    indexed_nums.sort(key=lambda x: (x[2], x[0]))
+    
+    # Extract just the numbers from the sorted list
+    return [num for _, num, _ in indexed_nums]
+```
+
+Wait, let me reconsider the digit sum calculation for negative numbers by examining the example more carefully:
+
+- `[-1, -11, 1, -12, 11]` is the expected output
+- `-1` comes first, then `-11`, then `1`, then `-12`, then `11`
+
+Let me trace through what the digit sums should be:
+- `-1`: should be -1 (negative of first digit)
+- `-11`: should be -1 + 1 = 0 (negative first digit plus remaining digits)
+- `1`: should be 1
+- `-12`: should be -1 + 2 = 1  
+- `11`: should be 1 + 1 = 2
+
+This gives us the order: -1(-1), -11(0), 1(1), -12(1), 11(2), which matches!
+
+```python
+def order_by_points(nums):
+    """
+    Write a function which sorts the given list of integers
+    in ascending order according to the sum of their digits.
+    Note: if there are several items with similar sum of their digits,
+    order them based on their index in original list.
+
+    For example:
+    >>> order_by_points([1, 11, -1, -11, -12]) == [-1, -11, 1, -12, 11]
+    >>> order_by_points([]) == []
+    """
+    def digit_sum(n):
+        if n == 0:
+            return 0
+        
+        s = str(abs(n))
+        digits = [int(d) for d in s]
+        
+        if n < 0:
+            # For negative numbers, first digit is negative, rest are positive
+            return -digits[0] + sum(digits[1:])
+        else:
+            # For positive numbers, sum all digits
+            return sum(digits)
+    
+    # Create list of (original_index, number, digit_sum) tuples for stable sorting
+    indexed_nums = [(i, num, digit_sum(num)) for i, num in enumerate(nums)]
+    
+    # Sort by digit sum first, then by original index
+    indexed_nums.sort(key=lambda x: (x[2], x[0]))
+    
+    # Return just the numbers
+    return [num for _, num, _ in indexed_nums]
+```

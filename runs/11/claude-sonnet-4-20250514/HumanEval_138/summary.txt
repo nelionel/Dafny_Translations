@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/138
+Entry Point: is_equal_to_sum_even
+Stop Reason: end_turn
+Input Tokens: 138
+Output Tokens: 702

@@ -1,0 +1,41 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def string_sequence(n: int) -> str:
+    """ Return a string containing space-delimited numbers starting from 0 upto n inclusive.
+    >>> string_sequence(0)
+    '0'
+    >>> string_sequence(5)
+    '0 1 2 3 4 5'
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to generate a string containing space-delimited numbers from 0 to n (inclusive).
+
+Let me analyze the examples:
+- `string_sequence(0)` should return `'0'`
+- `string_sequence(5)` should return `'0 1 2 3 4 5'`
+
+Here's the implementation:
+
+```python
+def string_sequence(n: int) -> str:
+    """ Return a string containing space-delimited numbers starting from 0 upto n inclusive.
+    >>> string_sequence(0)
+    '0'
+    >>> string_sequence(5)
+    '0 1 2 3 4 5'
+    """
+    return ' '.join(str(i) for i in range(n + 1))
+```
+
+This implementation:
+1. Uses `range(n + 1)` to generate numbers from 0 to n inclusive
+2. Converts each number to a string using `str(i)`
+3. Joins all the string numbers with spaces using `' '.join()`
+
+The function works for any non-negative integer n, creating a space-delimited sequence of numbers from 0 to n.

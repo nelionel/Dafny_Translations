@@ -1,0 +1,42 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List, Any
+
+
+def filter_integers(values: List[Any]) -> List[int]:
+    """ Filter given list of any python values only for integers
+    >>> filter_integers(['a', 3.14, 5])
+    [5]
+    >>> filter_integers([1, 2, 3, 'abc', {}, []])
+    [1, 2, 3]
+    """
+
+
+======MODEL OUTPUT======
+Looking at the function signature and examples, I need to implement a function that filters a list to return only integer values.
+
+```python
+from typing import List, Any
+
+
+def filter_integers(values: List[Any]) -> List[int]:
+    """ Filter given list of any python values only for integers
+    >>> filter_integers(['a', 3.14, 5])
+    [5]
+    >>> filter_integers([1, 2, 3, 'abc', {}, []])
+    [1, 2, 3]
+    """
+    return [value for value in values if isinstance(value, int) and not isinstance(value, bool)]
+```
+
+The implementation uses a list comprehension to filter the input list. The key points are:
+
+1. `isinstance(value, int)` checks if the value is an integer
+2. `not isinstance(value, bool)` excludes boolean values, since in Python `bool` is a subclass of `int`, but we want to exclude `True` and `False` from our integer filter
+3. Returns a new list containing only the integer values from the original list
+
+This will correctly handle the examples:
+- `['a', 3.14, 5]` → `[5]` (excludes string and float)
+- `[1, 2, 3, 'abc', {}, []]` → `[1, 2, 3]` (excludes string, dict, and list)

@@ -1,0 +1,82 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def fibfib(n: int):
+    """The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:
+    fibfib(0) == 0
+    fibfib(1) == 0
+    fibfib(2) == 1
+    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).
+    Please write a function to efficiently compute the n-th element of the fibfib number sequence.
+    >>> fibfib(1)
+    0
+    >>> fibfib(5)
+    4
+    >>> fibfib(8)
+    24
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement the FibFib sequence which is similar to Fibonacci but uses the sum of the previous three numbers instead of two.
+
+The sequence is defined as:
+- fibfib(0) = 0
+- fibfib(1) = 0  
+- fibfib(2) = 1
+- fibfib(n) = fibfib(n-1) + fibfib(n-2) + fibfib(n-3) for n > 2
+
+For efficiency, I'll use dynamic programming with memoization to avoid recalculating the same values multiple times.
+
+```python
+def fibfib(n: int):
+    """The FibFib number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:
+    fibfib(0) == 0
+    fibfib(1) == 0
+    fibfib(2) == 1
+    fibfib(n) == fibfib(n-1) + fibfib(n-2) + fibfib(n-3).
+    Please write a function to efficiently compute the n-th element of the fibfib number sequence.
+    >>> fibfib(1)
+    0
+    >>> fibfib(5)
+    4
+    >>> fibfib(8)
+    24
+    """
+    # Handle base cases
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 0
+    elif n == 2:
+        return 1
+    
+    # Use iterative approach for efficiency
+    # Keep track of the last three values
+    a, b, c = 0, 0, 1  # fibfib(0), fibfib(1), fibfib(2)
+    
+    # Calculate fibfib(n) iteratively
+    for i in range(3, n + 1):
+        next_val = a + b + c
+        a, b, c = b, c, next_val
+    
+    return c
+```
+
+The algorithm works as follows:
+
+1. **Base cases**: Handle n = 0, 1, 2 directly since they're given in the definition
+2. **Iterative calculation**: For n > 2, use three variables (a, b, c) to keep track of the last three FibFib values
+3. **Rolling window**: In each iteration, calculate the next value as the sum of the previous three, then shift the window forward
+
+This approach has:
+- **Time complexity**: O(n) - we calculate each value exactly once
+- **Space complexity**: O(1) - we only store the last three values
+
+The solution efficiently computes the n-th FibFib number without the exponential time complexity of a naive recursive approach.

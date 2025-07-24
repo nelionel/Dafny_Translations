@@ -1,0 +1,75 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def select_words(s, n):
+    """Given a string s and a natural number n, you have been tasked to implement 
+    a function that returns a list of all words from string s that contain exactly 
+    n consonants, in order these words appear in the string s.
+    If the string s is empty then the function should return an empty list.
+    Note: you may assume the input string contains only letters and spaces.
+    Examples:
+    select_words("Mary had a little lamb", 4) ==> ["little"]
+    select_words("Mary had a little lamb", 3) ==> ["Mary", "lamb"]
+    select_words("simple white space", 2) ==> []
+    select_words("Hello world", 4) ==> ["world"]
+    select_words("Uncle sam", 3) ==> ["Uncle"]
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Split the string into words
+2. For each word, count the number of consonants
+3. Return words that have exactly n consonants
+4. Maintain the original order
+
+A consonant is any letter that is not a vowel (a, e, i, o, u).
+
+```python
+def select_words(s, n):
+    """Given a string s and a natural number n, you have been tasked to implement 
+    a function that returns a list of all words from string s that contain exactly 
+    n consonants, in order these words appear in the string s.
+    If the string s is empty then the function should return an empty list.
+    Note: you may assume the input string contains only letters and spaces.
+    Examples:
+    select_words("Mary had a little lamb", 4) ==> ["little"]
+    select_words("Mary had a little lamb", 3) ==> ["Mary", "lamb"]
+    select_words("simple white space", 2) ==> []
+    select_words("Hello world", 4) ==> ["world"]
+    select_words("Uncle sam", 3) ==> ["Uncle"]
+    """
+    if not s:
+        return []
+    
+    words = s.split()
+    result = []
+    vowels = set('aeiouAEIOU')
+    
+    for word in words:
+        consonant_count = 0
+        for char in word:
+            if char.isalpha() and char not in vowels:
+                consonant_count += 1
+        
+        if consonant_count == n:
+            result.append(word)
+    
+    return result
+```
+
+The solution works as follows:
+
+1. First, I check if the input string is empty and return an empty list if so
+2. Split the string into words using `split()` which handles multiple spaces automatically
+3. For each word, I count consonants by:
+   - Iterating through each character
+   - Checking if it's a letter and not a vowel
+   - Incrementing the consonant counter
+4. If the consonant count equals n, I add the word to the result list
+5. Return the result list maintaining the original order
+
+The vowels set includes both lowercase and uppercase vowels for case-insensitive matching.

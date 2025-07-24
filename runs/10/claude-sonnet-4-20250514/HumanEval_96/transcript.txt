@@ -1,0 +1,79 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def count_up_to(n):
+    """Implement a function that takes an non-negative integer and returns an array of the first n
+    integers that are prime numbers and less than n.
+    for example:
+    count_up_to(5) => [2,3]
+    count_up_to(11) => [2,3,5,7]
+    count_up_to(0) => []
+    count_up_to(20) => [2,3,5,7,11,13,17,19]
+    count_up_to(1) => []
+    count_up_to(18) => [2,3,5,7,11,13,17]
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find all prime numbers that are less than `n` and return them in an array.
+
+Let me break this down:
+1. I need to check each number from 2 to n-1 to see if it's prime
+2. A prime number is only divisible by 1 and itself
+3. I'll collect all prime numbers in a list and return it
+
+Here's my implementation:
+
+```python
+def count_up_to(n):
+    """Implement a function that takes an non-negative integer and returns an array of the first n
+    integers that are prime numbers and less than n.
+    for example:
+    count_up_to(5) => [2,3]
+    count_up_to(11) => [2,3,5,7]
+    count_up_to(0) => []
+    count_up_to(20) => [2,3,5,7,11,13,17,19]
+    count_up_to(1) => []
+    count_up_to(18) => [2,3,5,7,11,13,17]
+    """
+    def is_prime(num):
+        """Helper function to check if a number is prime"""
+        if num < 2:
+            return False
+        if num == 2:
+            return True
+        if num % 2 == 0:
+            return False
+        
+        # Check odd divisors up to sqrt(num)
+        for i in range(3, int(num**0.5) + 1, 2):
+            if num % i == 0:
+                return False
+        return True
+    
+    primes = []
+    for i in range(2, n):
+        if is_prime(i):
+            primes.append(i)
+    
+    return primes
+```
+
+The solution works as follows:
+
+1. **Helper function `is_prime(num)`**: 
+   - Returns `False` for numbers less than 2
+   - Returns `True` for 2 (the only even prime)
+   - Returns `False` for other even numbers
+   - For odd numbers, checks divisibility by odd numbers from 3 up to √num
+
+2. **Main logic**:
+   - Iterates through numbers from 2 to n-1
+   - Uses the helper function to check if each number is prime
+   - Collects all prime numbers in a list and returns it
+
+3. **Edge cases handled**:
+   - `n = 0` or `n = 1`: Returns empty list since there are no primes less than these values
+   - The function correctly finds all primes less than n, not the first n primes

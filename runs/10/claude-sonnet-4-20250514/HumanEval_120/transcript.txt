@@ -1,0 +1,85 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def maximum(arr, k):
+    """
+    Given an array arr of integers and a positive integer k, return a sorted list 
+    of length k with the maximum k numbers in arr.
+
+    Example 1:
+
+        Input: arr = [-3, -4, 5], k = 3
+        Output: [-4, -3, 5]
+
+    Example 2:
+
+        Input: arr = [4, -4, 4], k = 2
+        Output: [4, 4]
+
+    Example 3:
+
+        Input: arr = [-3, 2, 1, 2, -1, -2, 1], k = 1
+        Output: [2]
+
+    Note:
+        1. The length of the array will be in the range of [1, 1000].
+        2. The elements in the array will be in the range of [-1000, 1000].
+        3. 0 <= k <= len(arr)
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find the k largest numbers in the array
+2. Return them in sorted order
+
+Let me analyze the examples:
+- Example 1: `[-3, -4, 5]`, k=3 → `[-4, -3, 5]` (all elements, sorted)
+- Example 2: `[4, -4, 4]`, k=2 → `[4, 4]` (the two largest values, sorted)
+- Example 3: `[-3, 2, 1, 2, -1, -2, 1]`, k=1 → `[2]` (the single largest value)
+
+The approach is:
+1. Sort the array in descending order
+2. Take the first k elements
+3. Sort those k elements in ascending order
+4. Return the result
+
+```python
+def maximum(arr, k):
+    """
+    Given an array arr of integers and a positive integer k, return a sorted list 
+    of length k with the maximum k numbers in arr.
+
+    Example 1:
+
+        Input: arr = [-3, -4, 5], k = 3
+        Output: [-4, -3, 5]
+
+    Example 2:
+
+        Input: arr = [4, -4, 4], k = 2
+        Output: [4, 4]
+
+    Example 3:
+
+        Input: arr = [-3, 2, 1, 2, -1, -2, 1], k = 1
+        Output: [2]
+
+    Note:
+        1. The length of the array will be in the range of [1, 1000].
+        2. The elements in the array will be in the range of [-1000, 1000].
+        3. 0 <= k <= len(arr)
+    """
+    if k == 0:
+        return []
+    
+    # Sort array in descending order and take first k elements
+    sorted_desc = sorted(arr, reverse=True)
+    k_largest = sorted_desc[:k]
+    
+    # Sort the k largest elements in ascending order
+    return sorted(k_largest)
+```

@@ -1,0 +1,81 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def bf(planet1, planet2):
+    '''
+    There are eight planets in our solar system: the closerst to the Sun 
+    is Mercury, the next one is Venus, then Earth, Mars, Jupiter, Saturn, 
+    Uranus, Neptune.
+    Write a function that takes two planet names as strings planet1 and planet2. 
+    The function should return a tuple containing all planets whose orbits are 
+    located between the orbit of planet1 and the orbit of planet2, sorted by 
+    the proximity to the sun. 
+    The function should return an empty tuple if planet1 or planet2
+    are not correct planet names. 
+    Examples
+    bf("Jupiter", "Neptune") ==> ("Saturn", "Uranus")
+    bf("Earth", "Mercury") ==> ("Venus")
+    bf("Mercury", "Uranus") ==> ("Venus", "Earth", "Mars", "Jupiter", "Saturn")
+    '''
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Define the order of planets from the Sun
+2. Find the positions of both input planets
+3. Return planets between them (exclusive) in order from Sun
+4. Handle invalid planet names by returning empty tuple
+5. Handle cases where planet1 is farther from Sun than planet2
+
+```python
+def bf(planet1, planet2):
+    '''
+    There are eight planets in our solar system: the closerst to the Sun 
+    is Mercury, the next one is Venus, then Earth, Mars, Jupiter, Saturn, 
+    Uranus, Neptune.
+    Write a function that takes two planet names as strings planet1 and planet2. 
+    The function should return a tuple containing all planets whose orbits are 
+    located between the orbit of planet1 and the orbit of planet2, sorted by 
+    the proximity to the sun. 
+    The function should return an empty tuple if planet1 or planet2
+    are not correct planet names. 
+    Examples
+    bf("Jupiter", "Neptune") ==> ("Saturn", "Uranus")
+    bf("Earth", "Mercury") ==> ("Venus")
+    bf("Mercury", "Uranus") ==> ("Venus", "Earth", "Mars", "Jupiter", "Saturn")
+    '''
+    
+    # Define the planets in order from the Sun
+    planets = ["Mercury", "Venus", "Earth", "Mars", "Jupiter", "Saturn", "Uranus", "Neptune"]
+    
+    # Check if both planets are valid
+    if planet1 not in planets or planet2 not in planets:
+        return ()
+    
+    # Get the indices of both planets
+    index1 = planets.index(planet1)
+    index2 = planets.index(planet2)
+    
+    # Determine the start and end indices (exclusive)
+    start = min(index1, index2)
+    end = max(index1, index2)
+    
+    # Return planets between the two planets (exclusive)
+    return tuple(planets[start + 1:end])
+```
+
+The function works as follows:
+
+1. **Planet list**: I define all 8 planets in order from closest to farthest from the Sun
+2. **Validation**: Check if both input planets are valid names - return empty tuple if not
+3. **Find positions**: Get the index positions of both planets in the list
+4. **Determine range**: Find the minimum and maximum indices to handle cases where planet1 might be farther than planet2
+5. **Extract planets**: Return planets between the two positions (exclusive of the endpoints) as a tuple
+
+The examples work correctly:
+- `bf("Jupiter", "Neptune")` returns `("Saturn", "Uranus")` - planets between Jupiter and Neptune
+- `bf("Earth", "Mercury")` returns `("Venus")` - Venus is between Mercury and Earth
+- `bf("Mercury", "Uranus")` returns `("Venus", "Earth", "Mars", "Jupiter", "Saturn")` - all planets between Mercury and Uranus

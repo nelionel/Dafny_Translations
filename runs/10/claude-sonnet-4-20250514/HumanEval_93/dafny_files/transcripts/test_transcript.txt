@@ -1,0 +1,195 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `encode`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate('TEST') == 'tgst', "This prints if this assert fails 1 (good for debugging!)"
+    assert candidate('Mudasir') == 'mWDCSKR', "This prints if this assert fails 2 (good for debugging!)"
+    assert candidate('YES') == 'ygs', "This prints if this assert fails 3 (good for debugging!)"
+    
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate('This is a message') == 'tHKS KS C MGSSCGG', "This prints if this assert fails 2 (also good for debugging!)"
+    assert candidate("I DoNt KnOw WhAt tO WrItE") == 'k dQnT kNqW wHcT Tq wRkTg', "This prints if this assert fails 2 (also good for debugging!)"
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method encode(message: string) returns (result: string)
+  ensures |result| == |message|
+{
+  result := "";
+  var i := 0;
+  
+  while i < |message|
+    invariant 0 <= i <= |message|
+    invariant |result| == i
+    decreases |message| - i
+  {
+    var ch := message[i];
+    
+    if ch == ' ' {
+      result := result + [' '];
+    } else if isVowel(ch) {
+      var mappedChar := mapVowel(ch);
+      var swappedChar := swapCase(mappedChar);
+      result := result + [swappedChar];
+    } else {
+      var swappedChar := swapCase(ch);
+      result := result + [swappedChar];
+    }
+    
+    i := i + 1;
+  }
+}
+
+function isVowel(c: char): bool
+{
+  c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' ||
+  c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U'
+}
+
+function mapVowel(c: char): char
+  requires isVowel(c)
+{
+  match c
+    case 'a' => 'c'
+    case 'e' => 'g' 
+    case 'i' => 'k'
+    case 'o' => 'q'
+    case 'u' => 'w'
+    case 'A' => 'C'
+    case 'E' => 'G'
+    case 'I' => 'K'
+    case 'O' => 'Q'
+    case 'U' => 'W'
+}
+
+function swapCase(c: char): char
+{
+  if 'a' <= c <= 'z' then
+    (c as int - 'a' as int + 'A' as int) as char
+  else if 'A' <= c <= 'Z' then
+    (c as int - 'A' as int + 'a' as int) as char
+  else
+    c
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`encode`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `encode` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `encode` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Looking at the Python test code and the Dafny solution:
+
+1. The method to test is `encode`, which takes a `string` and returns a `string`.
+
+2. From the Dafny solution, I can see:
+```dafny
+method encode(message: string) returns (result: string)
+```
+
+3. For the dummy implementation, I need to create a simple version that returns an empty string:
+
+```dafny
+method encode(message: string) returns (result: string)
+{
+    result := "";
+}
+```
+
+4. Now for the tests. Looking at the Python assertions:
+- `assert candidate('TEST') == 'tgst'`
+- `assert candidate('Mudasir') == 'mWDCSKR'`
+- `assert candidate('YES') == 'ygs'`
+- `assert candidate('This is a message') == 'tHKS KS C MGSSCGG'`
+- `assert candidate("I DoNt KnOw WhAt tO WrItE") == 'k dQnT kNqW wHcT Tq wRkTg'`
+
+Each of these should become a test method that calls `encode` and uses `expect` to check the result.
+
+--- RESPONSE ---
+<dummy>
+method encode(message: string) returns (result: string)
+{
+    result := "";
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := encode("TEST");
+    expect result == "tgst";
+}
+
+method {:test} test_1()
+{
+    var result := encode("Mudasir");
+    expect result == "mWDCSKR";
+}
+
+method {:test} test_2()
+{
+    var result := encode("YES");
+    expect result == "ygs";
+}
+
+method {:test} test_3()
+{
+    var result := encode("This is a message");
+    expect result == "tHKS KS C MGSSCGG";
+}
+
+method {:test} test_4()
+{
+    var result := encode("I DoNt KnOw WhAt tO WrItE");
+    expect result == "k dQnT kNqW wHcT Tq wRkTg";
+}
+```
+

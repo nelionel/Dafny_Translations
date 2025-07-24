@@ -1,0 +1,67 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def int_to_mini_roman(number):
+    """
+    Given a positive integer, obtain its roman numeral equivalent as a string,
+    and return it in lowercase.
+    Restrictions: 1 <= num <= 1000
+
+    Examples:
+    >>> int_to_mini_roman(19) == 'xix'
+    >>> int_to_mini_roman(152) == 'clii'
+    >>> int_to_mini_roman(426) == 'cdxxvi'
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to convert integers to Roman numerals in lowercase. I'll use the standard Roman numeral system with subtractive notation (like IV for 4, IX for 9, etc.).
+
+```python
+def int_to_mini_roman(number):
+    """
+    Given a positive integer, obtain its roman numeral equivalent as a string,
+    and return it in lowercase.
+    Restrictions: 1 <= num <= 1000
+
+    Examples:
+    >>> int_to_mini_roman(19) == 'xix'
+    >>> int_to_mini_roman(152) == 'clii'
+    >>> int_to_mini_roman(426) == 'cdxxvi'
+    """
+    # Define the mapping from integers to Roman numerals in descending order
+    # Include subtractive cases (4, 9, 40, 90, 400, 900)
+    values = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    numerals = ['M', 'CM', 'D', 'CD', 'C', 'XC', 'L', 'XL', 'X', 'IX', 'V', 'IV', 'I']
+    
+    result = ''
+    
+    # Process each value-numeral pair
+    for i in range(len(values)):
+        # Add the numeral as many times as the value fits into the number
+        count = number // values[i]
+        if count > 0:
+            result += numerals[i] * count
+            number -= values[i] * count
+    
+    # Return in lowercase as required
+    return result.lower()
+```
+
+The algorithm works by:
+
+1. **Defining value-numeral pairs**: I create two parallel lists with integer values and their corresponding Roman numerals, ordered from largest to smallest. This includes the subtractive cases (CM=900, CD=400, XC=90, XL=40, IX=9, IV=4).
+
+2. **Greedy approach**: For each value-numeral pair, I determine how many times that value fits into the remaining number, add the corresponding numerals to the result, and subtract the used value from the number.
+
+3. **Lowercase conversion**: Finally, I convert the result to lowercase as required.
+
+Let me verify with the examples:
+- `int_to_mini_roman(19)`: 10 + 9 = X + IX = "XIX" → "xix" ✓
+- `int_to_mini_roman(152)`: 100 + 50 + 1 + 1 = C + L + I + I = "CLII" → "clii" ✓
+- `int_to_mini_roman(426)`: 400 + 20 + 5 + 1 = CD + XX + V + I = "CDXXVI" → "cdxxvi" ✓

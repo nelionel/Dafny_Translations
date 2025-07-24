@@ -1,0 +1,67 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def starts_one_ends(n):
+    """
+    Given a positive integer n, return the count of the numbers of n-digit
+    positive integers that start or end with 1.
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to count n-digit positive integers that either start with 1 OR end with 1.
+
+Let me break this down:
+- n-digit positive integers range from 10^(n-1) to 10^n - 1
+- I need to count numbers that start with 1 OR end with 1
+- I'll use the inclusion-exclusion principle: |A ∪ B| = |A| + |B| - |A ∩ B|
+
+Where:
+- A = numbers that start with 1
+- B = numbers that end with 1
+- A ∩ B = numbers that both start and end with 1
+
+```python
+def starts_one_ends(n):
+    """
+    Given a positive integer n, return the count of the numbers of n-digit
+    positive integers that start or end with 1.
+    """
+    if n <= 0:
+        return 0
+    
+    if n == 1:
+        return 1  # Only the number "1"
+    
+    # Numbers that start with 1: 1 followed by (n-1) digits
+    # The remaining (n-1) digits can be anything from 0-9
+    starts_with_1 = 10 ** (n - 1)
+    
+    # Numbers that end with 1: (n-1) digits followed by 1
+    # The first digit can be 1-9 (not 0, as we need n-digit numbers)
+    # The remaining (n-2) digits can be anything from 0-9
+    ends_with_1 = 9 * (10 ** (n - 2))
+    
+    # Numbers that both start and end with 1: 1 followed by (n-2) digits followed by 1
+    # The middle (n-2) digits can be anything from 0-9
+    if n == 2:
+        starts_and_ends_with_1 = 1  # Only "11"
+    else:
+        starts_and_ends_with_1 = 10 ** (n - 2)
+    
+    # Apply inclusion-exclusion principle
+    result = starts_with_1 + ends_with_1 - starts_and_ends_with_1
+    
+    return result
+```
+
+The logic:
+1. **Numbers starting with 1**: For n-digit numbers starting with 1, we have 1 fixed as the first digit, and the remaining (n-1) positions can be filled with any digit 0-9. So there are 10^(n-1) such numbers.
+
+2. **Numbers ending with 1**: For n-digit numbers ending with 1, the last digit is fixed as 1. The first digit must be 1-9 (not 0, since we need n-digit numbers), and the middle (n-2) digits can be 0-9. So there are 9 × 10^(n-2) such numbers.
+
+3. **Numbers both starting and ending with 1**: These have 1 as the first digit and 1 as the last digit. The middle (n-2) digits can be 0-9. So there are 10^(n-2) such numbers (with special handling for n=2).
+
+4. **Final count**: Using inclusion-exclusion principle to avoid double-counting numbers that both start and end with 1.

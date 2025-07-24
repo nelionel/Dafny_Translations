@@ -1,0 +1,36 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def triangle_area(a, h):
+    """Given length of a side and high return area for a triangle.
+    >>> triangle_area(5, 3)
+    7.5
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to implement the formula for the area of a triangle given a base and height.
+
+The area of a triangle is calculated as: **Area = (1/2) × base × height**
+
+Here's the implementation:
+
+```python
+def triangle_area(a, h):
+    """Given length of a side and high return area for a triangle.
+    >>> triangle_area(5, 3)
+    7.5
+    """
+    return (a * h) / 2
+```
+
+This implementation:
+- Takes two parameters: `a` (the length of the base side) and `h` (the height)
+- Returns the area using the standard triangle area formula: (base × height) ÷ 2
+- For the example given: `triangle_area(5, 3)` returns `(5 × 3) ÷ 2 = 7.5`

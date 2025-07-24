@@ -1,0 +1,105 @@
+=============== SYSTEM ===============
+You are an expert in formal verification and Dafny specifications. Your task is to analyze whether Dafny method specifications properly describe the behavior of the corresponding Python function.
+
+You will be given:
+1. A Python function with its behavior
+2. A Dafny method translation with specifications (requires, ensures clauses)
+
+Your job is to determine if the Dafny specifications fully and accurately capture the Python function's behavior. If not, you should improve the specifications.
+
+IMPORTANT: You must respond with EXACTLY one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" - if the specifications correctly describe the function
+- "THE SCRIPT HAD NOT A PROPER SPEC" - if the specifications need improvement
+
+After this phrase, provide the complete Dafny code (either unchanged or with improved specifications).
+
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def is_equal_to_sum_even(n):
+    """Evaluate whether the given number n can be written as the sum of exactly 4 positive even numbers
+    Example
+    is_equal_to_sum_even(4) == False
+    is_equal_to_sum_even(6) == False
+    is_equal_to_sum_even(8) == True
+    """
+    # A number can be written as sum of 4 positive even numbers if:
+    # 1. It's even (sum of even numbers is always even)
+    # 2. It's at least 8 (minimum sum: 2+2+2+2 = 8)
+    return n % 2 == 0 and n >= 8
+```
+
+**Current Dafny Code:**
+```dafny
+method is_equal_to_sum_even(n: int) returns (result: bool)
+    ensures result == (n % 2 == 0 && n >= 8)
+{
+    result := n % 2 == 0 && n >= 8;
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+ 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the Dafny specifications:
+
+**Python Function Analysis:**
+- The function `is_equal_to_sum_even(n)` checks if a number `n` can be written as the sum of exactly 4 positive even numbers
+- The logic is: return `n % 2 == 0 and n >= 8`
+- This means:
+  1. `n` must be even (since sum of even numbers is even)
+  2. `n` must be at least 8 (since minimum sum is 2+2+2+2 = 8)
+
+**Dafny Code Analysis:**
+- The method has signature: `method is_equal_to_sum_even(n: int) returns (result: bool)`
+- There are no `requires` clauses
+- There is one `ensures` clause: `ensures result == (n % 2 == 0 && n >= 8)`
+- The implementation is: `result := n % 2 == 0 && n >= 8;`
+
+**Comparison:**
+1. The `ensures` clause correctly captures the return value behavior: `result == (n % 2 == 0 && n >= 8)`
+2. This matches exactly what the Python function returns: `n % 2 == 0 and n >= 8`
+3. There are no preconditions in the Python function - it accepts any integer `n`
+4. The Dafny method also accepts any integer `n` (no `requires` clauses), which is correct
+
+The specifications appear to fully capture the behavior:
+- No preconditions needed (function works for any integer)
+- The postcondition correctly describes the return value
+- The logic matches exactly between Python and Dafny
+
+The Dafny specifications properly describe the Python function's behavior.
+
+--- RESPONSE ---
+THE SCRIPT HAS PROPER SPECS
+
+```dafny
+method is_equal_to_sum_even(n: int) returns (result: bool)
+    ensures result == (n % 2 == 0 && n >= 8)
+{
+    result := n % 2 == 0 && n >= 8;
+}
+```
+

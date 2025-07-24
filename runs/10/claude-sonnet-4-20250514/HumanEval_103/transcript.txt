@@ -1,0 +1,61 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def rounded_avg(n, m):
+    """You are given two positive integers n and m, and your task is to compute the
+    average of the integers from n through m (including n and m). 
+    Round the answer to the nearest integer and convert that to binary.
+    If n is greater than m, return -1.
+    Example:
+    rounded_avg(1, 5) => "0b11"
+    rounded_avg(7, 5) => -1
+    rounded_avg(10, 20) => "0b1111"
+    rounded_avg(20, 33) => "0b11010"
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Check if n > m, and return -1 if so
+2. Calculate the average of integers from n to m (inclusive)
+3. Round to the nearest integer
+4. Convert to binary representation
+
+Let me trace through the examples:
+- `rounded_avg(1, 5)`: average of 1,2,3,4,5 = 15/5 = 3, binary of 3 is "0b11"
+- `rounded_avg(7, 5)`: 7 > 5, so return -1
+- `rounded_avg(10, 20)`: average of 10 through 20 = 165/11 = 15, binary of 15 is "0b1111"
+- `rounded_avg(20, 33)`: average of 20 through 33 = 371/14 ≈ 26.5, rounded = 26, binary of 26 is "0b11010"
+
+```python
+def rounded_avg(n, m):
+    """You are given two positive integers n and m, and your task is to compute the
+    average of the integers from n through m (including n and m). 
+    Round the answer to the nearest integer and convert that to binary.
+    If n is greater than m, return -1.
+    Example:
+    rounded_avg(1, 5) => "0b11"
+    rounded_avg(7, 5) => -1
+    rounded_avg(10, 20) => "0b1111"
+    rounded_avg(20, 33) => "0b11010"
+    """
+    # Check if n is greater than m
+    if n > m:
+        return -1
+    
+    # Calculate the sum of integers from n to m using arithmetic series formula
+    # Sum = (number of terms) * (first term + last term) / 2
+    # Number of terms = m - n + 1
+    total_sum = (m - n + 1) * (n + m) // 2
+    count = m - n + 1
+    
+    # Calculate average and round to nearest integer
+    average = total_sum / count
+    rounded_average = round(average)
+    
+    # Convert to binary representation
+    return bin(rounded_average)
+```

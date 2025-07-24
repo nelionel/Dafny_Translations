@@ -1,0 +1,247 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `words_in_sentence`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate("This is a test") == "is"
+    assert candidate("lets go for swimming") == "go for"
+    assert candidate("there is no place available here") == "there is no place"
+    assert candidate("Hi I am Hussein") == "Hi am Hussein"
+    assert candidate("go for it") == "go for it"
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate("here") == ""
+    assert candidate("here is") == "is"
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method words_in_sentence(sentence: string) returns (result: string)
+  requires |sentence| >= 1 && |sentence| <= 100
+  ensures |result| <= |sentence|
+{
+  // Split sentence into words
+  var words := split_by_space(sentence);
+  
+  // Filter words whose lengths are prime
+  var prime_words: seq<string> := [];
+  var i := 0;
+  while i < |words|
+    invariant 0 <= i <= |words|
+    invariant |prime_words| <= i
+    decreases |words| - i
+  {
+    var word_length := |words[i]|;
+    var is_prime_length := is_prime(word_length);
+    if is_prime_length {
+      prime_words := prime_words + [words[i]];
+    }
+    i := i + 1;
+  }
+  
+  // Join filtered words back with spaces
+  result := join_with_space(prime_words);
+}
+
+method is_prime(n: int) returns (result: bool)
+  requires n >= 0
+{
+  if n < 2 {
+    result := false;
+  } else if n == 2 {
+    result := true;
+  } else if n % 2 == 0 {
+    result := false;
+  } else {
+    result := true;
+    var i := 3;
+    while i * i <= n
+      invariant i >= 3
+      invariant i % 2 == 1
+      invariant result ==> forall k :: 3 <= k < i && k % 2 == 1 ==> n % k != 0
+      decreases n - i * i + 1
+    {
+      if n % i == 0 {
+        result := false;
+        break;
+      }
+      i := i + 2;
+    }
+  }
+}
+
+method split_by_space(s: string) returns (words: seq<string>)
+  ensures |words| >= 0
+{
+  words := [];
+  if |s| == 0 {
+    return;
+  }
+  
+  var current_word := "";
+  var i := 0;
+  
+  while i < |s|
+    invariant 0 <= i <= |s|
+    decreases |s| - i
+  {
+    if s[i] == ' ' {
+      if |current_word| > 0 {
+        words := words + [current_word];
+        current_word := "";
+      }
+    } else {
+      current_word := current_word + [s[i]];
+    }
+    i := i + 1;
+  }
+  
+  // Add the last word if it's not empty
+  if |current_word| > 0 {
+    words := words + [current_word];
+  }
+}
+
+method join_with_space(words: seq<string>) returns (result: string)
+{
+  result := "";
+  var i := 0;
+  while i < |words|
+    invariant 0 <= i <= |words|
+    decreases |words| - i
+  {
+    if i > 0 {
+      result := result + " ";
+    }
+    result := result + words[i];
+    i := i + 1;
+  }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`words_in_sentence`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `words_in_sentence` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `words_in_sentence` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the provided Dafny solution and Python tests:
+
+1. The Dafny method signature is: `method words_in_sentence(sentence: string) returns (result: string)`
+
+2. Looking at the Python tests:
+   - `candidate("This is a test") == "is"` - expects "is"
+   - `candidate("lets go for swimming") == "go for"` - expects "go for"  
+   - `candidate("there is no place available here") == "there is no place"` - expects "there is no place"
+   - `candidate("Hi I am Hussein") == "Hi am Hussein"` - expects "Hi am Hussein"
+   - `candidate("go for it") == "go for it"` - expects "go for it"
+   - `candidate("here") == ""` - expects empty string
+   - `candidate("here is") == "is"` - expects "is"
+
+3. For the dummy implementation, I need to create a minimal version that returns a string (default would be empty string "").
+
+4. For the tests, I need to create test methods that call `words_in_sentence` and use `expect` to check the results.
+
+Let me create the dummy implementation and tests now.
+
+--- RESPONSE ---
+Looking at the Dafny solution, I can see the method signature is `method words_in_sentence(sentence: string) returns (result: string)` with preconditions and postconditions.
+
+<dummy>
+method words_in_sentence(sentence: string) returns (result: string)
+  requires |sentence| >= 1 && |sentence| <= 100
+  ensures |result| <= |sentence|
+{
+    result := "";
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := words_in_sentence("This is a test");
+    expect result == "is";
+}
+
+method {:test} test_1()
+{
+    var result := words_in_sentence("lets go for swimming");
+    expect result == "go for";
+}
+
+method {:test} test_2()
+{
+    var result := words_in_sentence("there is no place available here");
+    expect result == "there is no place";
+}
+
+method {:test} test_3()
+{
+    var result := words_in_sentence("Hi I am Hussein");
+    expect result == "Hi am Hussein";
+}
+
+method {:test} test_4()
+{
+    var result := words_in_sentence("go for it");
+    expect result == "go for it";
+}
+
+method {:test} test_5()
+{
+    var result := words_in_sentence("here");
+    expect result == "";
+}
+
+method {:test} test_6()
+{
+    var result := words_in_sentence("here is");
+    expect result == "is";
+}
+```
+

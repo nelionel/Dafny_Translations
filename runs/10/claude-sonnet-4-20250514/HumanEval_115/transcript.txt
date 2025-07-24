@@ -1,0 +1,93 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def max_fill(grid, capacity):
+    import math
+    """
+    You are given a rectangular grid of wells. Each row represents a single well,
+    and each 1 in a row represents a single unit of water.
+    Each well has a corresponding bucket that can be used to extract water from it, 
+    and all buckets have the same capacity.
+    Your task is to use the buckets to empty the wells.
+    Output the number of times you need to lower the buckets.
+
+    Example 1:
+        Input: 
+            grid : [[0,0,1,0], [0,1,0,0], [1,1,1,1]]
+            bucket_capacity : 1
+        Output: 6
+
+    Example 2:
+        Input: 
+            grid : [[0,0,1,1], [0,0,0,0], [1,1,1,1], [0,1,1,1]]
+            bucket_capacity : 2
+        Output: 5
+    
+    Example 3:
+        Input: 
+            grid : [[0,0,0], [0,0,0]]
+            bucket_capacity : 5
+        Output: 0
+
+    Constraints:
+        * all wells have the same length
+        * 1 <= grid.length <= 10^2
+        * 1 <= grid[:,1].length <= 10^2
+        * grid[i][j] -> 0 | 1
+        * 1 <= capacity <= 10
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Count the total water units in each well (each row)
+2. For each well, calculate how many bucket trips are needed to empty it
+3. Sum up all the bucket trips
+
+Let me trace through the examples:
+
+Example 1: 
+- Row 0: [0,0,1,0] → 1 unit of water → ceil(1/1) = 1 trip
+- Row 1: [0,1,0,0] → 1 unit of water → ceil(1/1) = 1 trip  
+- Row 2: [1,1,1,1] → 4 units of water → ceil(4/1) = 4 trips
+- Total: 1 + 1 + 4 = 6 trips
+
+Example 2:
+- Row 0: [0,0,1,1] → 2 units of water → ceil(2/2) = 1 trip
+- Row 1: [0,0,0,0] → 0 units of water → ceil(0/2) = 0 trips
+- Row 2: [1,1,1,1] → 4 units of water → ceil(4/2) = 2 trips
+- Row 3: [0,1,1,1] → 3 units of water → ceil(3/2) = 2 trips
+- Total: 1 + 0 + 2 + 2 = 5 trips
+
+```python
+def max_fill(grid, capacity):
+    import math
+    """
+    You are given a rectangular grid of wells. Each row represents a single well,
+    and each 1 in a row represents a single unit of water.
+    Each well has a corresponding bucket that can be used to extract water from it, 
+    and all buckets have the same capacity.
+    Your task is to use the buckets to empty the wells.
+    Output the number of times you need to lower the buckets.
+    """
+    
+    total_trips = 0
+    
+    # For each well (row)
+    for row in grid:
+        # Count water units in this well
+        water_units = sum(row)
+        
+        # Calculate trips needed for this well
+        if water_units > 0:
+            trips_needed = math.ceil(water_units / capacity)
+        else:
+            trips_needed = 0
+            
+        total_trips += trips_needed
+    
+    return total_trips
+```

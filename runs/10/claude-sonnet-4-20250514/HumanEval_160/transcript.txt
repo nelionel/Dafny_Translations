@@ -1,0 +1,160 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def do_algebra(operator, operand):
+    """
+    Given two lists operator, and operand. The first list has basic algebra operations, and 
+    the second list is a list of integers. Use the two given lists to build the algebric 
+    expression and return the evaluation of this expression.
+
+    The basic algebra operations:
+    Addition ( + ) 
+    Subtraction ( - ) 
+    Multiplication ( * ) 
+    Floor division ( // ) 
+    Exponentiation ( ** ) 
+
+    Example:
+    operator['+', '*', '-']
+    array = [2, 3, 4, 5]
+    result = 2 + 3 * 4 - 5
+    => result = 9
+
+    Note:
+        The length of operator list is equal to the length of operand list minus one.
+        Operand is a list of of non-negative integers.
+        Operator list has at least one operator, and operand list has at least two operands.
+
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Build an algebraic expression from two lists: operators and operands
+2. Evaluate the expression following proper order of operations
+3. Handle the basic algebra operations: +, -, *, //, **
+
+The key insight is that I need to respect operator precedence:
+- ** (exponentiation) has highest precedence
+- *, // have medium precedence  
+- +, - have lowest precedence
+
+I'll build the expression as a string and then evaluate it, but I need to be careful about operator precedence.
+
+```python
+def do_algebra(operator, operand):
+    """
+    Given two lists operator, and operand. The first list has basic algebra operations, and 
+    the second list is a list of integers. Use the two given lists to build the algebric 
+    expression and return the evaluation of this expression.
+
+    The basic algebra operations:
+    Addition ( + ) 
+    Subtraction ( - ) 
+    Multiplication ( * ) 
+    Floor division ( // ) 
+    Exponentiation ( ** ) 
+
+    Example:
+    operator['+', '*', '-']
+    array = [2, 3, 4, 5]
+    result = 2 + 3 * 4 - 5
+    => result = 9
+
+    Note:
+        The length of operator list is equal to the length of operand list minus one.
+        Operand is a list of of non-negative integers.
+        Operator list has at least one operator, and operand list has at least two operands.
+
+    """
+    # Build the expression string
+    expression = str(operand[0])
+    
+    for i in range(len(operator)):
+        expression += " " + operator[i] + " " + str(operand[i + 1])
+    
+    # Evaluate the expression
+    # We need to handle operator precedence properly
+    # Python's eval() function handles this correctly
+    return eval(expression)
+```
+
+Wait, let me reconsider this. Using `eval()` might work but it's generally not recommended for security reasons. Let me implement a proper solution that handles operator precedence manually:
+
+```python
+def do_algebra(operator, operand):
+    """
+    Given two lists operator, and operand. The first list has basic algebra operations, and 
+    the second list is a list of integers. Use the two given lists to build the algebric 
+    expression and return the evaluation of this expression.
+
+    The basic algebra operations:
+    Addition ( + ) 
+    Subtraction ( - ) 
+    Multiplication ( * ) 
+    Floor division ( // ) 
+    Exponentiation ( ** ) 
+
+    Example:
+    operator['+', '*', '-']
+    array = [2, 3, 4, 5]
+    result = 2 + 3 * 4 - 5
+    => result = 9
+
+    Note:
+        The length of operator list is equal to the length of operand list minus one.
+        Operand is a list of of non-negative integers.
+        Operator list has at least one operator, and operand list has at least two operands.
+
+    """
+    # Create a copy of operands to work with
+    values = operand[:]
+    ops = operator[:]
+    
+    # Handle exponentiation first (highest precedence, right-to-left)
+    i = len(ops) - 1
+    while i >= 0:
+        if ops[i] == '**':
+            result = values[i] ** values[i + 1]
+            values[i] = result
+            values.pop(i + 1)
+            ops.pop(i)
+        i -= 1
+    
+    # Handle multiplication and floor division (left-to-right)
+    i = 0
+    while i < len(ops):
+        if ops[i] == '*':
+            result = values[i] * values[i + 1]
+            values[i] = result
+            values.pop(i + 1)
+            ops.pop(i)
+        elif ops[i] == '//':
+            result = values[i] // values[i + 1]
+            values[i] = result
+            values.pop(i + 1)
+            ops.pop(i)
+        else:
+            i += 1
+    
+    # Handle addition and subtraction (left-to-right)
+    i = 0
+    while i < len(ops):
+        if ops[i] == '+':
+            result = values[i] + values[i + 1]
+            values[i] = result
+            values.pop(i + 1)
+            ops.pop(i)
+        elif ops[i] == '-':
+            result = values[i] - values[i + 1]
+            values[i] = result
+            values.pop(i + 1)
+            ops.pop(i)
+        else:
+            i += 1
+    
+    return values[0]
+```

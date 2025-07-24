@@ -1,0 +1,49 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def modp(n: int, p: int):
+    """Return 2^n modulo p (be aware of numerics).
+    >>> modp(3, 5)
+    3
+    >>> modp(1101, 101)
+    2
+    >>> modp(0, 101)
+    1
+    >>> modp(3, 11)
+    8
+    >>> modp(100, 101)
+    1
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement a function that calculates 2^n modulo p efficiently. The key insight is to use Python's built-in `pow()` function with three arguments, which implements modular exponentiation efficiently to avoid overflow issues with large numbers.
+
+```python
+def modp(n: int, p: int):
+    """Return 2^n modulo p (be aware of numerics).
+    >>> modp(3, 5)
+    3
+    >>> modp(1101, 101)
+    2
+    >>> modp(0, 101)
+    1
+    >>> modp(3, 11)
+    8
+    >>> modp(100, 101)
+    1
+    """
+    return pow(2, n, p)
+```
+
+The `pow(base, exponent, modulus)` function efficiently computes `base^exponent % modulus` using fast modular exponentiation, which avoids computing the potentially huge intermediate result of 2^n before taking the modulo. This is important for large values of n to prevent overflow and performance issues.
+
+Let me verify with the given examples:
+- `modp(3, 5)`: 2^3 = 8, 8 % 5 = 3 ✓
+- `modp(1101, 101)`: 2^1101 % 101 = 2 ✓
+- `modp(0, 101)`: 2^0 = 1, 1 % 101 = 1 ✓
+- `modp(3, 11)`: 2^3 = 8, 8 % 11 = 8 ✓
+- `modp(100, 101)`: 2^100 % 101 = 1 ✓

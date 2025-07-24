@@ -1,0 +1,222 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def intersection(interval1, interval2):
+    """You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intervals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return "YES",
+    otherwise, return "NO".
+    If the two intervals don't intersect, return "NO".
+
+
+    [input/output] samples:
+    intersection((1, 2), (2, 3)) ==> "NO"
+    intersection((-1, 1), (0, 4)) ==> "NO"
+    intersection((-3, -1), (-5, 5)) ==> "YES"
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find the intersection of two intervals
+2. Calculate the length of the intersection
+3. Check if that length is a prime number
+4. Return "YES" if prime, "NO" otherwise
+
+Let me break this down step by step:
+
+```python
+def intersection(interval1, interval2):
+    """You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intervals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return "YES",
+    otherwise, return "NO".
+    If the two intervals don't intersect, return "NO".
+    """
+    
+    def is_prime(n):
+        """Check if a number is prime"""
+        if n < 2:
+            return False
+        if n == 2:
+            return True
+        if n % 2 == 0:
+            return False
+        for i in range(3, int(n**0.5) + 1, 2):
+            if n % i == 0:
+                return False
+        return True
+    
+    # Extract start and end points of both intervals
+    start1, end1 = interval1
+    start2, end2 = interval2
+    
+    # Find the intersection
+    # The intersection starts at the maximum of the two start points
+    # and ends at the minimum of the two end points
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+    
+    # Check if there's actually an intersection
+    if intersection_start > intersection_end:
+        return "NO"
+    
+    # Calculate the length of the intersection
+    # Since intervals are closed, length = end - start + 1
+    intersection_length = intersection_end - intersection_start + 1
+    
+    # Check if the length is prime
+    if is_prime(intersection_length):
+        return "YES"
+    else:
+        return "NO"
+```
+
+Let me verify with the given examples:
+
+1. `intersection((1, 2), (2, 3))`:
+   - Intersection: max(1,2) to min(2,3) = (2,2)
+   - Length: 2-2+1 = 1
+   - 1 is not prime → "NO" ✓
+
+2. `intersection((-1, 1), (0, 4))`:
+   - Intersection: max(-1,0) to min(1,4) = (0,1)
+   - Length: 1-0+1 = 2
+   - 2 is prime → "YES" (but expected "NO"... let me check)
+   - Wait, the expected output is "NO", so maybe I misunderstood something.
+
+Let me reconsider the length calculation. Looking at the first example more carefully:
+- Intersection of (1,3) and (2,4) is (2,3) with length 1
+- This suggests length = end - start, not end - start + 1
+
+Let me correct this:
+
+```python
+def intersection(interval1, interval2):
+    """You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intervals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return "YES",
+    otherwise, return "NO".
+    If the two intervals don't intersect, return "NO".
+    """
+    
+    def is_prime(n):
+        """Check if a number is prime"""
+        if n < 2:
+            return False
+        if n == 2:
+            return True
+        if n % 2 == 0:
+            return False
+        for i in range(3, int(n**0.5) + 1, 2):
+            if n % i == 0:
+                return False
+        return True
+    
+    # Extract start and end points of both intervals
+    start1, end1 = interval1
+    start2, end2 = interval2
+    
+    # Find the intersection
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+    
+    # Check if there's actually an intersection
+    if intersection_start > intersection_end:
+        return "NO"
+    
+    # Calculate the length of the intersection
+    # Based on the example, length seems to be end - start
+    intersection_length = intersection_end - intersection_start
+    
+    # Check if the length is prime
+    if is_prime(intersection_length):
+        return "YES"
+    else:
+        return "NO"
+```
+
+Wait, that doesn't make sense either because then the length would be 0 for a single point intersection. Let me re-read the problem.
+
+Actually, looking at the example again: intersection of (1,3) and (2,4) is (2,3), and they say the length is 1. For a closed interval (2,3), the length should indeed be 3-2+1=2, but they're saying it's 1.
+
+I think they might be using a different definition of "length" - perhaps the number of integer gaps or the distance between endpoints. Let me use end - start:
+
+```python
+def intersection(interval1, interval2):
+    """You are given two intervals,
+    where each interval is a pair of integers. For example, interval = (start, end) = (1, 2).
+    The given intervals are closed which means that the interval (start, end)
+    includes both start and end.
+    For each given interval, it is assumed that its start is less or equal its end.
+    Your task is to determine whether the length of intersection of these two 
+    intervals is a prime number.
+    Example, the intersection of the intervals (1, 3), (2, 4) is (2, 3)
+    which its length is 1, which not a prime number.
+    If the length of the intersection is a prime number, return "YES",
+    otherwise, return "NO".
+    If the two intervals don't intersect, return "NO".
+    """
+    
+    def is_prime(n):
+        """Check if a number is prime"""
+        if n < 2:
+            return False
+        if n == 2:
+            return True
+        if n % 2 == 0:
+            return False
+        for i in range(3, int(n**0.5) + 1, 2):
+            if n % i == 0:
+                return False
+        return True
+    
+    # Extract start and end points of both intervals
+    start1, end1 = interval1
+    start2, end2 = interval2
+    
+    # Find the intersection
+    intersection_start = max(start1, start2)
+    intersection_end = min(end1, end2)
+    
+    # Check if there's actually an intersection
+    if intersection_start > intersection_end:
+        return "NO"
+    
+    # Calculate the length of the intersection
+    # Using end - start based on the given example
+    intersection_length = intersection_end - intersection_start
+    
+    # Check if the length is prime
+    if is_prime(intersection_length):
+        return "YES"
+    else:
+        return "NO"
+```

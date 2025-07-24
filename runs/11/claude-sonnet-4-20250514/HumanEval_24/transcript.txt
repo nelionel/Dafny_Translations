@@ -1,0 +1,40 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def largest_divisor(n: int) -> int:
+    """ For a given number n, find the largest number that divides n evenly, smaller than n
+    >>> largest_divisor(15)
+    5
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the largest divisor of `n` that is smaller than `n` itself.
+
+The most efficient approach is to iterate from `n-1` down to 1 and return the first number that divides `n` evenly. This ensures I find the largest divisor first.
+
+```python
+def largest_divisor(n: int) -> int:
+    """ For a given number n, find the largest number that divides n evenly, smaller than n
+    >>> largest_divisor(15)
+    5
+    """
+    for i in range(n - 1, 0, -1):
+        if n % i == 0:
+            return i
+    return 1  # This should never be reached for n > 1, but handles edge cases
+```
+
+This implementation:
+1. Starts from `n-1` and counts down to 1
+2. Returns the first number that divides `n` evenly (i.e., `n % i == 0`)
+3. Since we're going from largest to smallest, the first divisor we find is the largest one
+4. For the example `largest_divisor(15)`, it will check 14, 13, 12, 11, 10, 9, 8, 7, 6, 5 and return 5 since 15 % 5 == 0
+
+The time complexity is O(n) in the worst case, but in practice it's often much faster since many numbers have large divisors.

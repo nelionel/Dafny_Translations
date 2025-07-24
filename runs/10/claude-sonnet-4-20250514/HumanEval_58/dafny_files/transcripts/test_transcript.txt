@@ -1,0 +1,194 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `common`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]) == [1, 5, 653]
+    assert candidate([5, 3, 2, 8], [3, 2]) == [2, 3]
+    assert candidate([4, 3, 2, 8], [3, 2, 4]) == [2, 3, 4]
+    assert candidate([4, 3, 2, 8], []) == []
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method common(l1: seq<int>, l2: seq<int>) returns (result: seq<int>)
+  ensures forall x :: x in result ==> x in l1 && x in l2
+  ensures forall i, j :: 0 <= i < j < |result| ==> result[i] < result[j]
+  ensures forall i, j :: 0 <= i < j < |result| ==> result[i] != result[j]
+{
+  // Find common elements without duplicates
+  var commons := [];
+  var i := 0;
+  
+  while i < |l1|
+    invariant 0 <= i <= |l1|
+    invariant forall x :: x in commons ==> x in l1 && x in l2
+    invariant forall x, y :: x in commons && y in commons && x != y ==> x != y
+    decreases |l1| - i
+  {
+    if inSeq(l1[i], l2) && !inSeq(l1[i], commons) {
+      commons := commons + [l1[i]];
+    }
+    i := i + 1;
+  }
+  
+  // Sort the result
+  result := insertionSort(commons);
+}
+
+function inSeq(x: int, s: seq<int>): bool
+{
+  x in s
+}
+
+method insertionSort(s: seq<int>) returns (sorted: seq<int>)
+  ensures |sorted| == |s|
+  ensures forall x :: x in s <==> x in sorted
+  ensures forall i, j :: 0 <= i < j < |sorted| ==> sorted[i] <= sorted[j]
+{
+  sorted := [];
+  var i := 0;
+  
+  while i < |s|
+    invariant 0 <= i <= |s|
+    invariant |sorted| == i
+    invariant forall k :: 0 <= k < i ==> s[k] in sorted
+    invariant forall x :: x in sorted ==> x in s[0..i]
+    invariant forall p, q :: 0 <= p < q < |sorted| ==> sorted[p] <= sorted[q]
+    decreases |s| - i
+  {
+    sorted := insertSorted(sorted, s[i]);
+    i := i + 1;
+  }
+}
+
+method insertSorted(sorted: seq<int>, x: int) returns (result: seq<int>)
+  requires forall i, j :: 0 <= i < j < |sorted| ==> sorted[i] <= sorted[j]
+  ensures |result| == |sorted| + 1
+  ensures x in result
+  ensures forall y :: y in sorted ==> y in result
+  ensures forall i, j :: 0 <= i < j < |result| ==> result[i] <= result[j]
+{
+  var pos := 0;
+  
+  while pos < |sorted| && sorted[pos] <= x
+    invariant 0 <= pos <= |sorted|
+    invariant forall k :: 0 <= k < pos ==> sorted[k] <= x
+    decreases |sorted| - pos
+  {
+    pos := pos + 1;
+  }
+  
+  result := sorted[0..pos] + [x] + sorted[pos..];
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`common`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `common` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `common` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the provided test cases and solution:
+
+1. The method to test is `common` which takes two sequences of integers and returns a sequence of integers.
+
+2. Looking at the Python test cases:
+   - `candidate([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]) == [1, 5, 653]`
+   - `candidate([5, 3, 2, 8], [3, 2]) == [2, 3]`
+   - `candidate([4, 3, 2, 8], [3, 2, 4]) == [2, 3, 4]`
+   - `candidate([4, 3, 2, 8], []) == []`
+
+3. From the Dafny solution, the `common` method has signature:
+   `method common(l1: seq<int>, l2: seq<int>) returns (result: seq<int>)`
+
+4. The method finds common elements between two sequences, removes duplicates, and returns them in sorted order.
+
+First, I need to create a minimal dummy implementation that has the same signature and returns a default value (empty sequence for seq<int>).
+
+Then, I need to translate each Python assert into a Dafny test method using the `{:test}` attribute, calling the `common` method and using `expect` to check the result.
+
+--- RESPONSE ---
+Looking at the tests and solution, I can see that `common` takes two sequences of integers and returns a sequence of integers containing the common elements in sorted order.
+
+<dummy>
+method common(l1: seq<int>, l2: seq<int>) returns (result: seq<int>)
+{
+    result := [];
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := common([1, 4, 3, 34, 653, 2, 5], [5, 7, 1, 5, 9, 653, 121]);
+    expect result == [1, 5, 653];
+}
+
+method {:test} test_1()
+{
+    var result := common([5, 3, 2, 8], [3, 2]);
+    expect result == [2, 3];
+}
+
+method {:test} test_2()
+{
+    var result := common([4, 3, 2, 8], [3, 2, 4]);
+    expect result == [2, 3, 4];
+}
+
+method {:test} test_3()
+{
+    var result := common([4, 3, 2, 8], []);
+    expect result == [];
+}
+```
+

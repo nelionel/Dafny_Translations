@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/147
+Entry Point: get_max_triples
+Stop Reason: end_turn
+Input Tokens: 235
+Output Tokens: 1233

@@ -1,0 +1,87 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def is_multiply_prime(a):
+    """Write a function that returns true if the given number is the multiplication of 3 prime numbers
+    and false otherwise.
+    Knowing that (a) is less then 100. 
+    Example:
+    is_multiply_prime(30) == True
+    30 = 2 * 3 * 5
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Check if a number can be expressed as the product of exactly 3 prime numbers
+2. The prime numbers don't need to be distinct (e.g., 2 * 2 * 2 = 8 is valid)
+3. The number is less than 100
+
+My approach:
+1. First, I'll create a helper function to check if a number is prime
+2. Then I'll find all prime factors of the given number
+3. Check if the total count of prime factors (with repetition) equals exactly 3
+
+```python
+def is_multiply_prime(a):
+    """Write a function that returns true if the given number is the multiplication of 3 prime numbers
+    and false otherwise.
+    Knowing that (a) is less then 100. 
+    Example:
+    is_multiply_prime(30) == True
+    30 = 2 * 3 * 5
+    """
+    
+    def is_prime(n):
+        """Helper function to check if a number is prime"""
+        if n < 2:
+            return False
+        for i in range(2, int(n ** 0.5) + 1):
+            if n % i == 0:
+                return False
+        return True
+    
+    def get_prime_factors(n):
+        """Get all prime factors of n (with repetition)"""
+        factors = []
+        d = 2
+        while d * d <= n:
+            while n % d == 0:
+                factors.append(d)
+                n //= d
+            d += 1
+        if n > 1:
+            factors.append(n)
+        return factors
+    
+    # Handle edge cases
+    if a <= 1:
+        return False
+    
+    # Get all prime factors
+    prime_factors = get_prime_factors(a)
+    
+    # Check if we have exactly 3 prime factors
+    return len(prime_factors) == 3
+```
+
+The function works as follows:
+
+1. **is_prime()**: Helper function that checks if a number is prime
+2. **get_prime_factors()**: Finds all prime factors of a number, including duplicates
+3. **Main logic**: 
+   - Handle edge cases (numbers ≤ 1)
+   - Get all prime factors of the input number
+   - Return True if there are exactly 3 prime factors, False otherwise
+
+Examples:
+- `is_multiply_prime(30)` returns `True` because 30 = 2 × 3 × 5 (3 prime factors)
+- `is_multiply_prime(8)` returns `True` because 8 = 2 × 2 × 2 (3 prime factors)
+- `is_multiply_prime(12)` returns `False` because 12 = 2 × 2 × 3 (3 prime factors) - wait, this should be True!
+- `is_multiply_prime(6)` returns `False` because 6 = 2 × 3 (only 2 prime factors)

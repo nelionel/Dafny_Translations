@@ -1,0 +1,52 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def derivative(xs: list):
+    """ xs represent coefficients of a polynomial.
+    xs[0] + xs[1] * x + xs[2] * x^2 + ....
+     Return derivative of this polynomial in the same form.
+    >>> derivative([3, 1, 2, 4, 5])
+    [1, 4, 12, 20]
+    >>> derivative([1, 2, 3])
+    [2, 6]
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the derivative of a polynomial represented by its coefficients.
+
+For a polynomial: `xs[0] + xs[1] * x + xs[2] * x^2 + xs[3] * x^3 + ...`
+
+The derivative would be: `xs[1] + 2 * xs[2] * x + 3 * xs[3] * x^2 + ...`
+
+So the coefficients of the derivative are: `[xs[1], 2 * xs[2], 3 * xs[3], ...]`
+
+In general, the coefficient at position `i` in the derivative is `(i+1) * xs[i+1]`.
+
+```python
+def derivative(xs: list):
+    """ xs represent coefficients of a polynomial.
+    xs[0] + xs[1] * x + xs[2] * x^2 + ....
+     Return derivative of this polynomial in the same form.
+    >>> derivative([3, 1, 2, 4, 5])
+    [1, 4, 12, 20]
+    >>> derivative([1, 2, 3])
+    [2, 6]
+    """
+    if len(xs) <= 1:
+        return []
+    
+    result = []
+    for i in range(1, len(xs)):
+        result.append(i * xs[i])
+    
+    return result
+```
+
+The function works by:
+1. Handling the edge case where the polynomial is constant (degree 0 or empty) - the derivative is 0, represented as an empty list
+2. For each coefficient `xs[i]` where `i >= 1`, the derivative coefficient is `i * xs[i]`
+3. The constant term `xs[0]` disappears in the derivative, so we start from index 1

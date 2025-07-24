@@ -1,0 +1,185 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python code to the Dafny verification language. Your task is to translate the provided Python function into a Dafny method that is both verifiable and compilable. Pay close attention to types, specifications, and providing concrete implementations for all methods.
+
+
+
+=============== USER ===============
+I will provide you with a Python function and its documentation. Please translate the Python function into a Dafny method.
+
+**Python Function and Documentation:**
+```python
+
+
+def is_prime(n):
+    """Return true if a given number is prime, and false otherwise.
+    >>> is_prime(6)
+    False
+    >>> is_prime(101)
+    True
+    >>> is_prime(11)
+    True
+    >>> is_prime(13441)
+    True
+    >>> is_prime(61)
+    True
+    >>> is_prime(4)
+    False
+    >>> is_prime(1)
+    False
+    """
+
+def is_prime(n):
+    """Return true if a given number is prime, and false otherwise.
+    >>> is_prime(6)
+    False
+    >>> is_prime(101)
+    True
+    >>> is_prime(11)
+    True
+    >>> is_prime(13441)
+    True
+    >>> is_prime(61)
+    True
+    >>> is_prime(4)
+    False
+    >>> is_prime(1)
+    False
+    """
+    # Numbers less than 2 are not prime
+    if n < 2:
+        return False
+    
+    # 2 is the only even prime number
+    if n == 2:
+        return True
+    
+    # All other even numbers are not prime
+    if n % 2 == 0:
+        return False
+    
+    # Check odd divisors from 3 up to sqrt(n)
+    i = 3
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 2
+    
+    return True
+```
+
+**Your Task:**
+1.  **Reasoning (in a <thinking> block):**
+    *   Analyze the Python code and its types. How will you map Python types (like lists of floats) to Dafny types (like `seq<real>`)?
+    *   Analyze the function's logic. What are the pre-conditions (`requires`) and post-conditions (`ensures`)?
+    *   Identify any loops and determine their invariants.
+    *   Think about termination conditions for any recursive calls or loops.
+2.  **Dafny Implementation (in a ```dafny ... ``` block):**
+    *   Write the complete Dafny method, including its signature, `requires` clauses, `ensures` clauses, and the method body.
+    *   **The return type of the main method must be a basic Dafny type.** Use `int`, `real`, `bool`, `string`, or a sequence of these types (e.g., `seq<int>`). Do not use custom `datatype`s in the return signature. If the Python code implies an optional return (e.g. returning `None`), you should return a sensible default for the basic type instead (e.g. `false`, `-1`, or an empty sequence `[]`).
+    *   The Dafny method name must be exactly the same as the Python function name: `is_prime`. Do not change the casing.
+    *   **All methods must have a concrete implementation (a body).** The `{:axiom}` attribute is forbidden for defining standard functions. However, if the problem's solution relies on an unproven mathematical conjecture (e.g., the Goldbach Conjecture, P vs NP), you may state the conjecture as an `axiom`. If you do so, you **must** include a comment identifying the conjecture (e.g., `// Axiom for the Twin Prime Conjecture`). Do not use axioms to avoid implementing solvable algorithms.
+    *   **Provide explicit termination proofs.** For any recursive function, you must include a `decreases` clause. Do **not** use `decreases *`. For functions that operate on a sequence, the termination metric is almost always the length of the sequence (e.g., `decreases my_sequence`). For functions on integers, it is the integer itself (e.g., `decreases n`).
+    *   **Do not use Dafny reserved keywords as variable names.** Avoid names like: `abstract, allocated, as, assert, assume, bool, break, by, calc, case, char, class, codatatype, const, constructor, datatype, decreases, else, ensures, exists, export, extends, false, forall, fresh, function, ghost, if, imap, import, in, include, int, invariant, is, iset, iterator, label, lemma, map, match, method, modifies, modify, module, multiset, nameonly, nat, new, newtype, null, object, object?, old, opened, ORDINAL, predicate, print, provides,reads, real, refines, requires, return, returns, reveal, reveals, seq, set, static, string, then, this, trait, true, twostate, type, unchanged, var, while, witness, yield, yields`. For example, instead of `var array`, use `var arr`.
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function step by step:
+
+1. **Types**: The function takes an integer `n` and returns a boolean.
+
+2. **Logic**: The function checks if a number is prime:
+   - Numbers less than 2 are not prime
+   - 2 is the only even prime number
+   - All other even numbers are not prime
+   - Check odd divisors from 3 up to sqrt(n)
+
+3. **Pre-conditions**: The function works for any integer, but conceptually we might want `n >= 0` since negative numbers aren't typically considered in prime discussions. However, the function handles `n < 2` by returning false, so we don't strictly need a precondition.
+
+4. **Post-conditions**: The function should return true if and only if `n` is prime.
+
+5. **Loop analysis**: There's a while loop that starts with `i = 3` and continues while `i * i <= n`, incrementing `i` by 2 each time. 
+   - Loop invariant: All numbers from 3 to i-1 (odd only) do not divide n
+   - Termination: The loop terminates because `i` increases by 2 each iteration and eventually `i * i > n`
+
+6. **Termination proof**: For the while loop, we need a decreases clause. Since `i` increases and the loop condition is `i * i <= n`, we can use `n - i * i` as the decreases clause, but we need to be careful about the exact formulation.
+
+Actually, let me think about this more carefully. The loop condition is `i * i <= n`, and `i` increases by 2 each time. So the decreases clause could be something like `n - i * i + 1` or we could use a different approach.
+
+Actually, let's use a simpler decreases clause. Since `i` starts at 3 and increases by 2, and the condition is `i * i <= n`, we know that `i` will eventually exceed `sqrt(n)`. 
+
+I'll explore potential ways to verify the loop's termination, focusing on how `i` progresses and eventually breaks the loop condition. The key is finding a reliable measure that consistently decreases as the loop continues.
+
+The current approach uses `n - i * i` as a potential termination metric, but it needs careful validation. By incrementing `i` by 2 and ensuring it squares remain less than or equal to `n`, we create a controlled progression through potential divisors.
+
+I'll need to confirm the decreases clause guarantees the loop will eventually terminate, considering how `i` advances and how its squared value relates to `n`. As `i` increases by 2 in each iteration, the squared value grows quadratically. When `i * i <= n`, the difference `n - i^2` decreases, ensuring the loop's termination. By incrementing `i` to `i + 2`, the new squared term `i'^2` increases by `4i + 4`, which is always positive for `i >= 3`. This guarantees the decreasing nature of the loop's progress while maintaining a non-negative difference between `n` and `i^2`.
+
+The loop maintains key properties: `i` remains an odd number greater than or equal to 3, systematically exploring potential factors of `n`. The mathematical progression ensures controlled reduction of the search space with each iteration.
+
+--- RESPONSE ---
+<thinking>
+Let me analyze the Python function:
+
+1. **Types**: The function takes an integer `n` and returns a boolean indicating whether `n` is prime.
+
+2. **Logic**: 
+   - Numbers less than 2 are not prime
+   - 2 is the only even prime number  
+   - All other even numbers are not prime
+   - Check odd divisors from 3 up to sqrt(n)
+
+3. **Pre-conditions**: No strict preconditions needed since the function handles all integer inputs.
+
+4. **Post-conditions**: The function should return true if and only if `n` is prime.
+
+5. **Loop analysis**: There's a while loop that:
+   - Starts with `i = 3`
+   - Continues while `i * i <= n` 
+   - Increments `i` by 2 each time (checking only odd potential divisors)
+   - Returns false if any divisor is found
+
+6. **Termination**: Since `i` increases by 2 each iteration and the condition is `i * i <= n`, the loop will terminate when `i * i` exceeds `n`. I can use `n - i * i` as the decreases clause since this value decreases with each iteration (as `i * i` increases).
+
+7. **Loop invariants**: 
+   - `i` is odd and `i >= 3`
+   - All odd numbers from 3 to `i-1` do not divide `n`
+   - `n` is odd and `n >= 3` (when we reach the loop)
+</thinking>
+
+```dafny
+method is_prime(n: int) returns (result: bool)
+    ensures result == (n >= 2 && forall k :: 2 <= k < n ==> n % k != 0)
+{
+    // Numbers less than 2 are not prime
+    if n < 2 {
+        return false;
+    }
+    
+    // 2 is the only even prime number
+    if n == 2 {
+        return true;
+    }
+    
+    // All other even numbers are not prime
+    if n % 2 == 0 {
+        return false;
+    }
+    
+    // Check odd divisors from 3 up to sqrt(n)
+    var i := 3;
+    while i * i <= n
+        invariant i >= 3 && i % 2 == 1
+        invariant forall k :: 3 <= k < i && k % 2 == 1 ==> n % k != 0
+        decreases n - i * i
+    {
+        if n % i == 0 {
+            return false;
+        }
+        i := i + 2;
+    }
+    
+    return true;
+}
+```
+

@@ -1,0 +1,31 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 2
+STDOUT:
+temp_compile.dfy(59,48): Error: rbracket expected
+   |
+59 |     var result := match_parens([")())", "(()()(""]);
+   |                                                 ^
+
+temp_compile.dfy(77,48): Error: rbracket expected
+   |
+77 |     var result := match_parens(["(()(", "()))()""]);
+   |                                                 ^
+
+temp_compile.dfy(89,46): Error: rbracket expected
+   |
+89 |     var result := match_parens([")(()", "(()(""]);
+   |                                               ^
+
+3 parse errors detected in temp_compile.dfy
+
+STDERR:
+
+Compilation result: failed
+
+=== DAFNY TESTING ===
+Skipped due to compilation failure.
+=== DAFNY VERIFICATION ===
+Skipped due to compilation failure.
+=== SPEC VALIDATION ===
+Skipped (compilation failed)

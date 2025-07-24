@@ -1,0 +1,770 @@
+=============== SYSTEM ===============
+You are an expert in formal verification and Dafny specifications. Your task is to analyze whether Dafny method specifications properly describe the behavior of the corresponding Python function.
+
+You will be given:
+1. A Python function with its behavior
+2. A Dafny method translation with specifications (requires, ensures clauses)
+
+Your job is to determine if the Dafny specifications fully and accurately capture the Python function's behavior. If not, you should improve the specifications.
+
+IMPORTANT: You must respond with EXACTLY one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" - if the specifications correctly describe the function
+- "THE SCRIPT HAD NOT A PROPER SPEC" - if the specifications need improvement
+
+After this phrase, provide the complete Dafny code (either unchanged or with improved specifications).
+
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def is_bored(S):
+    """
+    You'll be given a string of words, and your task is to count the number
+    of boredoms. A boredom is a sentence that starts with the word "I".
+    Sentences are delimited by '.', '?' or '!'.
+   
+    For example:
+    >>> is_bored("Hello world")
+    0
+    >>> is_bored("The sky is blue. The sun is shining. I love this weather")
+    1
+    """
+    import re
+    
+    # Split the string by sentence delimiters (., ?, !)
+    sentences = re.split(r'[.?!]', S)
+    
+    boredom_count = 0
+    
+    for sentence in sentences:
+        # Strip whitespace and check if sentence is not empty
+        sentence = sentence.strip()
+        if sentence:
+            # Split into words and check if first word is "I"
+            words = sentence.split()
+            if words and words[0] == "I":
+                boredom_count += 1
+    
+    return boredom_count
+```
+
+**Current Dafny Code:**
+```dafny
+method is_bored(S: string) returns (count: int)
+    ensures count >= 0
+{
+    count := 0;
+    var currentSentence := "";
+    var i := 0;
+    
+    while i <= |S|
+        invariant 0 <= i <= |S| + 1
+        invariant count >= 0
+        decreases |S| + 1 - i
+    {
+        if i == |S| || isDelimiter(S[i]) {
+            // Process current sentence
+            var trimmed := trim(currentSentence);
+            if |trimmed| > 0 {
+                var words := splitBySpaces(trimmed);
+                if |words| > 0 && words[0] == "I" {
+                    count := count + 1;
+                }
+            }
+            currentSentence := "";
+        } else {
+            currentSentence := currentSentence + [S[i]];
+        }
+        i := i + 1;
+    }
+}
+
+function isDelimiter(c: char): bool
+{
+    c == '.' || c == '?' || c == '!'
+}
+
+function isWhitespace(c: char): bool
+{
+    c == ' ' || c == '\t' || c == '\n' || c == '\r'
+}
+
+function trim(s: string): string
+    ensures |trim(s)| <= |s|
+{
+    var start := findFirstNonWhitespace(s, 0);
+    var end := findLastNonWhitespace(s, |s| - 1);
+    if start == -1 then "" else s[start..end+1]
+}
+
+function findFirstNonWhitespace(s: string, i: int): int
+    requires 0 <= i <= |s|
+    ensures -1 <= findFirstNonWhitespace(s, i) <= |s|
+    ensures findFirstNonWhitespace(s, i) == -1 ==> forall j :: i <= j < |s| ==> isWhitespace(s[j])
+    ensures findFirstNonWhitespace(s, i) != -1 ==> findFirstNonWhitespace(s, i) >= i && findFirstNonWhitespace(s, i) < |s| && !isWhitespace(s[findFirstNonWhitespace(s, i)])
+    decreases |s| - i
+{
+    if i >= |s| then -1
+    else if !isWhitespace(s[i]) then i
+    else findFirstNonWhitespace(s, i + 1)
+}
+
+function findLastNonWhitespace(s: string, i: int): int
+    requires -1 <= i < |s|
+    ensures -1 <= findLastNonWhitespace(s, i) <= i
+    ensures findLastNonWhitespace(s, i) == -1 ==> forall j :: 0 <= j <= i ==> isWhitespace(s[j])
+    ensures findLastNonWhitespace(s, i) != -1 ==> findLastNonWhitespace(s, i) >= 0 && !isWhitespace(s[findLastNonWhitespace(s, i)])
+    decreases i + 1
+{
+    if i < 0 then -1
+    else if !isWhitespace(s[i]) then i
+    else findLastNonWhitespace(s, i - 1)
+}
+
+function splitBySpaces(s: string): seq<string>
+    ensures forall word :: word in splitBySpaces(s) ==> |word| > 0
+{
+    if |s| == 0 then []
+    else splitBySpacesHelper(s, 0, [])
+}
+
+function splitBySpacesHelper(s: string, start: int, acc: seq<string>): seq<string>
+    requires 0 <= start <= |s|
+    ensures forall word :: word in splitBySpacesHelper(s, start, acc) ==> |word| > 0
+    decreases |s| - start
+{
+    if start >= |s| then acc
+    else if isWhitespace(s[start]) then
+        splitBySpacesHelper(s, start + 1, acc)
+    else
+        var wordEnd := findNextWhitespace(s, start);
+        var word := s[start..wordEnd];
+        splitBySpacesHelper(s, wordEnd, acc + [word])
+}
+
+function findNextWhitespace(s: string, start: int): int
+    requires 0 <= start <= |s|
+    ensures start <= findNextWhitespace(s, start) <= |s|
+    ensures findNextWhitespace(s, start) == |s| || isWhitespace(s[findNextWhitespace(s, start)])
+    ensures forall i :: start <= i < findNextWhitespace(s, start) ==> !isWhitespace(s[i])
+    decreases |s| - start
+{
+    if start >= |s| then |s|
+    else if isWhitespace(s[start]) then start
+    else findNextWhitespace(s, start + 1)
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+ 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the Dafny specifications.
+
+The Python function `is_bored`:
+1. Takes a string S as input
+2. Splits the string by sentence delimiters (., ?, !)
+3. For each sentence, strips whitespace
+4. If the sentence is not empty, splits it into words
+5. If the first word is exactly "I", increments the count
+6. Returns the count
+
+Now let me check the Dafny specifications:
+
+The method signature is:
+```dafny
+method is_bored(S: string) returns (count: int)
+    ensures count >= 0
+```
+
+The current specification only ensures that `count >= 0`, but this doesn't capture the actual behavior of the function. The specification should describe:
+
+1. What the function actually counts (sentences starting with "I")
+2. The relationship between the input string and the output count
+3. The behavior with respect to sentence delimiters
+
+The current specification is too weak. It doesn't describe what the function actually does - it just says the result is non-negative, which is trivial but doesn't capture the core functionality.
+
+A proper specification should describe:
+- The function counts the number of sentences that start with the word "I"
+- Sentences are delimited by '.', '?', or '!'
+- Only non-empty sentences (after trimming whitespace) are considered
+- The first word of the sentence must be exactly "I"
+
+So the current specification is inadequate and needs improvement.
+
+--- RESPONSE ---
+THE SCRIPT HAD NOT A PROPER SPEC
+
+```dafny
+method is_bored(S: string) returns (count: int)
+    ensures count >= 0
+    ensures count == CountSentencesStartingWithI(S)
+{
+    count := 0;
+    var currentSentence := "";
+    var i := 0;
+    
+    while i <= |S|
+        invariant 0 <= i <= |S| + 1
+        invariant count >= 0
+        decreases |S| + 1 - i
+    {
+        if i == |S| || isDelimiter(S[i]) {
+            // Process current sentence
+            var trimmed := trim(currentSentence);
+            if |trimmed| > 0 {
+                var words := splitBySpaces(trimmed);
+                if |words| > 0 && words[0] == "I" {
+                    count := count + 1;
+                }
+            }
+            currentSentence := "";
+        } else {
+            currentSentence := currentSentence + [S[i]];
+        }
+        i := i + 1;
+    }
+}
+
+function CountSentencesStartingWithI(S: string): int
+    ensures CountSentencesStartingWithI(S) >= 0
+{
+    var sentences := SplitBySentenceDelimiters(S);
+    CountIStartingSentences(sentences)
+}
+
+function SplitBySentenceDelimiters(s: string): seq<string>
+{
+    if |s| == 0 then [""]
+    else SplitBySentenceDelimitersHelper(s, 0, "")
+}
+
+function SplitBySentenceDelimitersHelper(s: string, i: int, current: string): seq<string>
+    requires 0 <= i <= |s|
+    decreases |s| - i
+{
+    if i == |s| then [current]
+    else if isDelimiter(s[i]) then
+        [current] + SplitBySentenceDelimitersHelper(s, i + 1, "")
+    else
+        SplitBySentenceDelimitersHelper(s, i + 1, current + [s[i]])
+}
+
+function CountIStartingSentences(sentences: seq<string>): int
+    ensures CountIStartingSentences(sentences) >= 0
+{
+    if |sentences| == 0 then 0
+    else
+        var trimmed := trim(sentences[0]);
+        var startsWithI := if |trimmed| > 0 then
+            var words := splitBySpaces(trimmed);
+            |words| > 0 && words[0] == "I"
+        else false;
+        (if startsWithI then 1 else 0) + CountIStartingSentences(sentences[1..])
+}
+
+function isDelimiter(c: char): bool
+{
+    c == '.' || c == '?' || c == '!'
+}
+
+function isWhitespace(c: char): bool
+{
+    c == ' ' || c == '\t' || c == '\n' || c == '\r'
+}
+
+function trim(s: string): string
+    ensures |trim(s)| <= |s|
+{
+    var start := findFirstNonWhitespace(s, 0);
+    var end := findLastNonWhitespace(s, |s| - 1);
+    if start == -1 then "" else s[start..end+1]
+}
+
+function findFirstNonWhitespace(s: string, i: int): int
+    requires 0 <= i <= |s|
+    ensures -1 <= findFirstNonWhitespace(s, i) <= |s|
+    ensures findFirstNonWhitespace(s, i) == -1 ==> forall j :: i <= j < |s| ==> isWhitespace(s[j])
+    ensures findFirstNonWhitespace(s, i) != -1 ==> findFirstNonWhitespace(s, i) >= i && findFirstNonWhitespace(s, i) < |s| && !isWhitespace(s[findFirstNonWhitespace(s, i)])
+    decreases |s| - i
+{
+    if i >= |s| then -1
+    else if !isWhitespace(s[i]) then i
+    else findFirstNonWhitespace(s, i + 1)
+}
+
+function findLastNonWhitespace(s: string, i: int): int
+    requires -1 <= i < |s|
+    ensures -1 <= findLastNonWhitespace(s, i) <= i
+    ensures findLastNonWhitespace(s, i) == -1 ==> forall j :: 0 <= j <= i ==> isWhitespace(s[j])
+    ensures findLastNonWhitespace(s, i) != -1 ==> findLastNonWhitespace(s, i) >= 0 && !isWhitespace(s[findLastNonWhitespace(s, i)])
+    decreases i + 1
+{
+    if i < 0 then -1
+    else if !isWhitespace(s[i]) then i
+    else findLastNonWhitespace(s, i - 1)
+}
+
+function splitBySpaces(s: string): seq<string>
+    ensures forall word :: word in splitBySpaces(s) ==> |word| > 0
+{
+    if |s| == 0 then []
+    else splitBySpacesHelper(s, 0, [])
+}
+
+function splitBySpacesHelper(s: string, start: int, acc: seq<string>): seq<string>
+    requires 0 <= start <= |s|
+    ensures forall word :: word in splitBySpacesHelper(s, start, acc) ==> |word| > 0
+    decreases |s| - start
+{
+    if start >= |s| then acc
+    else if isWhitespace(s[start]) then
+        splitBySpacesHelper(s, start + 1, acc)
+    else
+        var wordEnd := findNextWhitespace(s, start);
+        var word := s[start..wordEnd];
+        splitBySpacesHelper(s, wordEnd, acc + [word])
+}
+
+function findNextWhitespace(s: string, start: int): int
+    requires 0 <= start <= |s|
+    ensures start <= findNextWhitespace(s, start) <= |s|
+    ensures findNextWhitespace(s, start) == |s| || isWhitespace(s[findNextWhitespace(s, start)])
+    ensures forall i :: start <= i < findNextWhitespace(s, start) ==> !isWhitespace(s[i])
+    decreases |s| - start
+{
+    if start >= |s| then |s|
+    else if isWhitespace(s[start]) then start
+    else findNextWhitespace(s, start + 1)
+}
+```
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def is_bored(S):
+    """
+    You'll be given a string of words, and your task is to count the number
+    of boredoms. A boredom is a sentence that starts with the word "I".
+    Sentences are delimited by '.', '?' or '!'.
+   
+    For example:
+    >>> is_bored("Hello world")
+    0
+    >>> is_bored("The sky is blue. The sun is shining. I love this weather")
+    1
+    """
+    import re
+    
+    # Split the string by sentence delimiters (., ?, !)
+    sentences = re.split(r'[.?!]', S)
+    
+    boredom_count = 0
+    
+    for sentence in sentences:
+        # Strip whitespace and check if sentence is not empty
+        sentence = sentence.strip()
+        if sentence:
+            # Split into words and check if first word is "I"
+            words = sentence.split()
+            if words and words[0] == "I":
+                boredom_count += 1
+    
+    return boredom_count
+```
+
+**Current Dafny Code:**
+```dafny
+method is_bored(S: string) returns (count: int)
+    ensures count >= 0
+    ensures count == CountSentencesStartingWithI(S)
+{
+    count := 0;
+    var currentSentence := "";
+    var i := 0;
+    
+    while i <= |S|
+        invariant 0 <= i <= |S| + 1
+        invariant count >= 0
+        decreases |S| + 1 - i
+    {
+        if i == |S| || isDelimiter(S[i]) {
+            // Process current sentence
+            var trimmed := trim(currentSentence);
+            if |trimmed| > 0 {
+                var words := splitBySpaces(trimmed);
+                if |words| > 0 && words[0] == "I" {
+                    count := count + 1;
+                }
+            }
+            currentSentence := "";
+        } else {
+            currentSentence := currentSentence + [S[i]];
+        }
+        i := i + 1;
+    }
+}
+
+function CountSentencesStartingWithI(S: string): int
+    ensures CountSentencesStartingWithI(S) >= 0
+{
+    var sentences := SplitBySentenceDelimiters(S);
+    CountIStartingSentences(sentences)
+}
+
+function SplitBySentenceDelimiters(s: string): seq<string>
+{
+    if |s| == 0 then [""]
+    else SplitBySentenceDelimitersHelper(s, 0, "")
+}
+
+function SplitBySentenceDelimitersHelper(s: string, i: int, current: string): seq<string>
+    requires 0 <= i <= |s|
+    decreases |s| - i
+{
+    if i == |s| then [current]
+    else if isDelimiter(s[i]) then
+        [current] + SplitBySentenceDelimitersHelper(s, i + 1, "")
+    else
+        SplitBySentenceDelimitersHelper(s, i + 1, current + [s[i]])
+}
+
+function CountIStartingSentences(sentences: seq<string>): int
+    ensures CountIStartingSentences(sentences) >= 0
+{
+    if |sentences| == 0 then 0
+    else
+        var trimmed := trim(sentences[0]);
+        var startsWithI := if |trimmed| > 0 then
+            var words := splitBySpaces(trimmed);
+            |words| > 0 && words[0] == "I"
+        else false;
+        (if startsWithI then 1 else 0) + CountIStartingSentences(sentences[1..])
+}
+
+function isDelimiter(c: char): bool
+{
+    c == '.' || c == '?' || c == '!'
+}
+
+function isWhitespace(c: char): bool
+{
+    c == ' ' || c == '\t' || c == '\n' || c == '\r'
+}
+
+function trim(s: string): string
+    ensures |trim(s)| <= |s|
+{
+    var start := findFirstNonWhitespace(s, 0);
+    var end := findLastNonWhitespace(s, |s| - 1);
+    if start == -1 then "" else s[start..end+1]
+}
+
+function findFirstNonWhitespace(s: string, i: int): int
+    requires 0 <= i <= |s|
+    ensures -1 <= findFirstNonWhitespace(s, i) <= |s|
+    ensures findFirstNonWhitespace(s, i) == -1 ==> forall j :: i <= j < |s| ==> isWhitespace(s[j])
+    ensures findFirstNonWhitespace(s, i) != -1 ==> findFirstNonWhitespace(s, i) >= i && findFirstNonWhitespace(s, i) < |s| && !isWhitespace(s[findFirstNonWhitespace(s, i)])
+    decreases |s| - i
+{
+    if i >= |s| then -1
+    else if !isWhitespace(s[i]) then i
+    else findFirstNonWhitespace(s, i + 1)
+}
+
+function findLastNonWhitespace(s: string, i: int): int
+    requires -1 <= i < |s|
+    ensures -1 <= findLastNonWhitespace(s, i) <= i
+    ensures findLastNonWhitespace(s, i) == -1 ==> forall j :: 0 <= j <= i ==> isWhitespace(s[j])
+    ensures findLastNonWhitespace(s, i) != -1 ==> findLastNonWhitespace(s, i) >= 0 && !isWhitespace(s[findLastNonWhitespace(s, i)])
+    decreases i + 1
+{
+    if i < 0 then -1
+    else if !isWhitespace(s[i]) then i
+    else findLastNonWhitespace(s, i - 1)
+}
+
+function splitBySpaces(s: string): seq<string>
+    ensures forall word :: word in splitBySpaces(s) ==> |word| > 0
+{
+    if |s| == 0 then []
+    else splitBySpacesHelper(s, 0, [])
+}
+
+function splitBySpacesHelper(s: string, start: int, acc: seq<string>): seq<string>
+    requires 0 <= start <= |s|
+    ensures forall word :: word in splitBySpacesHelper(s, start, acc) ==> |word| > 0
+    decreases |s| - start
+{
+    if start >= |s| then acc
+    else if isWhitespace(s[start]) then
+        splitBySpacesHelper(s, start + 1, acc)
+    else
+        var wordEnd := findNextWhitespace(s, start);
+        var word := s[start..wordEnd];
+        splitBySpacesHelper(s, wordEnd, acc + [word])
+}
+
+function findNextWhitespace(s: string, start: int): int
+    requires 0 <= start <= |s|
+    ensures start <= findNextWhitespace(s, start) <= |s|
+    ensures findNextWhitespace(s, start) == |s| || isWhitespace(s[findNextWhitespace(s, start)])
+    ensures forall i :: start <= i < findNextWhitespace(s, start) ==> !isWhitespace(s[i])
+    decreases |s| - start
+{
+    if start >= |s| then |s|
+    else if isWhitespace(s[start]) then start
+    else findNextWhitespace(s, start + 1)
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+
+
+This is attempt 2 to improve the specifications. Please analyze the current version and improve it further if needed. 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the Dafny code to see if the specifications properly capture the behavior.
+
+The Python function:
+1. Takes a string S
+2. Splits the string by sentence delimiters (., ?, !)
+3. For each sentence:
+   - Strips whitespace
+   - If not empty, splits into words
+   - If first word is "I", increments boredom_count
+4. Returns the count
+
+Looking at the Dafny code:
+
+The method `is_bored` has these ensures clauses:
+- `ensures count >= 0`
+- `ensures count == CountSentencesStartingWithI(S)`
+
+The function `CountSentencesStartingWithI` is supposed to define what the correct count should be. Let me trace through this:
+
+1. `CountSentencesStartingWithI(S)` calls `SplitBySentenceDelimiters(S)` to get sentences
+2. Then calls `CountIStartingSentences(sentences)` to count how many start with "I"
+
+Looking at `SplitBySentenceDelimiters`:
+- If empty string, returns [""]
+- Otherwise calls helper function
+- The helper function splits by delimiters (., ?, !)
+
+Looking at `CountIStartingSentences`:
+- For each sentence, trims it
+- If not empty, splits by spaces and checks if first word is "I"
+
+This seems to match the Python behavior. However, let me check more carefully:
+
+1. In Python, `re.split(r'[.?!]', S)` will split the string and potentially create empty strings if there are consecutive delimiters or if the string starts/ends with delimiters.
+
+2. The Python code strips each sentence and only processes non-empty ones.
+
+3. The Python code splits by spaces (default behavior of `split()` which handles multiple consecutive spaces as single separators and strips leading/trailing spaces).
+
+Looking at the Dafny implementation:
+
+
+I'm investigating the empty string scenario in sentence splitting. Python's `re.split()` returns `['']` for an empty input, which matches the Dafny implementation's behavior of returning `[""]`. This suggests the empty string handling is consistent across both implementations. 
+
+The splitting logic appears to be carefully designed to handle edge cases like consecutive delimiters and string boundaries. I'll continue examining the implementation details to ensure full compatibility between the Python and Dafny versions.
+
+The sentence counting function seems robust, with specific handling for trimming sentences and checking for "I" as the first word. The space-splitting mechanism appears to correctly manage multiple whitespace scenarios.
+
+I'm methodically working through potential edge cases, particularly focusing on how empty and boundary conditions are processed in the sentence parsing logic.
+
+The implementation covers key scenarios: empty inputs, single sentences, multi-delimiter strings, and sentences with variable spacing. The whitespace definition comprehensively includes space, tab, newline, and carriage return characters, matching Python's standard behavior.
+
+The specifications demonstrate careful attention to detail, ensuring accurate sentence counting while maintaining flexibility across different input types.
+
+--- RESPONSE ---
+THE SCRIPT HAS PROPER SPECS
+
+```dafny
+method is_bored(S: string) returns (count: int)
+    ensures count >= 0
+    ensures count == CountSentencesStartingWithI(S)
+{
+    count := 0;
+    var currentSentence := "";
+    var i := 0;
+    
+    while i <= |S|
+        invariant 0 <= i <= |S| + 1
+        invariant count >= 0
+        decreases |S| + 1 - i
+    {
+        if i == |S| || isDelimiter(S[i]) {
+            // Process current sentence
+            var trimmed := trim(currentSentence);
+            if |trimmed| > 0 {
+                var words := splitBySpaces(trimmed);
+                if |words| > 0 && words[0] == "I" {
+                    count := count + 1;
+                }
+            }
+            currentSentence := "";
+        } else {
+            currentSentence := currentSentence + [S[i]];
+        }
+        i := i + 1;
+    }
+}
+
+function CountSentencesStartingWithI(S: string): int
+    ensures CountSentencesStartingWithI(S) >= 0
+{
+    var sentences := SplitBySentenceDelimiters(S);
+    CountIStartingSentences(sentences)
+}
+
+function SplitBySentenceDelimiters(s: string): seq<string>
+{
+    if |s| == 0 then [""]
+    else SplitBySentenceDelimitersHelper(s, 0, "")
+}
+
+function SplitBySentenceDelimitersHelper(s: string, i: int, current: string): seq<string>
+    requires 0 <= i <= |s|
+    decreases |s| - i
+{
+    if i == |s| then [current]
+    else if isDelimiter(s[i]) then
+        [current] + SplitBySentenceDelimitersHelper(s, i + 1, "")
+    else
+        SplitBySentenceDelimitersHelper(s, i + 1, current + [s[i]])
+}
+
+function CountIStartingSentences(sentences: seq<string>): int
+    ensures CountIStartingSentences(sentences) >= 0
+{
+    if |sentences| == 0 then 0
+    else
+        var trimmed := trim(sentences[0]);
+        var startsWithI := if |trimmed| > 0 then
+            var words := splitBySpaces(trimmed);
+            |words| > 0 && words[0] == "I"
+        else false;
+        (if startsWithI then 1 else 0) + CountIStartingSentences(sentences[1..])
+}
+
+function isDelimiter(c: char): bool
+{
+    c == '.' || c == '?' || c == '!'
+}
+
+function isWhitespace(c: char): bool
+{
+    c == ' ' || c == '\t' || c == '\n' || c == '\r'
+}
+
+function trim(s: string): string
+    ensures |trim(s)| <= |s|
+{
+    var start := findFirstNonWhitespace(s, 0);
+    var end := findLastNonWhitespace(s, |s| - 1);
+    if start == -1 then "" else s[start..end+1]
+}
+
+function findFirstNonWhitespace(s: string, i: int): int
+    requires 0 <= i <= |s|
+    ensures -1 <= findFirstNonWhitespace(s, i) <= |s|
+    ensures findFirstNonWhitespace(s, i) == -1 ==> forall j :: i <= j < |s| ==> isWhitespace(s[j])
+    ensures findFirstNonWhitespace(s, i) != -1 ==> findFirstNonWhitespace(s, i) >= i && findFirstNonWhitespace(s, i) < |s| && !isWhitespace(s[findFirstNonWhitespace(s, i)])
+    decreases |s| - i
+{
+    if i >= |s| then -1
+    else if !isWhitespace(s[i]) then i
+    else findFirstNonWhitespace(s, i + 1)
+}
+
+function findLastNonWhitespace(s: string, i: int): int
+    requires -1 <= i < |s|
+    ensures -1 <= findLastNonWhitespace(s, i) <= i
+    ensures findLastNonWhitespace(s, i) == -1 ==> forall j :: 0 <= j <= i ==> isWhitespace(s[j])
+    ensures findLastNonWhitespace(s, i) != -1 ==> findLastNonWhitespace(s, i) >= 0 && !isWhitespace(s[findLastNonWhitespace(s, i)])
+    decreases i + 1
+{
+    if i < 0 then -1
+    else if !isWhitespace(s[i]) then i
+    else findLastNonWhitespace(s, i - 1)
+}
+
+function splitBySpaces(s: string): seq<string>
+    ensures forall word :: word in splitBySpaces(s) ==> |word| > 0
+{
+    if |s| == 0 then []
+    else splitBySpacesHelper(s, 0, [])
+}
+
+function splitBySpacesHelper(s: string, start: int, acc: seq<string>): seq<string>
+    requires 0 <= start <= |s|
+    ensures forall word :: word in splitBySpacesHelper(s, start, acc) ==> |word| > 0
+    decreases |s| - start
+{
+    if start >= |s| then acc
+    else if isWhitespace(s[start]) then
+        splitBySpacesHelper(s, start + 1, acc)
+    else
+        var wordEnd := findNextWhitespace(s, start);
+        var word := s[start..wordEnd];
+        splitBySpacesHelper(s, wordEnd, acc + [word])
+}
+
+function findNextWhitespace(s: string, start: int): int
+    requires 0 <= start <= |s|
+    ensures start <= findNextWhitespace(s, start) <= |s|
+    ensures findNextWhitespace(s, start) == |s| || isWhitespace(s[findNextWhitespace(s, start)])
+    ensures forall i :: start <= i < findNextWhitespace(s, start) ==> !isWhitespace(s[i])
+    decreases |s| - start
+{
+    if start >= |s| then |s|
+    else if isWhitespace(s[start]) then start
+    else findNextWhitespace(s, start + 1)
+}
+```
+

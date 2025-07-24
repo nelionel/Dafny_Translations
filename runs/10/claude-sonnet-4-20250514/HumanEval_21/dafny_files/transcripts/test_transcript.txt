@@ -1,0 +1,210 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `rescale_to_unit`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate([2.0, 49.9]) == [0.0, 1.0]
+    assert candidate([100.0, 49.9]) == [1.0, 0.0]
+    assert candidate([1.0, 2.0, 3.0, 4.0, 5.0]) == [0.0, 0.25, 0.5, 0.75, 1.0]
+    assert candidate([2.0, 1.0, 5.0, 3.0, 4.0]) == [0.25, 0.0, 1.0, 0.5, 0.75]
+    assert candidate([12.0, 11.0, 15.0, 13.0, 14.0]) == [0.25, 0.0, 1.0, 0.5, 0.75]
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+function min_seq(numbers: seq<real>): real
+  requires |numbers| > 0
+  decreases numbers
+{
+  if |numbers| == 1 then 
+    numbers[0]
+  else 
+    var rest_min := min_seq(numbers[1..]);
+    if numbers[0] <= rest_min then numbers[0] else rest_min
+}
+
+function max_seq(numbers: seq<real>): real
+  requires |numbers| > 0
+  decreases numbers
+{
+  if |numbers| == 1 then 
+    numbers[0]
+  else 
+    var rest_max := max_seq(numbers[1..]);
+    if numbers[0] >= rest_max then numbers[0] else rest_max
+}
+
+lemma min_seq_property(numbers: seq<real>)
+  requires |numbers| > 0
+  ensures forall i :: 0 <= i < |numbers| ==> min_seq(numbers) <= numbers[i]
+  decreases numbers
+{
+  if |numbers| == 1 {
+    // Base case: trivially true
+  } else {
+    min_seq_property(numbers[1..]);
+  }
+}
+
+lemma max_seq_property(numbers: seq<real>)
+  requires |numbers| > 0
+  ensures forall i :: 0 <= i < |numbers| ==> numbers[i] <= max_seq(numbers)
+  decreases numbers
+{
+  if |numbers| == 1 {
+    // Base case: trivially true
+  } else {
+    max_seq_property(numbers[1..]);
+  }
+}
+
+method rescale_to_unit(numbers: seq<real>) returns (result: seq<real>)
+  requires |numbers| >= 2
+  ensures |result| == |numbers|
+  ensures forall i :: 0 <= i < |result| ==> 0.0 <= result[i] <= 1.0
+{
+  var min_val := min_seq(numbers);
+  var max_val := max_seq(numbers);
+  
+  min_seq_property(numbers);
+  max_seq_property(numbers);
+  
+  if min_val == max_val {
+    // All numbers are the same
+    result := seq(|numbers|, i => 0.0);
+  } else {
+    var range_val := max_val - min_val;
+    result := seq(|numbers|, i => (numbers[i] - min_val) / range_val);
+    
+    // The postcondition about bounds follows from:
+    // - min_val <= numbers[i] <= max_val for all i
+    // - So 0.0 <= (numbers[i] - min_val) <= range_val
+    // - So 0.0 <= (numbers[i] - min_val) / range_val <= 1.0
+  }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`rescale_to_unit`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `rescale_to_unit` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `rescale_to_unit` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the tests and solution:
+
+1. The Python tests are calling a candidate function with various real number sequences and expecting specific results.
+2. The Dafny solution shows a method `rescale_to_unit` that takes a `seq<real>` and returns a `seq<real>`.
+3. The signature is: `method rescale_to_unit(numbers: seq<real>) returns (result: seq<real>)`
+4. The method rescales the input sequence to unit range [0,1].
+
+Let me look at the Python tests:
+- `candidate([2.0, 49.9]) == [0.0, 1.0]`
+- `candidate([100.0, 49.9]) == [1.0, 0.0]`
+- `candidate([1.0, 2.0, 3.0, 4.0, 5.0]) == [0.0, 0.25, 0.5, 0.75, 1.0]`
+- `candidate([2.0, 1.0, 5.0, 3.0, 4.0]) == [0.25, 0.0, 1.0, 0.5, 0.75]`
+- `candidate([12.0, 11.0, 15.0, 13.0, 14.0]) == [0.25, 0.0, 1.0, 0.5, 0.75]`
+
+So I need to create:
+1. A dummy implementation of `rescale_to_unit` that returns an empty sequence or some default.
+2. Test methods that call `rescale_to_unit` and check the results using `expect`.
+
+For the dummy implementation, I need to match the signature. Looking at the solution, it has:
+`method rescale_to_unit(numbers: seq<real>) returns (result: seq<real>)`
+
+For the dummy, I should return an empty sequence: `[]`
+
+
+I'll transform the Python test cases into Dafny-compatible sequences, converting the lists to Dafny's sequence notation and matching the expected results.
+
+--- RESPONSE ---
+Looking at the solution, I can see the method signature and need to create tests based on the Python assertions.
+
+<dummy>
+method rescale_to_unit(numbers: seq<real>) returns (result: seq<real>)
+{
+    result := [];
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := rescale_to_unit([2.0, 49.9]);
+    expect result == [0.0, 1.0];
+}
+
+method {:test} test_1()
+{
+    var result := rescale_to_unit([100.0, 49.9]);
+    expect result == [1.0, 0.0];
+}
+
+method {:test} test_2()
+{
+    var result := rescale_to_unit([1.0, 2.0, 3.0, 4.0, 5.0]);
+    expect result == [0.0, 0.25, 0.5, 0.75, 1.0];
+}
+
+method {:test} test_3()
+{
+    var result := rescale_to_unit([2.0, 1.0, 5.0, 3.0, 4.0]);
+    expect result == [0.25, 0.0, 1.0, 0.5, 0.75];
+}
+
+method {:test} test_4()
+{
+    var result := rescale_to_unit([12.0, 11.0, 15.0, 13.0, 14.0]);
+    expect result == [0.25, 0.0, 1.0, 0.5, 0.75];
+}
+```
+

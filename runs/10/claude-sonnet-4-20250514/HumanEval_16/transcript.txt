@@ -1,0 +1,50 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def count_distinct_characters(string: str) -> int:
+    """ Given a string, find out how many distinct characters (regardless of case) does it consist of
+    >>> count_distinct_characters('xyzXYZ')
+    3
+    >>> count_distinct_characters('Jerry')
+    4
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Count distinct characters in a string regardless of case
+2. This means 'x' and 'X' should be considered the same character
+3. Return the total count of unique characters
+
+The approach is to:
+- Convert the string to lowercase (or uppercase) to handle case-insensitivity
+- Use a set to automatically handle uniqueness
+- Return the length of the set
+
+```python
+def count_distinct_characters(string: str) -> int:
+    """ Given a string, find out how many distinct characters (regardless of case) does it consist of
+    >>> count_distinct_characters('xyzXYZ')
+    3
+    >>> count_distinct_characters('Jerry')
+    4
+    """
+    # Convert to lowercase to handle case-insensitivity
+    # Use set to get unique characters, then return the count
+    return len(set(string.lower()))
+```
+
+Let me verify with the examples:
+- `count_distinct_characters('xyzXYZ')`: 
+  - Lowercase: 'xyzxyz'
+  - Set: {'x', 'y', 'z'}
+  - Length: 3 ✓
+
+- `count_distinct_characters('Jerry')`:
+  - Lowercase: 'jerry' 
+  - Set: {'j', 'e', 'r', 'y'}
+  - Length: 4 ✓

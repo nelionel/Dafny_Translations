@@ -1,0 +1,76 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def get_closest_vowel(word):
+    """You are given a word. Your task is to find the closest vowel that stands between 
+    two consonants from the right side of the word (case sensitive).
+    
+    Vowels in the beginning and ending doesn't count. Return empty string if you didn't
+    find any vowel met the above condition. 
+
+    You may assume that the given string contains English letter only.
+
+    Example:
+    get_closest_vowel("yogurt") ==> "u"
+    get_closest_vowel("FULL") ==> "U"
+    get_closest_vowel("quick") ==> ""
+    get_closest_vowel("ab") ==> ""
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find vowels that are between two consonants (not at the beginning or end)
+2. Return the closest such vowel from the right side of the word
+3. Handle case sensitivity
+4. Return empty string if no such vowel exists
+
+Let me trace through the examples:
+- "yogurt": vowels are 'o' (pos 1) and 'u' (pos 3). 'o' is between 'y' and 'g' (consonants), 'u' is between 'g' and 'r' (consonants). The rightmost is 'u'.
+- "FULL": vowel 'U' (pos 1) is between 'F' and 'L' (consonants). Return 'U'.
+- "quick": vowels are 'u' (pos 1) and 'i' (pos 2). 'u' is between 'q' and 'i', but 'i' is between 'u' and 'c'. Wait, 'i' is between vowel 'u' and consonant 'c', so it doesn't count. 'u' is between 'q' and 'i', but we need consonants on both sides. Actually, 'i' is between 'u' (vowel) and 'c' (consonant), so it doesn't qualify. 'u' is between 'q' (consonant) and 'i' (vowel), so it doesn't qualify either. Return "".
+- "ab": no vowels between consonants. Return "".
+
+```python
+def get_closest_vowel(word):
+    """You are given a word. Your task is to find the closest vowel that stands between 
+    two consonants from the right side of the word (case sensitive).
+    
+    Vowels in the beginning and ending doesn't count. Return empty string if you didn't
+    find any vowel met the above condition. 
+
+    You may assume that the given string contains English letter only.
+
+    Example:
+    get_closest_vowel("yogurt") ==> "u"
+    get_closest_vowel("FULL") ==> "U"
+    get_closest_vowel("quick") ==> ""
+    get_closest_vowel("ab") ==> ""
+    """
+    vowels = "aeiouAEIOU"
+    
+    # Need at least 3 characters to have a vowel between two consonants
+    if len(word) < 3:
+        return ""
+    
+    # Search from right to left, excluding the first and last characters
+    for i in range(len(word) - 2, 0, -1):
+        # Check if current character is a vowel
+        if word[i] in vowels:
+            # Check if it's between two consonants
+            if word[i-1] not in vowels and word[i+1] not in vowels:
+                return word[i]
+    
+    return ""
+```
+
+The algorithm:
+1. Define vowels (both lowercase and uppercase)
+2. Return empty string if word has less than 3 characters
+3. Iterate from right to left, excluding first and last positions
+4. For each position, check if it's a vowel between two consonants
+5. Return the first (rightmost) vowel found that meets the criteria
+6. Return empty string if no such vowel is found

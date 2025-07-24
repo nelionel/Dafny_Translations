@@ -1,0 +1,52 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def multiply(a, b):
+    """Complete the function that takes two integers and returns 
+    the product of their unit digits.
+    Assume the input is always valid.
+    Examples:
+    multiply(148, 412) should return 16.
+    multiply(19, 28) should return 72.
+    multiply(2020, 1851) should return 0.
+    multiply(14,-15) should return 20.
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Extract the unit digit (last digit) from each number
+2. Multiply those unit digits together
+3. Handle negative numbers correctly (the unit digit of -15 is 5, not -5)
+
+Let me trace through the examples:
+- multiply(148, 412): unit digits are 8 and 2, so 8 × 2 = 16 ✓
+- multiply(19, 28): unit digits are 9 and 8, so 9 × 8 = 72 ✓
+- multiply(2020, 1851): unit digits are 0 and 1, so 0 × 1 = 0 ✓
+- multiply(14, -15): unit digits are 4 and 5, so 4 × 5 = 20 ✓
+
+```python
+def multiply(a, b):
+    """Complete the function that takes two integers and returns 
+    the product of their unit digits.
+    Assume the input is always valid.
+    Examples:
+    multiply(148, 412) should return 16.
+    multiply(19, 28) should return 72.
+    multiply(2020, 1851) should return 0.
+    multiply(14,-15) should return 20.
+    """
+    # Get the unit digit of each number using modulo 10
+    # abs() handles negative numbers correctly
+    unit_digit_a = abs(a) % 10
+    unit_digit_b = abs(b) % 10
+    
+    # Return the product of the unit digits
+    return unit_digit_a * unit_digit_b
+```

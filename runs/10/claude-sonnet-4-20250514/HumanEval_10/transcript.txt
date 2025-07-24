@@ -1,0 +1,73 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def is_palindrome(string: str) -> bool:
+    """ Test if given string is a palindrome """
+    return string == string[::-1]
+
+
+def make_palindrome(string: str) -> str:
+    """ Find the shortest palindrome that begins with a supplied string.
+    Algorithm idea is simple:
+    - Find the longest postfix of supplied string that is a palindrome.
+    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.
+    >>> make_palindrome('')
+    ''
+    >>> make_palindrome('cat')
+    'catac'
+    >>> make_palindrome('cata')
+    'catac'
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement the `make_palindrome` function that finds the shortest palindrome beginning with the given string.
+
+The algorithm described is:
+1. Find the longest postfix (suffix) of the string that is already a palindrome
+2. Take the prefix that comes before this palindromic suffix
+3. Append the reverse of that prefix to the end of the original string
+
+Let me trace through the examples:
+- `make_palindrome('cat')`: The longest palindromic suffix is 't' (single character). The prefix before it is 'ca'. So we append reverse of 'ca' which is 'ac' → 'cat' + 'ac' = 'catac'
+- `make_palindrome('cata')`: The longest palindromic suffix is 'ata'. The prefix before it is 'c'. So we append reverse of 'c' which is 'c' → 'cata' + 'c' = 'catac'
+
+```python
+def make_palindrome(string: str) -> str:
+    """ Find the shortest palindrome that begins with a supplied string.
+    Algorithm idea is simple:
+    - Find the longest postfix of supplied string that is a palindrome.
+    - Append to the end of the string reverse of a string prefix that comes before the palindromic suffix.
+    >>> make_palindrome('')
+    ''
+    >>> make_palindrome('cat')
+    'catac'
+    >>> make_palindrome('cata')
+    'catac'
+    """
+    if not string:
+        return ''
+    
+    # Find the longest palindromic suffix
+    for i in range(len(string)):
+        suffix = string[i:]
+        if is_palindrome(suffix):
+            # Found the longest palindromic suffix
+            # The prefix is everything before this suffix
+            prefix = string[:i]
+            # Append the reverse of the prefix to the original string
+            return string + prefix[::-1]
+    
+    # This should never happen since a single character is always a palindrome
+    return string
+```
+
+The algorithm works by:
+1. Starting from the beginning of the string and checking each possible suffix
+2. When we find the first (and therefore longest) palindromic suffix, we identify the prefix that comes before it
+3. We append the reverse of that prefix to the original string to create the shortest palindrome
+
+The time complexity is O(n²) in the worst case, where n is the length of the string, since we might need to check each suffix and each suffix check takes O(n) time.

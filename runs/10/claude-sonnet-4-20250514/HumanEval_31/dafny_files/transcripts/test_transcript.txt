@@ -1,0 +1,233 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `is_prime`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate(6) == False
+    assert candidate(101) == True
+    assert candidate(11) == True
+    assert candidate(13441) == True
+    assert candidate(61) == True
+    assert candidate(4) == False
+    assert candidate(1) == False
+    assert candidate(5) == True
+    assert candidate(11) == True
+    assert candidate(17) == True
+    assert candidate(5 * 17) == False
+    assert candidate(11 * 7) == False
+    assert candidate(13441 * 19) == False
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method is_prime(n: int) returns (result: bool)
+    ensures result == (n >= 2 && forall k :: 2 <= k < n ==> n % k != 0)
+{
+    // Numbers less than 2 are not prime
+    if n < 2 {
+        return false;
+    }
+    
+    // 2 is the only even prime number
+    if n == 2 {
+        return true;
+    }
+    
+    // All other even numbers are not prime
+    if n % 2 == 0 {
+        return false;
+    }
+    
+    // Check odd divisors from 3 up to sqrt(n)
+    var i := 3;
+    while i * i <= n
+        invariant i >= 3 && i % 2 == 1
+        invariant forall k :: 3 <= k < i && k % 2 == 1 ==> n % k != 0
+        decreases n - i * i
+    {
+        if n % i == 0 {
+            return false;
+        }
+        i := i + 2;
+    }
+    
+    return true;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`is_prime`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `is_prime` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `is_prime` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Looking at the Python test code, I need to translate each `assert` statement into a Dafny test method.
+
+The tests are:
+1. `assert candidate(6) == False`
+2. `assert candidate(101) == True`
+3. `assert candidate(11) == True`
+4. `assert candidate(13441) == True`
+5. `assert candidate(61) == True`
+6. `assert candidate(4) == False`
+7. `assert candidate(1) == False`
+8. `assert candidate(5) == True`
+9. `assert candidate(11) == True` (duplicate)
+10. `assert candidate(17) == True`
+11. `assert candidate(5 * 17) == False` (which is `candidate(85) == False`)
+12. `assert candidate(11 * 7) == False` (which is `candidate(77) == False`)
+13. `assert candidate(13441 * 19) == False` (which is `candidate(255379) == False`)
+
+The Dafny method to test is `is_prime` with signature:
+```dafny
+method is_prime(n: int) returns (result: bool)
+```
+
+First, I need to create a dummy implementation:
+```dafny
+method is_prime(n: int) returns (result: bool)
+{
+    return false;
+}
+```
+
+Then I need to translate each test. In Dafny, `True` becomes `true` and `False` becomes `false`.
+
+Let me create the test methods:
+
+--- RESPONSE ---
+<dummy>
+method is_prime(n: int) returns (result: bool)
+{
+    return false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := is_prime(6);
+    expect result == false;
+}
+
+method {:test} test_1()
+{
+    var result := is_prime(101);
+    expect result == true;
+}
+
+method {:test} test_2()
+{
+    var result := is_prime(11);
+    expect result == true;
+}
+
+method {:test} test_3()
+{
+    var result := is_prime(13441);
+    expect result == true;
+}
+
+method {:test} test_4()
+{
+    var result := is_prime(61);
+    expect result == true;
+}
+
+method {:test} test_5()
+{
+    var result := is_prime(4);
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := is_prime(1);
+    expect result == false;
+}
+
+method {:test} test_7()
+{
+    var result := is_prime(5);
+    expect result == true;
+}
+
+method {:test} test_8()
+{
+    var result := is_prime(11);
+    expect result == true;
+}
+
+method {:test} test_9()
+{
+    var result := is_prime(17);
+    expect result == true;
+}
+
+method {:test} test_10()
+{
+    var result := is_prime(85);
+    expect result == false;
+}
+
+method {:test} test_11()
+{
+    var result := is_prime(77);
+    expect result == false;
+}
+
+method {:test} test_12()
+{
+    var result := is_prime(255379);
+    expect result == false;
+}
+```
+

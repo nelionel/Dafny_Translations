@@ -1,0 +1,44 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def solution(lst):
+    """Given a non-empty list of integers, return the sum of all of the odd elements that are in even positions.
+    
+
+    Examples
+    solution([5, 8, 7, 1]) ==> 12
+    solution([3, 3, 3, 3, 3]) ==> 9
+    solution([30, 13, 24, 321]) ==>0
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find elements that are in even positions (0, 2, 4, etc.)
+2. Among those elements, only consider the odd ones
+3. Return the sum of those odd elements
+
+Let me trace through the examples:
+- `[5, 8, 7, 1]`: positions 0,2 have values 5,7. Both are odd. Sum = 5+7 = 12 ✓
+- `[3, 3, 3, 3, 3]`: positions 0,2,4 have values 3,3,3. All are odd. Sum = 3+3+3 = 9 ✓  
+- `[30, 13, 24, 321]`: positions 0,2 have values 30,24. Both are even. Sum = 0 ✓
+
+```python
+def solution(lst):
+    """Given a non-empty list of integers, return the sum of all of the odd elements that are in even positions.
+    
+
+    Examples
+    solution([5, 8, 7, 1]) ==> 12
+    solution([3, 3, 3, 3, 3]) ==> 9
+    solution([30, 13, 24, 321]) ==>0
+    """
+    total = 0
+    for i in range(0, len(lst), 2):  # iterate through even positions (0, 2, 4, ...)
+        if lst[i] % 2 == 1:  # check if the element is odd
+            total += lst[i]
+    return total
+```

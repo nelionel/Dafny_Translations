@@ -1,0 +1,55 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def decimal_to_binary(decimal):
+    """You will be given a number in decimal form and your task is to convert it to
+    binary format. The function should return a string, with each character representing a binary
+    number. Each character in the string will be '0' or '1'.
+
+    There will be an extra couple of characters 'db' at the beginning and at the end of the string.
+    The extra characters are there to help with the format.
+
+    Examples:
+    decimal_to_binary(15)   # returns "db1111db"
+    decimal_to_binary(32)   # returns "db100000db"
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Convert a decimal number to its binary representation
+2. Add "db" at the beginning and end of the binary string
+3. Return the formatted string
+
+Here's the implementation:
+
+```python
+def decimal_to_binary(decimal):
+    """You will be given a number in decimal form and your task is to convert it to
+    binary format. The function should return a string, with each character representing a binary
+    number. Each character in the string will be '0' or '1'.
+
+    There will be an extra couple of characters 'db' at the beginning and at the end of the string.
+    The extra characters are there to help with the format.
+
+    Examples:
+    decimal_to_binary(15)   # returns "db1111db"
+    decimal_to_binary(32)   # returns "db100000db"
+    """
+    # Convert decimal to binary using bin() function and remove '0b' prefix
+    binary = bin(decimal)[2:]
+    
+    # Add 'db' at the beginning and end
+    return f"db{binary}db"
+```
+
+The solution works as follows:
+
+1. `bin(decimal)` converts the decimal number to binary format, but it returns a string like "0b1111" where "0b" is the binary prefix
+2. `[2:]` slices the string to remove the "0b" prefix, leaving just the binary digits
+3. `f"db{binary}db"` formats the string with "db" at the beginning and end
+
+This handles all positive integers correctly, converting them to their binary representation with the required formatting.

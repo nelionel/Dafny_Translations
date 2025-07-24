@@ -1,0 +1,60 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+test_0: PASSED
+test_1: PASSED
+test_2: PASSED
+test_3: PASSED
+test_4: PASSED
+test_5: PASSED
+test_6: PASSED
+test_7: PASSED
+test_8: PASSED
+test_9: PASSED
+
+STDERR:
+
+Testing result: 10/10 passed
+
+=== DAFNY VERIFICATION ===
+VERIFYING: runs/10/claude-sonnet-4-20250514/HumanEval_39/dafny_files/actual_dafny_files/solution.dfy
+COMMAND: dafny verify solution.dfy
+Return code: 4
+STDOUT:
+temp_verify.dfy(17,21): Error: decreases clause might not decrease
+   |
+17 |     else is_prime_odd(num, i + 2)
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^
+
+temp_verify.dfy(28,4): Error: decreases expression might not decrease
+   |
+28 |     while count < n
+   |     ^^^^^
+
+
+Dafny program verifier finished with 1 verified, 2 errors
+
+STDERR:
+
+Verification result: failed
+=== SPEC VALIDATION ===
+Spec validation attempts: 4
+Has proper specs: True
+- Attempt 1: Specs need improvement
+- Attempt 2: Specs need improvement
+- Attempt 3: Specs need improvement
+- Attempt 4: Proper specs found

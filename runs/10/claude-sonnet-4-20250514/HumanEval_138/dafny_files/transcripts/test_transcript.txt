@@ -1,0 +1,164 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `is_equal_to_sum_even`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+    assert candidate(4) == False
+    assert candidate(6) == False
+    assert candidate(8) == True
+    assert candidate(10) == True
+    assert candidate(11) == False
+    assert candidate(12) == True
+    assert candidate(13) == False
+    assert candidate(16) == True
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method is_equal_to_sum_even(n: int) returns (result: bool)
+    ensures result == (n % 2 == 0 && n >= 8)
+{
+    result := n % 2 == 0 && n >= 8;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`is_equal_to_sum_even`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `is_equal_to_sum_even` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `is_equal_to_sum_even` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python test assertions and the Dafny solution:
+
+1. The Python tests are calling `candidate(n)` with various integers and expecting boolean results.
+2. The Dafny method is `is_equal_to_sum_even(n: int) returns (result: bool)`
+3. Looking at the solution, it returns `result := n % 2 == 0 && n >= 8;`
+
+So the method checks if a number is both even (n % 2 == 0) and >= 8.
+
+Let me verify this against the test cases:
+- candidate(4) == False: 4 is even but < 8, so False ✓
+- candidate(6) == False: 6 is even but < 8, so False ✓
+- candidate(8) == True: 8 is even and >= 8, so True ✓
+- candidate(10) == True: 10 is even and >= 8, so True ✓
+- candidate(11) == False: 11 is odd, so False ✓
+- candidate(12) == True: 12 is even and >= 8, so True ✓
+- candidate(13) == False: 13 is odd, so False ✓
+- candidate(16) == True: 16 is even and >= 8, so True ✓
+
+All test cases match the logic.
+
+Now I need to:
+1. Create a dummy implementation that returns a default bool (false)
+2. Create test methods for each assertion
+
+The dummy should have the same signature as the real method:
+```dafny
+method is_equal_to_sum_even(n: int) returns (result: bool)
+{
+    result := false;
+}
+```
+
+Then I need to create 8 test methods, one for each assertion:
+
+--- RESPONSE ---
+<dummy>
+method is_equal_to_sum_even(n: int) returns (result: bool)
+{
+    result := false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := is_equal_to_sum_even(4);
+    expect result == false;
+}
+
+method {:test} test_1()
+{
+    var result := is_equal_to_sum_even(6);
+    expect result == false;
+}
+
+method {:test} test_2()
+{
+    var result := is_equal_to_sum_even(8);
+    expect result == true;
+}
+
+method {:test} test_3()
+{
+    var result := is_equal_to_sum_even(10);
+    expect result == true;
+}
+
+method {:test} test_4()
+{
+    var result := is_equal_to_sum_even(11);
+    expect result == false;
+}
+
+method {:test} test_5()
+{
+    var result := is_equal_to_sum_even(12);
+    expect result == true;
+}
+
+method {:test} test_6()
+{
+    var result := is_equal_to_sum_even(13);
+    expect result == false;
+}
+
+method {:test} test_7()
+{
+    var result := is_equal_to_sum_even(16);
+    expect result == true;
+}
+```
+

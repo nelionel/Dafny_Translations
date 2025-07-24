@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/41
+Entry Point: car_race_collision
+Stop Reason: end_turn
+Input Tokens: 208
+Output Tokens: 414

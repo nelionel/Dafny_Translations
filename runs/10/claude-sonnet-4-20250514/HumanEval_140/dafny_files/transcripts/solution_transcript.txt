@@ -1,0 +1,201 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python code to the Dafny verification language. Your task is to translate the provided Python function into a Dafny method that is both verifiable and compilable. Pay close attention to types, specifications, and providing concrete implementations for all methods.
+
+
+
+=============== USER ===============
+I will provide you with a Python function and its documentation. Please translate the Python function into a Dafny method.
+
+**Python Function and Documentation:**
+```python
+
+def fix_spaces(text):
+    """
+    Given a string text, replace all spaces in it with underscores, 
+    and if a string has more than 2 consecutive spaces, 
+    then replace all consecutive spaces with - 
+    
+    fix_spaces("Example") == "Example"
+    fix_spaces("Example 1") == "Example_1"
+    fix_spaces(" Example 2") == "_Example_2"
+    fix_spaces(" Example   3") == "_Example-3"
+    """
+
+def fix_spaces(text):
+    """
+    Given a string text, replace all spaces in it with underscores, 
+    and if a string has more than 2 consecutive spaces, 
+    then replace all consecutive spaces with - 
+    
+    fix_spaces("Example") == "Example"
+    fix_spaces("Example 1") == "Example_1"
+    fix_spaces(" Example 2") == "_Example_2"
+    fix_spaces(" Example   3") == "_Example-3"
+    """
+    if not text:
+        return text
+    
+    result = []
+    i = 0
+    
+    while i < len(text):
+        if text[i] == ' ':
+            # Count consecutive spaces
+            space_count = 0
+            j = i
+            while j < len(text) and text[j] == ' ':
+                space_count += 1
+                j += 1
+            
+            # Replace based on count
+            if space_count > 2:
+                result.append('-')
+            else:
+                result.append('_' * space_count)
+            
+            i = j
+        else:
+            result.append(text[i])
+            i += 1
+    
+    return ''.join(result)
+```
+
+**Your Task:**
+1.  **Reasoning (in a <thinking> block):**
+    *   Analyze the Python code and its types. How will you map Python types (like lists of floats) to Dafny types (like `seq<real>`)?
+    *   Analyze the function's logic. What are the pre-conditions (`requires`) and post-conditions (`ensures`)?
+    *   Identify any loops and determine their invariants.
+    *   Think about termination conditions for any recursive calls or loops.
+2.  **Dafny Implementation (in a ```dafny ... ``` block):**
+    *   Write the complete Dafny method, including its signature, `requires` clauses, `ensures` clauses, and the method body.
+    *   **The return type of the main method must be a basic Dafny type.** Use `int`, `real`, `bool`, `string`, or a sequence of these types (e.g., `seq<int>`). Do not use custom `datatype`s in the return signature. If the Python code implies an optional return (e.g. returning `None`), you should return a sensible default for the basic type instead (e.g. `false`, `-1`, or an empty sequence `[]`).
+    *   The Dafny method name must be exactly the same as the Python function name: `fix_spaces`. Do not change the casing.
+    *   **All methods must have a concrete implementation (a body).** The `{:axiom}` attribute is forbidden for defining standard functions. However, if the problem's solution relies on an unproven mathematical conjecture (e.g., the Goldbach Conjecture, P vs NP), you may state the conjecture as an `axiom`. If you do so, you **must** include a comment identifying the conjecture (e.g., `// Axiom for the Twin Prime Conjecture`). Do not use axioms to avoid implementing solvable algorithms.
+    *   **Provide explicit termination proofs.** For any recursive function, you must include a `decreases` clause. Do **not** use `decreases *`. For functions that operate on a sequence, the termination metric is almost always the length of the sequence (e.g., `decreases my_sequence`). For functions on integers, it is the integer itself (e.g., `decreases n`).
+    *   **Do not use Dafny reserved keywords as variable names.** Avoid names like: `abstract, allocated, as, assert, assume, bool, break, by, calc, case, char, class, codatatype, const, constructor, datatype, decreases, else, ensures, exists, export, extends, false, forall, fresh, function, ghost, if, imap, import, in, include, int, invariant, is, iset, iterator, label, lemma, map, match, method, modifies, modify, module, multiset, nameonly, nat, new, newtype, null, object, object?, old, opened, ORDINAL, predicate, print, provides,reads, real, refines, requires, return, returns, reveal, reveals, seq, set, static, string, then, this, trait, true, twostate, type, unchanged, var, while, witness, yield, yields`. For example, instead of `var array`, use `var arr`.
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function:
+
+1. The function takes a string `text` as input.
+2. It iterates through the string and processes spaces:
+   - If there are 1-2 consecutive spaces, replace them with underscores (one underscore per space)
+   - If there are more than 2 consecutive spaces, replace all consecutive spaces with a single dash '-'
+   - Non-space characters are kept as-is
+
+The logic:
+- Handle empty string case
+- Use a result list to build the output
+- Iterate through characters:
+  - If current character is a space, count consecutive spaces
+  - Based on count, append either underscores or a single dash
+  - If not a space, append the character as-is
+- Join the result and return
+
+For Dafny:
+- Input type: `string` 
+- Return type: `string`
+- Need to handle string indexing and character operations
+- Need loop invariants for the main loop
+- Need termination proof (decreases clause)
+
+Let me think about the specifications:
+- Preconditions: None really needed, works for any string
+- Postconditions: The result should have the correct length relationship and transformations
+
+For the loop:
+- We need to track position `i` in the input string
+- We need to build a result string
+- Loop invariant: `i` is within bounds, result contains processed characters up to position `i`
+- Termination: `decreases |text| - i`
+
+Let me write the Dafny code:
+
+--- RESPONSE ---
+<thinking>
+Let me analyze the Python function:
+
+1. **Function analysis**: The function takes a string and processes spaces:
+   - 1-2 consecutive spaces → replace with underscores (1 underscore per space)
+   - More than 2 consecutive spaces → replace with a single dash '-'
+   - Non-space characters remain unchanged
+
+2. **Type mapping**: 
+   - Python `str` → Dafny `string`
+   - Return type is `string`
+
+3. **Algorithm logic**:
+   - Handle empty string case
+   - Iterate through characters with index `i`
+   - When encountering spaces, count consecutive spaces starting from `i`
+   - Replace based on count, then advance `i` past all processed spaces
+   - For non-spaces, just append and increment `i`
+
+4. **Specifications**:
+   - No meaningful preconditions needed
+   - Postcondition could verify the transformation rules
+   - Loop invariant: `i` is within valid range, result built correctly up to `i`
+   - Termination: `decreases |text| - i` since `i` always increases
+
+5. **Implementation details**:
+   - Need helper to count consecutive spaces
+   - Build result string incrementally
+   - Handle string concatenation in Dafny
+</thinking>
+
+```dafny
+method fix_spaces(text: string) returns (result: string)
+    ensures |result| >= 0
+{
+    if |text| == 0 {
+        return text;
+    }
+    
+    result := "";
+    var i := 0;
+    
+    while i < |text|
+        invariant 0 <= i <= |text|
+        decreases |text| - i
+    {
+        if text[i] == ' ' {
+            // Count consecutive spaces
+            var space_count := 0;
+            var j := i;
+            
+            while j < |text| && text[j] == ' '
+                invariant i <= j <= |text|
+                invariant space_count == j - i
+                decreases |text| - j
+            {
+                space_count := space_count + 1;
+                j := j + 1;
+            }
+            
+            // Replace based on count
+            if space_count > 2 {
+                result := result + "-";
+            } else {
+                var k := 0;
+                while k < space_count
+                    invariant 0 <= k <= space_count
+                    decreases space_count - k
+                {
+                    result := result + "_";
+                    k := k + 1;
+                }
+            }
+            
+            i := j;
+        } else {
+            result := result + [text[i]];
+            i := i + 1;
+        }
+    }
+}
+```
+

@@ -1,0 +1,59 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List, Tuple
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """ From a given list of integers, generate a list of rolling maximum element found until given moment
+    in the sequence.
+    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+    [1, 2, 3, 3, 3, 4, 4]
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to implement a rolling maximum that tracks the maximum value seen so far at each position in the list.
+
+Here's the implementation:
+
+```python
+from typing import List, Tuple
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """ From a given list of integers, generate a list of rolling maximum element found until given moment
+    in the sequence.
+    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+    [1, 2, 3, 3, 3, 4, 4]
+    """
+    if not numbers:
+        return []
+    
+    result = []
+    current_max = numbers[0]
+    
+    for num in numbers:
+        current_max = max(current_max, num)
+        result.append(current_max)
+    
+    return result
+```
+
+The function works by:
+1. Handling the edge case of an empty list
+2. Initializing the result list and setting the current maximum to the first element
+3. Iterating through each number in the input list
+4. For each number, updating the current maximum if the current number is larger
+5. Appending the current maximum to the result list
+6. Returning the complete list of rolling maximums
+
+For the example `[1, 2, 3, 2, 3, 4, 2]`:
+- Position 0: max so far is 1 → [1]
+- Position 1: max so far is 2 → [1, 2]
+- Position 2: max so far is 3 → [1, 2, 3]
+- Position 3: max so far is still 3 → [1, 2, 3, 3]
+- Position 4: max so far is still 3 → [1, 2, 3, 3, 3]
+- Position 5: max so far is 4 → [1, 2, 3, 3, 3, 4]
+- Position 6: max so far is still 4 → [1, 2, 3, 3, 3, 4, 4]

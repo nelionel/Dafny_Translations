@@ -1,0 +1,70 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def specialFilter(nums):
+    """Write a function that takes an array of numbers as input and returns 
+    the number of elements in the array that are greater than 10 and both 
+    first and last digits of a number are odd (1, 3, 5, 7, 9).
+    For example:
+    specialFilter([15, -73, 14, -15]) => 1 
+    specialFilter([33, -2, -3, 45, 21, 109]) => 2
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Filter numbers that are greater than 10
+2. Check if both the first and last digits are odd (1, 3, 5, 7, 9)
+3. Count how many numbers meet both criteria
+
+Let me break down the approach:
+- For each number > 10, convert it to a string to easily access first and last digits
+- Check if both first and last digits are in the set {1, 3, 5, 7, 9}
+- Count the numbers that satisfy both conditions
+
+```python
+def specialFilter(nums):
+    """Write a function that takes an array of numbers as input and returns 
+    the number of elements in the array that are greater than 10 and both 
+    first and last digits of a number are odd (1, 3, 5, 7, 9).
+    For example:
+    specialFilter([15, -73, 14, -15]) => 1 
+    specialFilter([33, -2, -3, 45, 21, 109]) => 2
+    """
+    count = 0
+    odd_digits = {'1', '3', '5', '7', '9'}
+    
+    for num in nums:
+        if num > 10:
+            # Convert to string to access first and last digits
+            num_str = str(num)
+            first_digit = num_str[0]
+            last_digit = num_str[-1]
+            
+            # Check if both first and last digits are odd
+            if first_digit in odd_digits and last_digit in odd_digits:
+                count += 1
+    
+    return count
+```
+
+The solution works as follows:
+
+1. Initialize a counter and define the set of odd digits
+2. Iterate through each number in the input array
+3. For numbers greater than 10:
+   - Convert the number to a string to easily access digits
+   - Get the first digit (`num_str[0]`) and last digit (`num_str[-1]`)
+   - Check if both digits are in the odd digits set
+   - If both conditions are met, increment the counter
+4. Return the final count
+
+For the examples:
+- `[15, -73, 14, -15]` → only 15 qualifies (>10, first=1, last=5, both odd) → returns 1
+- `[33, -2, -3, 45, 21, 109]` → 33 (first=3, last=3) and 21 (first=2, last=1) qualify, but 21 doesn't since first digit 2 is even, only 33 qualifies. Wait, let me recheck: 33 (✓), 45 (first=4 even, ✗), 21 (first=2 even, ✗), 109 (first=1, last=9, ✓) → returns 2

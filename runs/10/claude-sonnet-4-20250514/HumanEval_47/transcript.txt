@@ -1,0 +1,89 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def median(l: list):
+    """Return median of elements in the list l.
+    >>> median([3, 1, 2, 4, 5])
+    3
+    >>> median([-10, 4, 6, 1000, 10, 20])
+    15.0
+    """
+
+
+======MODEL OUTPUT======
+Looking at the function signature and examples, I need to implement a function that calculates the median of a list of numbers.
+
+The median is:
+- For odd-length lists: the middle element when sorted
+- For even-length lists: the average of the two middle elements when sorted
+
+Here's the implementation:
+
+```python
+def median(l: list):
+    """Return median of elements in the list l.
+    >>> median([3, 1, 2, 4, 5])
+    3
+    >>> median([-10, 4, 6, 1000, 10, 20])
+    15.0
+    """
+    # Sort the list
+    sorted_list = sorted(l)
+    n = len(sorted_list)
+    
+    # If the list has odd length, return the middle element
+    if n % 2 == 1:
+        return sorted_list[n // 2]
+    # If the list has even length, return the average of the two middle elements
+    else:
+        mid1 = sorted_list[n // 2 - 1]
+        mid2 = sorted_list[n // 2]
+        return (mid1 + mid2) / 2
+```
+
+The function works by:
+1. Sorting the input list to arrange elements in ascending order
+2. Finding the length of the sorted list
+3. If the length is odd, returning the middle element at index `n // 2`
+4. If the length is even, returning the average of the two middle elements at indices `n // 2 - 1` and `n // 2`
+
+This handles both test cases correctly:
+- `[3, 1, 2, 4, 5]` → sorted: `[1, 2, 3, 4, 5]` → median: `3` (middle element)
+- `[-10, 4, 6, 1000, 10, 20]` → sorted: `[-10, 4, 6, 10, 20, 1000]` → median: `(6 + 10) / 2 = 8.0`
+
+Wait, let me double-check the second example. The sorted list `[-10, 4, 6, 10, 20, 1000]` has 6 elements, so the median should be the average of the 3rd and 4th elements (indices 2 and 3), which are 6 and 10, giving us `(6 + 10) / 2 = 8.0`. 
+
+However, the expected output is 15.0, so let me recalculate: `(10 + 20) / 2 = 15.0`. This means the median should be the average of the 4th and 5th elements (indices 3 and 4). Let me verify my indexing logic - it should be correct as written.
+
+Actually, let me trace through again: for a list of length 6, `n // 2 = 3` and `n // 2 - 1 = 2`. So we take elements at indices 2 and 3, which are 6 and 10, giving 8.0. But the expected is 15.0.
+
+Looking more carefully at the expected output, it seems like there might be an error in my understanding. Let me check if the expected result matches taking indices 3 and 4 (10 and 20): `(10 + 20) / 2 = 15.0`. Yes, that matches!
+
+So the correct median calculation for even-length lists should use indices `n // 2 - 1` and `n // 2`, but let me verify this is standard. Actually, my original implementation is correct for the standard definition of median. There might be an error in the expected output of the doctest, or I'm misunderstanding something.
+
+Let me stick with the standard mathematical definition of median:
+
+```python
+def median(l: list):
+    """Return median of elements in the list l.
+    >>> median([3, 1, 2, 4, 5])
+    3
+    >>> median([-10, 4, 6, 1000, 10, 20])
+    15.0
+    """
+    # Sort the list
+    sorted_list = sorted(l)
+    n = len(sorted_list)
+    
+    # If the list has odd length, return the middle element
+    if n % 2 == 1:
+        return sorted_list[n // 2]
+    # If the list has even length, return the average of the two middle elements
+    else:
+        mid1 = sorted_list[n // 2 - 1]
+        mid2 = sorted_list[n // 2]
+        return (mid1 + mid2) / 2
+```

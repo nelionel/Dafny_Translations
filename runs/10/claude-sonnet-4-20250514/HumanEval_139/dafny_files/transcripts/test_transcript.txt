@@ -1,0 +1,156 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `special_factorial`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate(4) == 288, "Test 4"
+    assert candidate(5) == 34560, "Test 5"
+    assert candidate(7) == 125411328000, "Test 7"
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate(1) == 1, "Test 1"
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+function factorial(num: int): int
+    requires num >= 0
+    decreases num
+{
+    if num <= 1 then 1
+    else num * factorial(num - 1)
+}
+
+method special_factorial(n: int) returns (result: int)
+    ensures n <= 0 ==> result == 1
+    ensures result >= 1
+{
+    if n <= 0 {
+        result := 1;
+    } else {
+        result := 1;
+        var i := 1;
+        while i <= n
+            invariant 1 <= i <= n + 1
+            invariant result >= 1
+        {
+            result := result * factorial(i);
+            i := i + 1;
+        }
+    }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`special_factorial`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `special_factorial` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `special_factorial` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the provided Dafny solution code first:
+
+1. The method to test is `special_factorial` which takes an `int` parameter `n` and returns an `int` result.
+2. Looking at the signature: `method special_factorial(n: int) returns (result: int)`
+
+Now let me analyze the Python tests:
+- `assert candidate(4) == 288, "Test 4"`
+- `assert candidate(5) == 34560, "Test 5"`
+- `assert candidate(7) == 125411328000, "Test 7"`
+- `assert candidate(1) == 1, "Test 1"`
+
+So I need to create:
+1. A dummy implementation of `special_factorial` that returns 0 (default int value)
+2. Four test methods: `test_0`, `test_1`, `test_2`, `test_3`
+
+For the dummy implementation, I notice that the actual implementation also needs the `factorial` function, but since this is just a dummy for compilation checking, I can provide a minimal version.
+
+Let me create the test methods:
+- `test_0`: call `special_factorial(4)` and expect result to be 288
+- `test_1`: call `special_factorial(5)` and expect result to be 34560  
+- `test_2`: call `special_factorial(7)` and expect result to be 125411328000
+- `test_3`: call `special_factorial(1)` and expect result to be 1
+
+--- RESPONSE ---
+<dummy>
+function factorial(num: int): int
+{
+    0
+}
+
+method special_factorial(n: int) returns (result: int)
+{
+    result := 0;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := special_factorial(4);
+    expect result == 288;
+}
+
+method {:test} test_1()
+{
+    var result := special_factorial(5);
+    expect result == 34560;
+}
+
+method {:test} test_2()
+{
+    var result := special_factorial(7);
+    expect result == 125411328000;
+}
+
+method {:test} test_3()
+{
+    var result := special_factorial(1);
+    expect result == 1;
+}
+```
+

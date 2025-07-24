@@ -1,0 +1,61 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def remove_vowels(text):
+    """
+    remove_vowels is a function that takes string and returns string without vowels.
+    >>> remove_vowels('')
+    ''
+    >>> remove_vowels("abcdef\nghijklm")
+    'bcdf\nghjklm'
+    >>> remove_vowels('abcdef')
+    'bcdf'
+    >>> remove_vowels('aaaaa')
+    ''
+    >>> remove_vowels('aaBAA')
+    'B'
+    >>> remove_vowels('zbcd')
+    'zbcd'
+    """
+
+
+======MODEL OUTPUT======
+Looking at the function requirements and examples, I need to create a function that removes all vowels (both lowercase and uppercase) from a given string while preserving other characters including whitespace and newlines.
+
+```python
+def remove_vowels(text):
+    """
+    remove_vowels is a function that takes string and returns string without vowels.
+    >>> remove_vowels('')
+    ''
+    >>> remove_vowels("abcdef\nghijklm")
+    'bcdf\nghjklm'
+    >>> remove_vowels('abcdef')
+    'bcdf'
+    >>> remove_vowels('aaaaa')
+    ''
+    >>> remove_vowels('aaBAA')
+    'B'
+    >>> remove_vowels('zbcd')
+    'zbcd'
+    """
+    vowels = "aeiouAEIOU"
+    result = ""
+    
+    for char in text:
+        if char not in vowels:
+            result += char
+    
+    return result
+```
+
+The function works by:
+1. Defining a string containing all vowels (both lowercase and uppercase)
+2. Iterating through each character in the input text
+3. Only adding characters to the result string if they are not vowels
+4. Returning the final string with all vowels removed
+
+This preserves all non-vowel characters including consonants, numbers, punctuation, whitespace, and newlines.

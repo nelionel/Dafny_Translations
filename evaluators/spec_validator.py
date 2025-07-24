@@ -23,7 +23,7 @@ class SpecValidator:
         self.provider = provider
         self.model = model
         self.config = config
-        self.max_attempts = 3
+        self.max_attempts = config.max_retries
         self.compiler = DafnyCompiler(config.dafny_path, config.compilation_timeout)
         
     def load_prompt_from_file(self, filename: str) -> Dict[str, str]:
@@ -44,6 +44,14 @@ class SpecValidator:
         problem_dir = work_dir.parent.parent
         main_dafny_dir = problem_dir / "dafny_files"
         actual_dafny_files_dir = main_dafny_dir / "actual_dafny_files"
+        
+        # Backup original solution.dfy as old_spec_solution.dfy once at the start
+        original_solution_path = actual_dafny_files_dir / "solution.dfy"
+        old_spec_solution_path = actual_dafny_files_dir / "old_spec_solution.dfy"
+        
+        if original_solution_path.exists() and not old_spec_solution_path.exists():
+            import shutil
+            shutil.copy2(original_solution_path, old_spec_solution_path)
         
         # Load prompt template once
         prompt_template = self.load_prompt_from_file("spec_validation.yaml")
@@ -67,20 +75,15 @@ class SpecValidator:
             if analysis_result['has_proper_specs']:
                 # Save improved code if it's different from original
                 improved_code = analysis_result['dafny_code']
+                
                 if improved_code != dafny_code:
-                    # Save to evaluations directory
-                    new_spec_path = work_dir / "solution_new_spec.dfy"
+                    # Save to evaluations directory for debugging
+                    new_spec_path = work_dir / "solution_improved.dfy"
                     with open(new_spec_path, 'w') as f:
                         f.write(improved_code)
                     
-                    # Also save to main dafny_files directory for easier access
-                    main_spec_path = main_dafny_dir / "solution_new_spec.dfy"
-                    with open(main_spec_path, 'w') as f:
-                        f.write(improved_code)
-                    
-                    # Also save to actual_dafny_files directory for easy comparison with original
-                    actual_spec_path = actual_dafny_files_dir / "solution_new_spec.dfy"
-                    with open(actual_spec_path, 'w') as f:
+                    # Replace the original solution.dfy with improved version
+                    with open(original_solution_path, 'w') as f:
                         f.write(improved_code)
                 
                 # Write detailed conversation transcript
@@ -124,19 +127,13 @@ class SpecValidator:
         
         # Save the best attempt if it's different from original
         if current_code != dafny_code:
-            # Save to evaluations directory
-            new_spec_path = work_dir / "solution_new_spec.dfy"
-            with open(new_spec_path, 'w') as f:
+            # Save to evaluations directory for debugging
+            best_attempt_path = work_dir / "solution_best_attempt.dfy"
+            with open(best_attempt_path, 'w') as f:
                 f.write(current_code)
             
-            # Also save to main dafny_files directory for easier access
-            main_spec_path = main_dafny_dir / "solution_new_spec.dfy"
-            with open(main_spec_path, 'w') as f:
-                f.write(current_code)
-            
-            # Also save to actual_dafny_files directory for easy comparison with original
-            actual_spec_path = actual_dafny_files_dir / "solution_new_spec.dfy"
-            with open(actual_spec_path, 'w') as f:
+            # Replace the original solution.dfy with best attempt
+            with open(original_solution_path, 'w') as f:
                 f.write(current_code)
         
         return SpecValidationResult(
@@ -211,43 +208,15 @@ class SpecValidator:
         # Write to evaluations directory
         transcript_path = work_dir / "spec_validation_transcript.txt"
         with open(transcript_path, 'w') as f:
-            # Write header information
-            f.write(f"=== DAFNY SPECIFICATION VALIDATION ===\n")
-            f.write(f"Started at: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
-            f.write(f"Maximum attempts: {self.max_attempts}\n")
-            f.write(f"Attempts made: {attempts}\n")
-            f.write(f"Success: {'✓' if success else '❌'}\n\n")
-            
-            f.write("=== ORIGINAL CONTEXT ===\n")
-            f.write("Python Code:\n")
-            f.write(python_code)
-            f.write("\n\nOriginal Dafny Code:\n")
-            f.write(dafny_code)
-            f.write("\n\n")
-            
-            # Write the detailed conversation
-            f.write("=== CONVERSATION TRANSCRIPT ===\n")
+            # Write the conversation using the same format as solution and test transcripts
             f.write(format_conversation_for_transcript(conversation_history))
-            
-            # Write final result
-            f.write("\n=== FINAL RESULT ===\n")
-            if success:
-                f.write("✓ Proper specifications achieved!\n")
-                if final_code != dafny_code:
-                    f.write("✓ Specifications were improved.\n")
-                else:
-                    f.write("✓ Original specifications were already proper.\n")
-            else:
-                f.write(f"❌ Failed to achieve proper specifications after {self.max_attempts} attempts\n")
-                if final_code != dafny_code:
-                    f.write("→ Best attempt code was saved for review.\n")
-            
-            f.write(f"Completed at: {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
         
-        # Copy to main directory for easier access
+        # Copy to transcripts directory for consistency with other transcripts
         if main_dafny_dir.exists():
             import shutil
-            main_transcript_path = main_dafny_dir / "spec_validation_transcript.txt"
+            transcripts_dir = main_dafny_dir / "transcripts"
+            transcripts_dir.mkdir(exist_ok=True)  # Ensure transcripts directory exists
+            main_transcript_path = transcripts_dir / "spec_validation_transcript.txt"
             shutil.copy2(transcript_path, main_transcript_path)
     
     def _parse_response(self, response_text: str) -> dict:

@@ -1,0 +1,65 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List, Optional
+
+
+def longest(strings: List[str]) -> Optional[str]:
+    """ Out of list of strings, return the longest one. Return the first one in case of multiple
+    strings of the same length. Return None in case the input list is empty.
+    >>> longest([])
+
+    >>> longest(['a', 'b', 'c'])
+    'a'
+    >>> longest(['a', 'bb', 'ccc'])
+    'ccc'
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to:
+
+1. Return `None` if the input list is empty
+2. Find the longest string in the list
+3. If there are multiple strings of the same maximum length, return the first one
+
+Here's the implementation:
+
+```python
+from typing import List, Optional
+
+
+def longest(strings: List[str]) -> Optional[str]:
+    """ Out of list of strings, return the longest one. Return the first one in case of multiple
+    strings of the same length. Return None in case the input list is empty.
+    >>> longest([])
+
+    >>> longest(['a', 'b', 'c'])
+    'a'
+    >>> longest(['a', 'bb', 'ccc'])
+    'ccc'
+    """
+    if not strings:
+        return None
+    
+    longest_string = strings[0]
+    max_length = len(strings[0])
+    
+    for string in strings[1:]:
+        if len(string) > max_length:
+            max_length = len(string)
+            longest_string = string
+    
+    return longest_string
+```
+
+The implementation works as follows:
+
+1. First, I check if the input list is empty and return `None` if it is
+2. I initialize `longest_string` with the first string and `max_length` with its length
+3. I iterate through the remaining strings starting from index 1
+4. For each string, if its length is greater than the current `max_length`, I update both `max_length` and `longest_string`
+5. Finally, I return the longest string found
+
+This ensures that in case of ties (multiple strings with the same maximum length), the first one encountered is returned.

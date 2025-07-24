@@ -1,0 +1,40 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def get_positive(l: list):
+    """Return only positive numbers in the list.
+    >>> get_positive([-1, 2, -4, 5, 6])
+    [2, 5, 6]
+    >>> get_positive([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])
+    [5, 3, 2, 3, 9, 123, 1]
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at the function signature and the examples, I need to implement a function that filters out only the positive numbers from a list (excluding zero and negative numbers).
+
+```python
+def get_positive(l: list):
+    """Return only positive numbers in the list.
+    >>> get_positive([-1, 2, -4, 5, 6])
+    [2, 5, 6]
+    >>> get_positive([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])
+    [5, 3, 2, 3, 9, 123, 1]
+    """
+    return [num for num in l if num > 0]
+```
+
+This implementation:
+1. Uses a list comprehension to iterate through all elements in the input list `l`
+2. Filters elements using the condition `num > 0` to keep only positive numbers
+3. Returns a new list containing only the positive numbers in their original order
+
+The function correctly handles the test cases:
+- `[-1, 2, -4, 5, 6]` returns `[2, 5, 6]` (excludes negative numbers)
+- `[5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]` returns `[5, 3, 2, 3, 9, 123, 1]` (excludes negative numbers and zero)

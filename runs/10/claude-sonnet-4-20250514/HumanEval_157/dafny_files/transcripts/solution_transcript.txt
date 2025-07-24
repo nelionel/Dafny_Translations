@@ -1,0 +1,187 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python code to the Dafny verification language. Your task is to translate the provided Python function into a Dafny method that is both verifiable and compilable. Pay close attention to types, specifications, and providing concrete implementations for all methods.
+
+
+
+=============== USER ===============
+I will provide you with a Python function and its documentation. Please translate the Python function into a Dafny method.
+
+**Python Function and Documentation:**
+```python
+
+def right_angle_triangle(a, b, c):
+    '''
+    Given the lengths of the three sides of a triangle. Return True if the three
+    sides form a right-angled triangle, False otherwise.
+    A right-angled triangle is a triangle in which one angle is right angle or 
+    90 degree.
+    Example:
+    right_angle_triangle(3, 4, 5) == True
+    right_angle_triangle(1, 2, 3) == False
+    '''
+
+def right_angle_triangle(a, b, c):
+    '''
+    Given the lengths of the three sides of a triangle. Return True if the three
+    sides form a right-angled triangle, False otherwise.
+    A right-angled triangle is a triangle in which one angle is right angle or 
+    90 degree.
+    Example:
+    right_angle_triangle(3, 4, 5) == True
+    right_angle_triangle(1, 2, 3) == False
+    '''
+    # First check if the sides can form a valid triangle
+    # Triangle inequality: sum of any two sides must be greater than the third side
+    if a + b <= c or a + c <= b or b + c <= a:
+        return False
+    
+    # Check if any side is non-positive
+    if a <= 0 or b <= 0 or c <= 0:
+        return False
+    
+    # Sort the sides to identify the longest side (hypotenuse)
+    sides = sorted([a, b, c])
+    
+    # Apply Pythagorean theorem: a² + b² = c²
+    # Where c is the longest side (hypotenuse)
+    return sides[0]**2 + sides[1]**2 == sides[2]**2
+```
+
+**Your Task:**
+1.  **Reasoning (in a <thinking> block):**
+    *   Analyze the Python code and its types. How will you map Python types (like lists of floats) to Dafny types (like `seq<real>`)?
+    *   Analyze the function's logic. What are the pre-conditions (`requires`) and post-conditions (`ensures`)?
+    *   Identify any loops and determine their invariants.
+    *   Think about termination conditions for any recursive calls or loops.
+2.  **Dafny Implementation (in a ```dafny ... ``` block):**
+    *   Write the complete Dafny method, including its signature, `requires` clauses, `ensures` clauses, and the method body.
+    *   **The return type of the main method must be a basic Dafny type.** Use `int`, `real`, `bool`, `string`, or a sequence of these types (e.g., `seq<int>`). Do not use custom `datatype`s in the return signature. If the Python code implies an optional return (e.g. returning `None`), you should return a sensible default for the basic type instead (e.g. `false`, `-1`, or an empty sequence `[]`).
+    *   The Dafny method name must be exactly the same as the Python function name: `right_angle_triangle`. Do not change the casing.
+    *   **All methods must have a concrete implementation (a body).** The `{:axiom}` attribute is forbidden for defining standard functions. However, if the problem's solution relies on an unproven mathematical conjecture (e.g., the Goldbach Conjecture, P vs NP), you may state the conjecture as an `axiom`. If you do so, you **must** include a comment identifying the conjecture (e.g., `// Axiom for the Twin Prime Conjecture`). Do not use axioms to avoid implementing solvable algorithms.
+    *   **Provide explicit termination proofs.** For any recursive function, you must include a `decreases` clause. Do **not** use `decreases *`. For functions that operate on a sequence, the termination metric is almost always the length of the sequence (e.g., `decreases my_sequence`). For functions on integers, it is the integer itself (e.g., `decreases n`).
+    *   **Do not use Dafny reserved keywords as variable names.** Avoid names like: `abstract, allocated, as, assert, assume, bool, break, by, calc, case, char, class, codatatype, const, constructor, datatype, decreases, else, ensures, exists, export, extends, false, forall, fresh, function, ghost, if, imap, import, in, include, int, invariant, is, iset, iterator, label, lemma, map, match, method, modifies, modify, module, multiset, nameonly, nat, new, newtype, null, object, object?, old, opened, ORDINAL, predicate, print, provides,reads, real, refines, requires, return, returns, reveal, reveals, seq, set, static, string, then, this, trait, true, twostate, type, unchanged, var, while, witness, yield, yields`. For example, instead of `var array`, use `var arr`.
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function to understand what it does:
+
+1. It checks if three side lengths can form a right-angled triangle
+2. First it validates if they can form a valid triangle (triangle inequality)
+3. Then it checks if any side is non-positive
+4. Finally it sorts the sides and applies the Pythagorean theorem
+
+For Dafny translation:
+- Parameters will be `real` type since they represent side lengths
+- Return type will be `bool`
+- I need to implement sorting logic since Dafny doesn't have a built-in sort for arrays
+- I need to handle the mathematical operations (squaring, comparison)
+
+Pre-conditions:
+- None explicitly required, but the function handles invalid inputs internally
+
+Post-conditions:
+- The result should be true if and only if the sides form a right triangle
+- This means they satisfy triangle inequality, are all positive, and satisfy Pythagorean theorem
+
+Let me think about the implementation:
+1. Check triangle inequality
+2. Check positivity
+3. Sort the three values
+4. Check Pythagorean theorem
+
+For sorting three values, I can do it manually with comparisons rather than implementing a full sort algorithm.
+
+--- RESPONSE ---
+<thinking>
+Let me analyze the Python function:
+
+1. **Function Purpose**: Determines if three side lengths form a right-angled triangle
+2. **Input**: Three numeric values (a, b, c) representing side lengths
+3. **Logic**: 
+   - Validates triangle inequality (sum of any two sides > third side)
+   - Checks for positive side lengths
+   - Sorts sides to identify the longest (potential hypotenuse)
+   - Applies Pythagorean theorem (a² + b² = c²)
+
+**Type Mapping**:
+- Python numeric values → Dafny `real` type
+- Python boolean → Dafny `bool`
+
+**Key Considerations**:
+- Need to implement sorting logic for three values (no built-in sort in Dafny)
+- Handle the mathematical operations (squaring, comparisons)
+- The function handles invalid inputs internally, so no strict preconditions needed
+
+**Specifications**:
+- No strict preconditions required
+- Post-condition: result is true iff the sides form a valid right triangle
+
+**Implementation Strategy**:
+1. Check triangle inequality conditions
+2. Check for positive side lengths  
+3. Manually sort the three sides using comparisons
+4. Apply Pythagorean theorem check
+</thinking>
+
+```dafny
+method right_angle_triangle(a: real, b: real, c: real) returns (result: bool)
+    ensures result <==> (
+        // Valid triangle conditions
+        a > 0.0 && b > 0.0 && c > 0.0 &&
+        a + b > c && a + c > b && b + c > a &&
+        // Pythagorean theorem for some ordering of the sides
+        (a * a + b * b == c * c || a * a + c * c == b * b || b * b + c * c == a * a)
+    )
+{
+    // First check if the sides can form a valid triangle
+    // Triangle inequality: sum of any two sides must be greater than the third side
+    if a + b <= c || a + c <= b || b + c <= a {
+        return false;
+    }
+    
+    // Check if any side is non-positive
+    if a <= 0.0 || b <= 0.0 || c <= 0.0 {
+        return false;
+    }
+    
+    // Sort the sides to identify the longest side (hypotenuse)
+    // Manual sorting of three values
+    var side1, side2, side3: real;
+    
+    if a >= b && a >= c {
+        side3 := a; // a is largest
+        if b >= c {
+            side1 := c;
+            side2 := b;
+        } else {
+            side1 := b;
+            side2 := c;
+        }
+    } else if b >= a && b >= c {
+        side3 := b; // b is largest
+        if a >= c {
+            side1 := c;
+            side2 := a;
+        } else {
+            side1 := a;
+            side2 := c;
+        }
+    } else {
+        side3 := c; // c is largest
+        if a >= b {
+            side1 := b;
+            side2 := a;
+        } else {
+            side1 := a;
+            side2 := b;
+        }
+    }
+    
+    // Apply Pythagorean theorem: side1² + side2² = side3²
+    // Where side3 is the longest side (hypotenuse)
+    return side1 * side1 + side2 * side2 == side3 * side3;
+}
+```
+

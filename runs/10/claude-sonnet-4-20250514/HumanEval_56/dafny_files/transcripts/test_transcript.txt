@@ -1,0 +1,224 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `correct_bracketing`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate("<>")
+    assert candidate("<<><>>")
+    assert candidate("<><><<><>><>")
+    assert candidate("<><><<<><><>><>><<><><<>>>")
+    assert not candidate("<<<><>>>>")
+    assert not candidate("><<>")
+    assert not candidate("<")
+    assert not candidate("<<<<")
+    assert not candidate(">")
+    assert not candidate("<<>")
+    assert not candidate("<><><<><>><>><<>")
+    assert not candidate("<><><<><>><>>><>")
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method correct_bracketing(brackets: string) returns (result: bool)
+    ensures result == (forall i :: 0 <= i <= |brackets| ==> 
+        |set j | 0 <= j < i && brackets[j] == '<'| >= |set j | 0 <= j < i && brackets[j] == '>'|) &&
+        |set j | 0 <= j < |brackets| && brackets[j] == '<'| == |set j | 0 <= j < |brackets| && brackets[j] == '>'|
+{
+    var counter := 0;
+    var i := 0;
+    
+    while i < |brackets|
+        invariant 0 <= i <= |brackets|
+        invariant counter >= 0
+        invariant counter == |set j | 0 <= j < i && brackets[j] == '<'| - |set j | 0 <= j < i && brackets[j] == '>'|
+        decreases |brackets| - i
+    {
+        if brackets[i] == '<' {
+            counter := counter + 1;
+        } else if brackets[i] == '>' {
+            counter := counter - 1;
+            if counter < 0 {
+                return false;
+            }
+        }
+        i := i + 1;
+    }
+    
+    return counter == 0;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`correct_bracketing`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `correct_bracketing` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `correct_bracketing` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze this:
+
+1. The method to test is `correct_bracketing`
+2. From the Dafny solution code, I can see the signature is:
+   `method correct_bracketing(brackets: string) returns (result: bool)`
+
+3. Looking at the Python tests:
+   - `assert candidate("<>")` - expects True
+   - `assert candidate("<<><>>")` - expects True  
+   - `assert candidate("<><><<><>><>")` - expects True
+   - `assert candidate("<><><<<><><>><>><<><><<>>>")` - expects True
+   - `assert not candidate("<<<><>>>>")` - expects False
+   - `assert not candidate("><<>")` - expects False
+   - `assert not candidate("<")` - expects False
+   - `assert not candidate("<<<<")` - expects False
+   - `assert not candidate(">")` - expects False
+   - `assert not candidate("<<>")` - expects False
+   - `assert not candidate("<><><<><>><>><<>")` - expects False
+   - `assert not candidate("<><><<><>><>>><>")` - expects False
+
+So I need to create:
+1. A dummy implementation that returns `false` by default
+2. Test methods that call `correct_bracketing` and use `expect` to check the results
+
+For the dummy implementation:
+```dafny
+method correct_bracketing(brackets: string) returns (result: bool)
+{
+    result := false;
+}
+```
+
+For the tests, I need to convert each assertion:
+- `assert candidate(x)` becomes expecting `true`
+- `assert not candidate(x)` becomes expecting `false`
+
+--- RESPONSE ---
+Looking at the Dafny solution code, I can see the method signature is `method correct_bracketing(brackets: string) returns (result: bool)`.
+
+<dummy>
+method correct_bracketing(brackets: string) returns (result: bool)
+{
+    result := false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := correct_bracketing("<>");
+    expect result == true;
+}
+
+method {:test} test_1()
+{
+    var result := correct_bracketing("<<><>>");
+    expect result == true;
+}
+
+method {:test} test_2()
+{
+    var result := correct_bracketing("<><><<><>><>");
+    expect result == true;
+}
+
+method {:test} test_3()
+{
+    var result := correct_bracketing("<><><<<><><>><>><<><><<>>>");
+    expect result == true;
+}
+
+method {:test} test_4()
+{
+    var result := correct_bracketing("<<<><>>>>");
+    expect result == false;
+}
+
+method {:test} test_5()
+{
+    var result := correct_bracketing("><<>");
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := correct_bracketing("<");
+    expect result == false;
+}
+
+method {:test} test_7()
+{
+    var result := correct_bracketing("<<<<");
+    expect result == false;
+}
+
+method {:test} test_8()
+{
+    var result := correct_bracketing(">");
+    expect result == false;
+}
+
+method {:test} test_9()
+{
+    var result := correct_bracketing("<<>");
+    expect result == false;
+}
+
+method {:test} test_10()
+{
+    var result := correct_bracketing("<><><<><>><>><<>");
+    expect result == false;
+}
+
+method {:test} test_11()
+{
+    var result := correct_bracketing("<><><<><>><>>><>");
+    expect result == false;
+}
+```
+

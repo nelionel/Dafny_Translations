@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/38
+Entry Point: decode_cyclic
+Stop Reason: end_turn
+Input Tokens: 255
+Output Tokens: 709

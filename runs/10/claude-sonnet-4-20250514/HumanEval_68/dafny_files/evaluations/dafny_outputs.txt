@@ -1,0 +1,49 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+temp_compile.dfy(9,54): Warning: unusual indentation in right-hand operand of ==> (which ends at line 10, column 95); do you perhaps need parentheses?
+  |
+9 |         forall i :: 0 <= i < |arr| && arr[i] % 2 == 0 ==> result[0] <= arr[i] &&
+  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+temp_compile.dfy(28,54): Warning: unusual indentation in right-hand operand of ==> (which ends at line 29, column 102); do you perhaps need parentheses?
+   |
+28 |             forall j :: 0 <= j < i && arr[j] % 2 == 0 ==> smallestEven <= arr[j] &&
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 3
+STDOUT:
+temp_test.dfy(9,54): Warning: unusual indentation in right-hand operand of ==> (which ends at line 10, column 95); do you perhaps need parentheses?
+  |
+9 |         forall i :: 0 <= i < |arr| && arr[i] % 2 == 0 ==> result[0] <= arr[i] &&
+  |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+temp_test.dfy(28,54): Warning: unusual indentation in right-hand operand of ==> (which ends at line 29, column 102); do you perhaps need parentheses?
+   |
+28 |             forall j :: 0 <= j < i && arr[j] % 2 == 0 ==> smallestEven <= arr[j] &&
+   |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier did not attempt verification
+Translation was aborted because warnings were found and --allow-warnings was not specified
+
+STDERR:
+
+Testing result: 0/0 passed
+
+=== DAFNY VERIFICATION ===
+Skipped due to failing tests.
+=== SPEC VALIDATION ===
+Spec validation attempts: 1
+Has proper specs: True
+- Attempt 1: Proper specs found

@@ -1,0 +1,47 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def add(lst):
+    """Given a non-empty list of integers lst. add the even elements that are at odd indices..
+
+
+    Examples:
+        add([4, 2, 6, 7]) ==> 2 
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find elements that are at odd indices (positions 1, 3, 5, etc.)
+2. Among those elements, select only the even ones
+3. Add them up
+
+Let me trace through the example:
+- `[4, 2, 6, 7]` has indices 0, 1, 2, 3
+- Elements at odd indices: index 1 → 2, index 3 → 7
+- Even elements among those: 2 (since 7 is odd)
+- Sum: 2
+
+```python
+def add(lst):
+    """Given a non-empty list of integers lst. add the even elements that are at odd indices..
+
+
+    Examples:
+        add([4, 2, 6, 7]) ==> 2 
+    """
+    total = 0
+    for i in range(1, len(lst), 2):  # Start at index 1, step by 2 to get odd indices
+        if lst[i] % 2 == 0:  # Check if the element is even
+            total += lst[i]
+    return total
+```
+
+The solution:
+1. Uses `range(1, len(lst), 2)` to iterate through odd indices only
+2. Checks if each element at an odd index is even using `lst[i] % 2 == 0`
+3. Adds even elements to the running total
+4. Returns the sum

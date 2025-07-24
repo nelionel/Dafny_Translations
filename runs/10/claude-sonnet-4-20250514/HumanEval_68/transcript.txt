@@ -1,0 +1,87 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def pluck(arr):
+    """
+    "Given an array representing a branch of a tree that has non-negative integer nodes
+    your task is to pluck one of the nodes and return it.
+    The plucked node should be the node with the smallest even value.
+    If multiple nodes with the same smallest even value are found return the node that has smallest index.
+
+    The plucked node should be returned in a list, [ smalest_value, its index ],
+    If there are no even values or the given array is empty, return [].
+
+    Example 1:
+        Input: [4,2,3]
+        Output: [2, 1]
+        Explanation: 2 has the smallest even value, and 2 has the smallest index.
+
+    Example 2:
+        Input: [1,2,3]
+        Output: [2, 1]
+        Explanation: 2 has the smallest even value, and 2 has the smallest index. 
+
+    Example 3:
+        Input: []
+        Output: []
+    
+    Example 4:
+        Input: [5, 0, 3, 0, 4, 2]
+        Output: [0, 1]
+        Explanation: 0 is the smallest value, but  there are two zeros,
+                     so we will choose the first zero, which has the smallest index.
+
+    Constraints:
+        * 1 <= nodes.length <= 10000
+        * 0 <= node.value
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find the smallest even value in the array
+2. If there are multiple nodes with the same smallest even value, return the one with the smallest index
+3. Return the result as `[smallest_even_value, its_index]`
+4. Return `[]` if there are no even values or the array is empty
+
+Let me trace through the examples:
+- `[4,2,3]`: Even values are 4 and 2. Smallest is 2 at index 1. Return `[2, 1]`
+- `[1,2,3]`: Even value is 2 at index 1. Return `[2, 1]`
+- `[]`: Empty array. Return `[]`
+- `[5, 0, 3, 0, 4, 2]`: Even values are 0(index 1), 0(index 3), 4(index 4), 2(index 5). Smallest is 0, first occurrence at index 1. Return `[0, 1]`
+
+```python
+def pluck(arr):
+    """
+    "Given an array representing a branch of a tree that has non-negative integer nodes
+    your task is to pluck one of the nodes and return it.
+    The plucked node should be the node with the smallest even value.
+    If multiple nodes with the same smallest even value are found return the node that has smallest index.
+
+    The plucked node should be returned in a list, [ smalest_value, its index ],
+    If there are no even values or the given array is empty, return [].
+    """
+    if not arr:
+        return []
+    
+    smallest_even = None
+    smallest_index = None
+    
+    for i, value in enumerate(arr):
+        if value % 2 == 0:  # Check if the value is even
+            if smallest_even is None or value < smallest_even:
+                smallest_even = value
+                smallest_index = i
+            elif value == smallest_even and i < smallest_index:
+                # This case actually won't happen since we iterate left to right
+                # and we only update when we find a smaller value
+                smallest_index = i
+    
+    if smallest_even is None:
+        return []
+    
+    return [smallest_even, smallest_index]
+```

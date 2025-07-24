@@ -1,0 +1,258 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `get_row`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate([
+        [1,2,3,4,5,6],
+        [1,2,3,4,1,6],
+        [1,2,3,4,5,1]
+    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]
+    assert candidate([
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6]
+    ], 2) == [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1)]
+    assert candidate([
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,1,3,4,5,6],
+        [1,2,1,4,5,6],
+        [1,2,3,1,5,6],
+        [1,2,3,4,1,6],
+        [1,2,3,4,5,1]
+    ], 1) == [(0, 0), (1, 0), (2, 1), (2, 0), (3, 2), (3, 0), (4, 3), (4, 0), (5, 4), (5, 0), (6, 5), (6, 0)]
+    assert candidate([], 1) == []
+    assert candidate([[1]], 2) == []
+    assert candidate([[], [1], [1, 2, 3]], 3) == [(2, 2)]
+
+    # Check some edge cases that are easy to work out by hand.
+    assert True
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method get_row(lst: seq<seq<int>>, x: int) returns (coordinates: seq<(int, int)>)
+    ensures forall coord :: coord in coordinates ==> 
+        0 <= coord.0 < |lst| && 0 <= coord.1 < |lst[coord.0]| && lst[coord.0][coord.1] == x
+    ensures forall i, j :: 0 <= i < j < |coordinates| ==> 
+        coordinates[i].0 <= coordinates[j].0 && 
+        (coordinates[i].0 == coordinates[j].0 ==> coordinates[i].1 >= coordinates[j].1)
+{
+    coordinates := [];
+    
+    // Find all occurrences of x
+    for row_idx := 0 to |lst|
+        invariant 0 <= row_idx <= |lst|
+        invariant forall coord :: coord in coordinates ==> 
+            0 <= coord.0 < row_idx && 0 <= coord.1 < |lst[coord.0]| && lst[coord.0][coord.1] == x
+    {
+        for col_idx := 0 to |lst[row_idx]|
+            invariant 0 <= col_idx <= |lst[row_idx]|
+            invariant forall coord :: coord in coordinates ==> 
+                (coord.0 < row_idx || (coord.0 == row_idx && coord.1 >= col_idx)) ==> 
+                0 <= coord.0 < |lst| && 0 <= coord.1 < |lst[coord.0]| && lst[coord.0][coord.1] == x
+        {
+            if lst[row_idx][col_idx] == x {
+                coordinates := coordinates + [(row_idx, col_idx)];
+            }
+        }
+    }
+    
+    // Sort coordinates: first by row ascending, then by column descending
+    coordinates := SortCoordinates(coordinates);
+}
+
+method SortCoordinates(coords: seq<(int, int)>) returns (sorted: seq<(int, int)>)
+    ensures |sorted| == |coords|
+    ensures forall coord :: coord in coords <==> coord in sorted
+    ensures forall i, j :: 0 <= i < j < |sorted| ==> 
+        sorted[i].0 <= sorted[j].0 && 
+        (sorted[i].0 == sorted[j].0 ==> sorted[i].1 >= sorted[j].1)
+    decreases |coords|
+{
+    if |coords| <= 1 {
+        sorted := coords;
+        return;
+    }
+    
+    // Simple insertion sort
+    sorted := [];
+    for i := 0 to |coords|
+        invariant 0 <= i <= |coords|
+        invariant |sorted| == i
+        invariant forall coord :: coord in sorted ==> coord in coords
+        invariant forall k, l :: 0 <= k < l < |sorted| ==> 
+            sorted[k].0 <= sorted[l].0 && 
+            (sorted[k].0 == sorted[l].0 ==> sorted[k].1 >= sorted[l].1)
+    {
+        var coord := coords[i];
+        var j := |sorted|;
+        
+        while j > 0 && CompareCoordinates(sorted[j-1], coord) > 0
+            invariant 0 <= j <= |sorted|
+            decreases j
+        {
+            j := j - 1;
+        }
+        
+        sorted := sorted[..j] + [coord] + sorted[j..];
+    }
+}
+
+function CompareCoordinates(a: (int, int), b: (int, int)): int
+{
+    if a.0 < b.0 then -1
+    else if a.0 > b.0 then 1
+    else if a.1 > b.1 then -1  // descending order for columns within same row
+    else if a.1 < b.1 then 1
+    else 0
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`get_row`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `get_row` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `get_row` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the given Python tests and Dafny solution:
+
+1. The method name is `get_row` and it takes a `seq<seq<int>>` and an `int` and returns a `seq<(int, int)>`.
+
+2. Looking at the Python tests:
+   - `candidate([[1,2,3,4,5,6],[1,2,3,4,1,6],[1,2,3,4,5,1]], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]`
+   - `candidate([[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6],[1,2,3,4,5,6]], 2) == [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1)]`
+   - `candidate([[1,2,3,4,5,6],[1,2,3,4,5,6],[1,1,3,4,5,6],[1,2,1,4,5,6],[1,2,3,1,5,6],[1,2,3,4,1,6],[1,2,3,4,5,1]], 1) == [(0, 0), (1, 0), (2, 1), (2, 0), (3, 2), (3, 0), (4, 3), (4, 0), (5, 4), (5, 0), (6, 5), (6, 0)]`
+   - `candidate([], 1) == []`
+   - `candidate([[1]], 2) == []`
+   - `candidate([[], [1], [1, 2, 3]], 3) == [(2, 2)]`
+
+I observe additional test cases that expand the method's behavior:
+- Empty single-element list returns empty result
+- Sparse lists with different lengths are handled correctly
+- The method finds all occurrences of a specific value across rows and columns
+
+The tests demonstrate the method should return coordinate tuples (row, column) where the specified value appears, handling various input scenarios like empty lists, single-element lists, and multi-row lists with different lengths.
+
+The implementation will need to systematically scan through each row and column, collecting matching coordinates efficiently.
+
+I'll track coordinates where the specified value appears, ensuring I handle edge cases like empty matrices and single-element arrays. The function must return a list of coordinate tuples representing row and column indices where the target value is found.
+
+The test cases demonstrate various scenarios: multiple matrices with different dimensions, sparse value distributions, and boundary conditions like empty or single-element arrays. I'll design the solution to be robust across these input variations.
+
+--- RESPONSE ---
+Looking at the Python tests and the Dafny solution, I can see that `get_row` takes a 2D sequence of integers and an integer value, and returns a sequence of coordinate tuples where the value appears.
+
+<dummy>
+method get_row(lst: seq<seq<int>>, x: int) returns (coordinates: seq<(int, int)>)
+{
+    coordinates := [];
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := get_row([
+        [1,2,3,4,5,6],
+        [1,2,3,4,1,6],
+        [1,2,3,4,5,1]
+    ], 1);
+    expect result == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)];
+}
+
+method {:test} test_1()
+{
+    var result := get_row([
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6]
+    ], 2);
+    expect result == [(0, 1), (1, 1), (2, 1), (3, 1), (4, 1), (5, 1)];
+}
+
+method {:test} test_2()
+{
+    var result := get_row([
+        [1,2,3,4,5,6],
+        [1,2,3,4,5,6],
+        [1,1,3,4,5,6],
+        [1,2,1,4,5,6],
+        [1,2,3,1,5,6],
+        [1,2,3,4,1,6],
+        [1,2,3,4,5,1]
+    ], 1);
+    expect result == [(0, 0), (1, 0), (2, 1), (2, 0), (3, 2), (3, 0), (4, 3), (4, 0), (5, 4), (5, 0), (6, 5), (6, 0)];
+}
+
+method {:test} test_3()
+{
+    var result := get_row([], 1);
+    expect result == [];
+}
+
+method {:test} test_4()
+{
+    var result := get_row([[1]], 2);
+    expect result == [];
+}
+
+method {:test} test_5()
+{
+    var result := get_row([[], [1], [1, 2, 3]], 3);
+    expect result == [(2, 2)];
+}
+```
+

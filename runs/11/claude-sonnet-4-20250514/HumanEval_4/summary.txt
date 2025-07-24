@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/4
+Entry Point: mean_absolute_deviation
+Stop Reason: end_turn
+Input Tokens: 168
+Output Tokens: 477

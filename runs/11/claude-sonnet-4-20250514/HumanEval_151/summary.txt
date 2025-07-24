@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/151
+Entry Point: double_the_difference
+Stop Reason: end_turn
+Input Tokens: 202
+Output Tokens: 548

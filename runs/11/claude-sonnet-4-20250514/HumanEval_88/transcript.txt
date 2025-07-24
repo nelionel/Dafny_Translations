@@ -1,0 +1,73 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def sort_array(array):
+    """
+    Given an array of non-negative integers, return a copy of the given array after sorting,
+    you will sort the given array in ascending order if the sum( first index value, last index value) is odd,
+    or sort it in descending order if the sum( first index value, last index value) is even.
+
+    Note:
+    * don't change the given array.
+
+    Examples:
+    * sort_array([]) => []
+    * sort_array([5]) => [5]
+    * sort_array([2, 4, 3, 0, 1, 5]) => [0, 1, 2, 3, 4, 5]
+    * sort_array([2, 4, 3, 0, 1, 5, 6]) => [6, 5, 4, 3, 2, 1, 0]
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Handle edge cases (empty array, single element)
+2. Calculate the sum of first and last elements
+3. Sort ascending if sum is odd, descending if sum is even
+4. Return a copy without modifying the original array
+
+Let me trace through the examples:
+- `[]` → empty, return `[]`
+- `[5]` → single element, return `[5]`
+- `[2, 4, 3, 0, 1, 5]` → sum = 2 + 5 = 7 (odd) → sort ascending → `[0, 1, 2, 3, 4, 5]`
+- `[2, 4, 3, 0, 1, 5, 6]` → sum = 2 + 6 = 8 (even) → sort descending → `[6, 5, 4, 3, 2, 1, 0]`
+
+```python
+def sort_array(array):
+    """
+    Given an array of non-negative integers, return a copy of the given array after sorting,
+    you will sort the given array in ascending order if the sum( first index value, last index value) is odd,
+    or sort it in descending order if the sum( first index value, last index value) is even.
+
+    Note:
+    * don't change the given array.
+
+    Examples:
+    * sort_array([]) => []
+    * sort_array([5]) => [5]
+    * sort_array([2, 4, 3, 0, 1, 5]) => [0, 1, 2, 3, 4, 5]
+    * sort_array([2, 4, 3, 0, 1, 5, 6]) => [6, 5, 4, 3, 2, 1, 0]
+    """
+    # Handle empty array or single element
+    if len(array) <= 1:
+        return array.copy()
+    
+    # Calculate sum of first and last elements
+    sum_first_last = array[0] + array[-1]
+    
+    # Create a copy of the array
+    array_copy = array.copy()
+    
+    # Sort based on whether sum is odd or even
+    if sum_first_last % 2 == 1:  # odd sum
+        array_copy.sort()  # ascending order
+    else:  # even sum
+        array_copy.sort(reverse=True)  # descending order
+    
+    return array_copy
+```

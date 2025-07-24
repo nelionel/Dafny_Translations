@@ -1,0 +1,86 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def closest_integer(value):
+    '''
+    Create a function that takes a value (string) representing a number
+    and returns the closest integer to it. If the number is equidistant
+    from two integers, round it away from zero.
+
+    Examples
+    >>> closest_integer("10")
+    10
+    >>> closest_integer("15.3")
+    15
+
+    Note:
+    Rounding away from zero means that if the given number is equidistant
+    from two integers, the one you should return is the one that is the
+    farthest from zero. For example closest_integer("14.5") should
+    return 15 and closest_integer("-14.5") should return -15.
+    '''
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Convert the string to a float
+2. Handle the special case where the number is equidistant from two integers (i.e., ends in .5)
+3. For equidistant cases, round away from zero
+4. For non-equidistant cases, use normal rounding
+
+Let me implement this step by step:
+
+```python
+def closest_integer(value):
+    '''
+    Create a function that takes a value (string) representing a number
+    and returns the closest integer to it. If the number is equidistant
+    from two integers, round it away from zero.
+
+    Examples
+    >>> closest_integer("10")
+    10
+    >>> closest_integer("15.3")
+    15
+
+    Note:
+    Rounding away from zero means that if the given number is equidistant
+    from two integers, the one you should return is the one that is the
+    farthest from zero. For example closest_integer("14.5") should
+    return 15 and closest_integer("-14.5") should return -15.
+    '''
+    # Convert string to float
+    num = float(value)
+    
+    # Check if the number is equidistant from two integers
+    # This happens when the fractional part is exactly 0.5
+    fractional_part = abs(num - int(num))
+    
+    if fractional_part == 0.5:
+        # Round away from zero
+        if num > 0:
+            return int(num) + 1
+        else:
+            return int(num) - 1
+    else:
+        # Use normal rounding
+        return round(num)
+```
+
+The solution works as follows:
+
+1. **Convert to float**: `float(value)` converts the string to a numeric value
+2. **Check for equidistant case**: I calculate the fractional part by taking the absolute difference between the number and its integer part
+3. **Handle equidistant case**: If the fractional part is exactly 0.5:
+   - For positive numbers: add 1 to the integer part (round up)
+   - For negative numbers: subtract 1 from the integer part (round down, which is away from zero)
+4. **Handle normal case**: Use Python's built-in `round()` function for all other cases
+
+This handles all the examples:
+- `closest_integer("10")` → 10 (no fractional part)
+- `closest_integer("15.3")` → 15 (normal rounding)
+- `closest_integer("14.5")` → 15 (round away from zero)
+- `closest_integer("-14.5")` → -15 (round away from zero)

@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/118
+Entry Point: get_closest_vowel
+Stop Reason: end_turn
+Input Tokens: 242
+Output Tokens: 1529

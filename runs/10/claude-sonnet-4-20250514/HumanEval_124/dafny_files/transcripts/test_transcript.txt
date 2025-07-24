@@ -1,0 +1,392 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `valid_date`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate('03-11-2000') == True
+
+    assert candidate('15-01-2012') == False
+
+    assert candidate('04-0-2040') == False
+
+    assert candidate('06-04-2020') == True
+
+    assert candidate('01-01-2007') == True
+
+    assert candidate('03-32-2011') == False
+
+    assert candidate('') == False
+
+    assert candidate('04-31-3000') == False
+
+    assert candidate('06-06-2005') == True
+
+    assert candidate('21-31-2000') == False
+
+    assert candidate('04-12-2003') == True
+
+    assert candidate('04122003') == False
+
+    assert candidate('20030412') == False
+
+    assert candidate('2003-04') == False
+
+    assert candidate('2003-04-12') == False
+
+    assert candidate('04-2003') == False
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method IsAllDigits(s: string) returns (result: bool)
+    requires |s| > 0
+    ensures result <==> (forall i :: 0 <= i < |s| ==> '0' <= s[i] <= '9')
+{
+    var i := 0;
+    while i < |s|
+        invariant 0 <= i <= |s|
+        invariant forall j :: 0 <= j < i ==> '0' <= s[j] <= '9'
+    {
+        if s[i] < '0' || s[i] > '9' {
+            return false;
+        }
+        i := i + 1;
+    }
+    return true;
+}
+
+method StringToInt(s: string) returns (result: int)
+    requires |s| > 0
+    requires forall i :: 0 <= i < |s| ==> '0' <= s[i] <= '9'
+    ensures result >= 0
+{
+    var i := 0;
+    var value := 0;
+    while i < |s|
+        invariant 0 <= i <= |s|
+        invariant value >= 0
+    {
+        var digit := (s[i] as int) - ('0' as int);
+        value := value * 10 + digit;
+        i := i + 1;
+    }
+    return value;
+}
+
+method SplitByDash(s: string) returns (parts: seq<string>)
+    ensures |parts| >= 1
+{
+    if |s| == 0 {
+        return [s];
+    }
+    
+    var result := [];
+    var start := 0;
+    var i := 0;
+    
+    while i < |s|
+        invariant 0 <= start <= i <= |s|
+        invariant |result| >= 0
+    {
+        if s[i] == '-' {
+            var part := s[start..i];
+            result := result + [part];
+            start := i + 1;
+        }
+        i := i + 1;
+    }
+    
+    // Add the last part
+    var last_part := s[start..];
+    result := result + [last_part];
+    
+    return result;
+}
+
+method CountDashes(s: string) returns (count: int)
+    ensures count >= 0
+    ensures count <= |s|
+{
+    var i := 0;
+    var dash_count := 0;
+    
+    while i < |s|
+        invariant 0 <= i <= |s|
+        invariant dash_count >= 0
+    {
+        if s[i] == '-' {
+            dash_count := dash_count + 1;
+        }
+        i := i + 1;
+    }
+    
+    return dash_count;
+}
+
+method valid_date(date: string) returns (result: bool)
+{
+    // Rule 1: Check if date string is not empty
+    if |date| == 0 {
+        return false;
+    }
+    
+    // Rule 4: Check if date is in correct format (mm-dd-yyyy)
+    var dash_count := CountDashes(date);
+    if dash_count != 2 {
+        return false;
+    }
+    
+    // Split by dashes
+    var parts := SplitByDash(date);
+    if |parts| != 3 {
+        return false;
+    }
+    
+    var month_str := parts[0];
+    var day_str := parts[1];
+    var year_str := parts[2];
+    
+    // Check if all parts are non-empty
+    if |month_str| == 0 || |day_str| == 0 || |year_str| == 0 {
+        return false;
+    }
+    
+    // Check if all parts are numeric
+    var month_is_digits := IsAllDigits(month_str);
+    var day_is_digits := IsAllDigits(day_str);
+    var year_is_digits := IsAllDigits(year_str);
+    
+    if !month_is_digits || !day_is_digits || !year_is_digits {
+        return false;
+    }
+    
+    // Convert to integers
+    var month := StringToInt(month_str);
+    var day := StringToInt(day_str);
+    var year := StringToInt(year_str);
+    
+    // Rule 3: Check if month is valid (1-12)
+    if month < 1 || month > 12 {
+        return false;
+    }
+    
+    // Rule 2: Check if day is valid based on the month
+    // Months with 31 days: 1,3,5,7,8,10,12
+    if month == 1 || month == 3 || month == 5 || month == 7 || 
+       month == 8 || month == 10 || month == 12 {
+        if day < 1 || day > 31 {
+            return false;
+        }
+    }
+    // Months with 30 days: 4,6,9,11
+    else if month == 4 || month == 6 || month == 9 || month == 11 {
+        if day < 1 || day > 30 {
+            return false;
+        }
+    }
+    // February (month 2) - max 29 days
+    else if month == 2 {
+        if day < 1 || day > 29 {
+            return false;
+        }
+    }
+    
+    return true;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`valid_date`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `valid_date` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `valid_date` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the task:
+
+1. The method to test is `valid_date` which takes a string and returns a bool
+2. I need to create a dummy implementation and translate the Python tests
+
+Looking at the Dafny solution code, the `valid_date` method has this signature:
+```dafny
+method valid_date(date: string) returns (result: bool)
+```
+
+For the dummy implementation, I should create a method with the same signature that returns a default value (false for bool).
+
+Now let me translate each Python assert statement:
+
+```python
+assert candidate('03-11-2000') == True
+assert candidate('15-01-2012') == False
+assert candidate('04-0-2040') == False
+assert candidate('06-04-2020') == True
+assert candidate('01-01-2007') == True
+assert candidate('03-32-2011') == False
+assert candidate('') == False
+assert candidate('04-31-3000') == False
+assert candidate('06-06-2005') == True
+assert candidate('21-31-2000') == False
+assert candidate('04-12-2003') == True
+assert candidate('04122003') == False
+assert candidate('20030412') == False
+assert candidate('2003-04') == False
+assert candidate('2003-04-12') == False
+assert candidate('04-2003') == False
+```
+
+Each one should become a test method that:
+1. Calls valid_date with the string parameter
+2. Uses expect to check the result matches the expected boolean value
+
+Note that in Dafny, True becomes true and False becomes false.
+
+--- RESPONSE ---
+<dummy>
+method valid_date(date: string) returns (result: bool)
+{
+    return false;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := valid_date("03-11-2000");
+    expect result == true;
+}
+
+method {:test} test_1()  
+{
+    var result := valid_date("15-01-2012");
+    expect result == false;
+}
+
+method {:test} test_2()
+{
+    var result := valid_date("04-0-2040");
+    expect result == false;
+}
+
+method {:test} test_3()
+{
+    var result := valid_date("06-04-2020");
+    expect result == true;
+}
+
+method {:test} test_4()
+{
+    var result := valid_date("01-01-2007");
+    expect result == true;
+}
+
+method {:test} test_5()
+{
+    var result := valid_date("03-32-2011");
+    expect result == false;
+}
+
+method {:test} test_6()
+{
+    var result := valid_date("");
+    expect result == false;
+}
+
+method {:test} test_7()
+{
+    var result := valid_date("04-31-3000");
+    expect result == false;
+}
+
+method {:test} test_8()
+{
+    var result := valid_date("06-06-2005");
+    expect result == true;
+}
+
+method {:test} test_9()
+{
+    var result := valid_date("21-31-2000");
+    expect result == false;
+}
+
+method {:test} test_10()
+{
+    var result := valid_date("04-12-2003");
+    expect result == true;
+}
+
+method {:test} test_11()
+{
+    var result := valid_date("04122003");
+    expect result == false;
+}
+
+method {:test} test_12()
+{
+    var result := valid_date("20030412");
+    expect result == false;
+}
+
+method {:test} test_13()
+{
+    var result := valid_date("2003-04");
+    expect result == false;
+}
+
+method {:test} test_14()
+{
+    var result := valid_date("2003-04-12");
+    expect result == false;
+}
+
+method {:test} test_15()
+{
+    var result := valid_date("04-2003");
+    expect result == false;
+}
+```
+

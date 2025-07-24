@@ -1,0 +1,63 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def next_smallest(lst):
+    """
+    You are given a list of integers.
+    Write a function next_smallest() that returns the 2nd smallest element of the list.
+    Return None if there is no such element.
+    
+    next_smallest([1, 2, 3, 4, 5]) == 2
+    next_smallest([5, 1, 4, 3, 2]) == 2
+    next_smallest([]) == None
+    next_smallest([1, 1]) == None
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the 2nd smallest element in a list of integers. The key insight is that if all elements are the same or there are fewer than 2 distinct elements, I should return None.
+
+Here's my approach:
+1. Handle edge cases (empty list, single element)
+2. Remove duplicates to get unique elements
+3. Check if we have at least 2 unique elements
+4. Sort and return the second smallest
+
+```python
+def next_smallest(lst):
+    """
+    You are given a list of integers.
+    Write a function next_smallest() that returns the 2nd smallest element of the list.
+    Return None if there is no such element.
+    
+    next_smallest([1, 2, 3, 4, 5]) == 2
+    next_smallest([5, 1, 4, 3, 2]) == 2
+    next_smallest([]) == None
+    next_smallest([1, 1]) == None
+    """
+    # Handle empty list
+    if not lst:
+        return None
+    
+    # Get unique elements
+    unique_elements = list(set(lst))
+    
+    # If we have less than 2 unique elements, return None
+    if len(unique_elements) < 2:
+        return None
+    
+    # Sort the unique elements and return the second smallest
+    unique_elements.sort()
+    return unique_elements[1]
+```
+
+The function works as follows:
+- For `[1, 2, 3, 4, 5]`: unique elements are `[1, 2, 3, 4, 5]`, sorted they remain the same, so return `2`
+- For `[5, 1, 4, 3, 2]`: unique elements are `[1, 2, 3, 4, 5]` after sorting, so return `2`
+- For `[]`: empty list, return `None`
+- For `[1, 1]`: unique elements are `[1]`, less than 2 unique elements, return `None`

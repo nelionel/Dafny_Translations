@@ -1,0 +1,78 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def encode(message):
+    """
+    Write a function that takes a message, and encodes in such a 
+    way that it swaps case of all letters, replaces all vowels in 
+    the message with the letter that appears 2 places ahead of that 
+    vowel in the english alphabet. 
+    Assume only letters. 
+    
+    Examples:
+    >>> encode('test')
+    'TGST'
+    >>> encode('This is a message')
+    'tHKS KS C MGSSCGG'
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Swap the case of all letters (uppercase becomes lowercase and vice versa)
+2. Replace vowels with the letter that appears 2 places ahead in the alphabet
+3. Handle both uppercase and lowercase vowels
+
+Let me trace through the examples:
+- 'test' → 'TGST': 't' becomes 'T' (swap case), 'e' becomes 'G' (e + 2 = g, but swapped case so 'G'), 's' becomes 'S', 't' becomes 'T'
+- 'This is a message' → 'tHKS KS C MGSSCGG': Similar logic applied
+
+Here's my implementation:
+
+```python
+def encode(message):
+    """
+    Write a function that takes a message, and encodes in such a 
+    way that it swaps case of all letters, replaces all vowels in 
+    the message with the letter that appears 2 places ahead of that 
+    vowel in the english alphabet. 
+    Assume only letters. 
+    
+    Examples:
+    >>> encode('test')
+    'TGST'
+    >>> encode('This is a message')
+    'tHKS KS C MGSSCGG'
+    """
+    vowels = 'aeiouAEIOU'
+    vowel_mapping = {
+        'a': 'c', 'e': 'g', 'i': 'k', 'o': 'q', 'u': 'w',
+        'A': 'C', 'E': 'G', 'I': 'K', 'O': 'Q', 'U': 'W'
+    }
+    
+    result = []
+    
+    for char in message:
+        if char == ' ':
+            result.append(' ')
+        elif char in vowels:
+            # Replace vowel with letter 2 places ahead, then swap case
+            new_char = vowel_mapping[char]
+            result.append(new_char.swapcase())
+        else:
+            # Just swap case for consonants
+            result.append(char.swapcase())
+    
+    return ''.join(result)
+```
+
+The function works by:
+1. Creating a mapping of vowels to their corresponding letters 2 places ahead in the alphabet
+2. Iterating through each character in the message
+3. If it's a space, keeping it as is
+4. If it's a vowel, replacing it with the mapped letter and then swapping case
+5. If it's a consonant, just swapping the case
+6. Joining all characters back into a string

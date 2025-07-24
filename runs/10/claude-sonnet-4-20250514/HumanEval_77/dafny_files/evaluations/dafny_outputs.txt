@@ -1,0 +1,50 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+test_0: PASSED
+test_1: PASSED
+test_2: PASSED
+test_3: PASSED
+test_4: PASSED
+test_5: PASSED
+test_6: PASSED
+test_7: PASSED
+
+STDERR:
+
+Testing result: 8/8 passed
+
+=== DAFNY VERIFICATION ===
+VERIFYING: runs/10/claude-sonnet-4-20250514/HumanEval_77/dafny_files/actual_dafny_files/solution.dfy
+COMMAND: dafny verify solution.dfy
+Return code: 4
+STDOUT:
+temp_verify.dfy(1,7): Error: Verification of 'iscube' timed out after 30 seconds. (the limit can be increased using --verification-time-limit)
+  |
+1 | method iscube(a: int) returns (result: bool)
+  |        ^^^^^^
+
+
+Dafny program verifier finished with 0 verified, 0 errors, 1 time out
+
+STDERR:
+
+Verification result: passed
+=== SPEC VALIDATION ===
+Spec validation attempts: 1
+Has proper specs: True
+- Attempt 1: Proper specs found

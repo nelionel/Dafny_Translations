@@ -1,0 +1,139 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `car_race_collision`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert candidate(2) == 4
+    assert candidate(3) == 9
+    assert candidate(4) == 16
+    assert candidate(8) == 64
+    assert candidate(10) == 100
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method car_race_collision(n: int) returns (result: int)
+    requires n >= 0
+    ensures result == n * n
+{
+    result := n * n;
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`car_race_collision`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `car_race_collision` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `car_race_collision` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze this step by step:
+
+1. **Method to test**: `car_race_collision`
+2. **Dafny solution signature**: `method car_race_collision(n: int) returns (result: int)`
+3. **Python tests**:
+   - `candidate(2) == 4`
+   - `candidate(3) == 9` 
+   - `candidate(4) == 16`
+   - `candidate(8) == 64`
+   - `candidate(10) == 100`
+
+So I need to create:
+1. A dummy implementation that matches the signature and returns a default value
+2. Test methods that call `car_race_collision` and check the results
+
+For the dummy implementation, since it returns an `int`, I should return `0` as the default value.
+
+For the tests, I need to:
+- Call `car_race_collision` with the input values
+- Check the returned result matches the expected value using `expect`
+
+Let me write this out:
+
+--- RESPONSE ---
+<dummy>
+method car_race_collision(n: int) returns (result: int)
+{
+    result := 0;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := car_race_collision(2);
+    expect result == 4;
+}
+
+method {:test} test_1()
+{
+    var result := car_race_collision(3);
+    expect result == 9;
+}
+
+method {:test} test_2()
+{
+    var result := car_race_collision(4);
+    expect result == 16;
+}
+
+method {:test} test_3()
+{
+    var result := car_race_collision(8);
+    expect result == 64;
+}
+
+method {:test} test_4()
+{
+    var result := car_race_collision(10);
+    expect result == 100;
+}
+```
+

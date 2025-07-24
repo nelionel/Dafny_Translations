@@ -1,0 +1,93 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def is_multiply_prime(a):
+    """Write a function that returns true if the given number is the multiplication of 3 prime numbers
+    and false otherwise.
+    Knowing that (a) is less then 100. 
+    Example:
+    is_multiply_prime(30) == True
+    30 = 2 * 3 * 5
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Check if a number can be expressed as the product of exactly 3 prime numbers
+2. The prime numbers don't need to be distinct (e.g., 2 * 2 * 2 = 8 is valid)
+3. The number is less than 100
+
+My approach:
+1. Create a helper function to check if a number is prime
+2. Find all prime factors of the given number
+3. Check if the total count of prime factors (with repetition) equals 3
+
+```python
+def is_multiply_prime(a):
+    """Write a function that returns true if the given number is the multiplication of 3 prime numbers
+    and false otherwise.
+    Knowing that (a) is less then 100. 
+    Example:
+    is_multiply_prime(30) == True
+    30 = 2 * 3 * 5
+    """
+    
+    def is_prime(n):
+        """Helper function to check if a number is prime"""
+        if n < 2:
+            return False
+        if n == 2:
+            return True
+        if n % 2 == 0:
+            return False
+        for i in range(3, int(n**0.5) + 1, 2):
+            if n % i == 0:
+                return False
+        return True
+    
+    # Handle edge cases
+    if a < 8:  # Minimum product of 3 primes is 2*2*2 = 8
+        return False
+    
+    # Count prime factors
+    prime_factor_count = 0
+    temp = a
+    
+    # Check for factor 2
+    while temp % 2 == 0:
+        prime_factor_count += 1
+        temp //= 2
+    
+    # Check for odd prime factors
+    i = 3
+    while i * i <= temp:
+        while temp % i == 0:
+            prime_factor_count += 1
+            temp //= i
+        i += 2
+    
+    # If temp > 1, then it's a prime factor
+    if temp > 1:
+        prime_factor_count += 1
+    
+    return prime_factor_count == 3
+```
+
+The function works by:
+
+1. First checking if the number is at least 8 (the smallest product of 3 primes: 2×2×2)
+2. Counting all prime factors (including repeated ones) by:
+   - Dividing by 2 as many times as possible
+   - Dividing by odd numbers starting from 3
+   - If there's a remainder > 1, it's also a prime factor
+3. Returns `True` if exactly 3 prime factors are found
+
+Examples:
+- `is_multiply_prime(30)` returns `True` (30 = 2 × 3 × 5)
+- `is_multiply_prime(8)` returns `True` (8 = 2 × 2 × 2)
+- `is_multiply_prime(12)` returns `False` (12 = 2 × 2 × 3, but that's only 3 factors... wait, let me recalculate: 12 = 2² × 3, so it has 3 prime factors counting multiplicity: 2, 2, 3)
+
+Actually, let me verify: 12 = 2 × 2 × 3, so it should return `True`. The function correctly counts repeated prime factors.

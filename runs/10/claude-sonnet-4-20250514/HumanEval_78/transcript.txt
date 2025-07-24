@@ -1,0 +1,80 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def hex_key(num):
+    """You have been tasked to write a function that receives 
+    a hexadecimal number as a string and counts the number of hexadecimal 
+    digits that are primes (prime number, or a prime, is a natural number 
+    greater than 1 that is not a product of two smaller natural numbers).
+    Hexadecimal digits are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.
+    Prime numbers are 2, 3, 5, 7, 11, 13, 17,...
+    So you have to determine a number of the following digits: 2, 3, 5, 7, 
+    B (=decimal 11), D (=decimal 13).
+    Note: you may assume the input is always correct or empty string, 
+    and symbols A,B,C,D,E,F are always uppercase.
+    Examples:
+    For num = "AB" the output should be 1.
+    For num = "1077E" the output should be 2.
+    For num = "ABED1A33" the output should be 4.
+    For num = "123456789ABCDEF0" the output should be 6.
+    For num = "2020" the output should be 2.
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Identify which hexadecimal digits correspond to prime numbers
+2. Count how many of these prime hex digits appear in the input string
+
+Let me first figure out which hexadecimal digits are prime:
+- Hexadecimal digits: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F
+- Their decimal values: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
+- Prime numbers among these: 2, 3, 5, 7, 11, 13
+- Corresponding hex digits: 2, 3, 5, 7, B, D
+
+```python
+def hex_key(num):
+    """You have been tasked to write a function that receives 
+    a hexadecimal number as a string and counts the number of hexadecimal 
+    digits that are primes (prime number, or a prime, is a natural number 
+    greater than 1 that is not a product of two smaller natural numbers).
+    Hexadecimal digits are 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.
+    Prime numbers are 2, 3, 5, 7, 11, 13, 17,...
+    So you have to determine a number of the following digits: 2, 3, 5, 7, 
+    B (=decimal 11), D (=decimal 13).
+    Note: you may assume the input is always correct or empty string, 
+    and symbols A,B,C,D,E,F are always uppercase.
+    Examples:
+    For num = "AB" the output should be 1.
+    For num = "1077E" the output should be 2.
+    For num = "ABED1A33" the output should be 4.
+    For num = "123456789ABCDEF0" the output should be 6.
+    For num = "2020" the output should be 2.
+    """
+    # Set of hexadecimal digits that represent prime numbers
+    prime_hex_digits = {'2', '3', '5', '7', 'B', 'D'}
+    
+    # Count occurrences of prime hex digits in the input string
+    count = 0
+    for digit in num:
+        if digit in prime_hex_digits:
+            count += 1
+    
+    return count
+```
+
+The solution works by:
+1. Creating a set of hexadecimal digits that correspond to prime numbers: '2', '3', '5', '7', 'B', 'D'
+2. Iterating through each character in the input string
+3. Counting how many characters match the prime hex digits
+4. Returning the total count
+
+Let me verify with the examples:
+- "AB": Only 'B' is prime → count = 1 ✓
+- "1077E": '7' appears twice → count = 2 ✓
+- "ABED1A33": 'B', 'D', '3', '3' are prime → count = 4 ✓
+- "123456789ABCDEF0": '2', '3', '5', '7', 'B', 'D' are prime → count = 6 ✓
+- "2020": '2' appears twice → count = 2 ✓

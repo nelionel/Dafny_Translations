@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/36
+Entry Point: fizz_buzz
+Stop Reason: end_turn
+Input Tokens: 130
+Output Tokens: 382

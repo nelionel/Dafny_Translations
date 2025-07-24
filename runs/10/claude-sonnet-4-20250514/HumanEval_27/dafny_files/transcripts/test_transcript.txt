@@ -1,0 +1,167 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `flip_case`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {
+    'author': 'jt',
+    'dataset': 'test'
+}
+
+
+def check(candidate):
+    assert candidate('') == ''
+    assert candidate('Hello!') == 'hELLO!'
+    assert candidate('These violent delights have violent ends') == 'tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS'
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+function IsLowerCase(c: char): bool
+{
+    'a' <= c <= 'z'
+}
+
+function IsUpperCase(c: char): bool
+{
+    'A' <= c <= 'Z'
+}
+
+function ToUpperCase(c: char): char
+    requires IsLowerCase(c)
+{
+    (c as int - 'a' as int + 'A' as int) as char
+}
+
+function ToLowerCase(c: char): char
+    requires IsUpperCase(c)
+{
+    (c as int - 'A' as int + 'a' as int) as char
+}
+
+method flip_case(s: string) returns (result: string)
+    ensures |result| == |s|
+    ensures forall i :: 0 <= i < |s| ==> 
+        (IsLowerCase(s[i]) ==> result[i] == ToUpperCase(s[i])) &&
+        (IsUpperCase(s[i]) ==> result[i] == ToLowerCase(s[i])) &&
+        (!IsLowerCase(s[i]) && !IsUpperCase(s[i]) ==> result[i] == s[i])
+{
+    result := "";
+    var i := 0;
+    while i < |s|
+        invariant 0 <= i <= |s|
+        invariant |result| == i
+        invariant forall j :: 0 <= j < i ==> 
+            (IsLowerCase(s[j]) ==> result[j] == ToUpperCase(s[j])) &&
+            (IsUpperCase(s[j]) ==> result[j] == ToLowerCase(s[j])) &&
+            (!IsLowerCase(s[j]) && !IsUpperCase(s[j]) ==> result[j] == s[j])
+        decreases |s| - i
+    {
+        var c := s[i];
+        if IsLowerCase(c) {
+            result := result + [ToUpperCase(c)];
+        } else if IsUpperCase(c) {
+            result := result + [ToLowerCase(c)];
+        } else {
+            result := result + [c];
+        }
+        i := i + 1;
+    }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`flip_case`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `flip_case` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `flip_case` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the task:
+
+1. The method to test is `flip_case` which takes a string and returns a string
+2. From the Dafny solution, I can see the signature is: `method flip_case(s: string) returns (result: string)`
+3. The Python tests are:
+   - `assert candidate('') == ''` - empty string should return empty string
+   - `assert candidate('Hello!') == 'hELLO!'` - flip case of letters, keep non-letters
+   - `assert candidate('These violent delights have violent ends') == 'tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS'` - flip case of a longer string
+
+For the dummy implementation, I need to create a method with the same signature that returns a default string value.
+
+For the tests, I need to:
+1. Call the flip_case method
+2. Use expect to check the result matches the expected value
+3. Name them test_0, test_1, test_2
+
+Let me write this out:
+
+--- RESPONSE ---
+<dummy>
+method flip_case(s: string) returns (result: string)
+{
+    result := "";
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := flip_case("");
+    expect result == "";
+}
+
+method {:test} test_1()
+{
+    var result := flip_case("Hello!");
+    expect result == "hELLO!";
+}
+
+method {:test} test_2()
+{
+    var result := flip_case("These violent delights have violent ends");
+    expect result == "tHESE VIOLENT DELIGHTS HAVE VIOLENT ENDS";
+}
+```
+

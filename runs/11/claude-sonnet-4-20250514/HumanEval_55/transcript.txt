@@ -1,0 +1,60 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def fib(n: int):
+    """Return n-th Fibonacci number.
+    >>> fib(10)
+    55
+    >>> fib(1)
+    1
+    >>> fib(8)
+    21
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at the examples, I can see that this follows the standard Fibonacci sequence where:
+- fib(1) = 1
+- fib(2) = 1 
+- fib(n) = fib(n-1) + fib(n-2) for n > 2
+
+Let me verify with the given examples:
+- fib(1) = 1 ✓
+- fib(8) = 21 ✓
+- fib(10) = 55 ✓
+
+Here's an efficient iterative implementation:
+
+```python
+def fib(n: int):
+    """Return n-th Fibonacci number.
+    >>> fib(10)
+    55
+    >>> fib(1)
+    1
+    >>> fib(8)
+    21
+    """
+    if n <= 0:
+        return 0
+    elif n == 1 or n == 2:
+        return 1
+    
+    a, b = 1, 1
+    for i in range(3, n + 1):
+        a, b = b, a + b
+    
+    return b
+```
+
+This implementation:
+1. Handles edge cases (n ≤ 0, n = 1, n = 2)
+2. Uses iteration instead of recursion for better performance (O(n) time, O(1) space)
+3. Uses tuple unpacking for clean variable swapping
+4. Returns the correct Fibonacci numbers as specified in the docstring examples

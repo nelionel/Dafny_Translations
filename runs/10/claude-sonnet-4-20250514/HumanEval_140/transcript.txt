@@ -1,0 +1,80 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def fix_spaces(text):
+    """
+    Given a string text, replace all spaces in it with underscores, 
+    and if a string has more than 2 consecutive spaces, 
+    then replace all consecutive spaces with - 
+    
+    fix_spaces("Example") == "Example"
+    fix_spaces("Example 1") == "Example_1"
+    fix_spaces(" Example 2") == "_Example_2"
+    fix_spaces(" Example   3") == "_Example-3"
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Replace single spaces and pairs of consecutive spaces with underscores
+2. Replace 3 or more consecutive spaces with a single dash
+3. Handle the string character by character or use pattern matching
+
+Let me analyze the examples:
+- "Example" → "Example" (no spaces)
+- "Example 1" → "Example_1" (single space becomes underscore)
+- " Example 2" → "_Example_2" (single space becomes underscore)
+- " Example   3" → "_Example-3" (single space becomes underscore, 3+ spaces become dash)
+
+Here's my implementation:
+
+```python
+def fix_spaces(text):
+    """
+    Given a string text, replace all spaces in it with underscores, 
+    and if a string has more than 2 consecutive spaces, 
+    then replace all consecutive spaces with - 
+    
+    fix_spaces("Example") == "Example"
+    fix_spaces("Example 1") == "Example_1"
+    fix_spaces(" Example 2") == "_Example_2"
+    fix_spaces(" Example   3") == "_Example-3"
+    """
+    if not text:
+        return text
+    
+    result = []
+    i = 0
+    
+    while i < len(text):
+        if text[i] == ' ':
+            # Count consecutive spaces
+            space_count = 0
+            j = i
+            while j < len(text) and text[j] == ' ':
+                space_count += 1
+                j += 1
+            
+            # Replace based on count
+            if space_count > 2:
+                result.append('-')
+            else:
+                result.append('_' * space_count)
+            
+            i = j
+        else:
+            result.append(text[i])
+            i += 1
+    
+    return ''.join(result)
+```
+
+The algorithm works by:
+1. Iterating through each character in the text
+2. When a space is encountered, counting how many consecutive spaces there are
+3. If there are more than 2 consecutive spaces, replacing them with a single dash
+4. Otherwise, replacing each space with an underscore
+5. Non-space characters are added as-is to the result

@@ -1,0 +1,71 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def strange_sort_list(lst):
+    '''
+    Given list of integers, return list in strange order.
+    Strange sorting, is when you start with the minimum value,
+    then maximum of the remaining integers, then minimum and so on.
+
+    Examples:
+    strange_sort_list([1, 2, 3, 4]) == [1, 4, 2, 3]
+    strange_sort_list([5, 5, 5, 5]) == [5, 5, 5, 5]
+    strange_sort_list([]) == []
+    '''
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement a "strange sort" where I alternate between picking the minimum and maximum values from the remaining elements.
+
+Let me trace through the first example:
+- Start with [1, 2, 3, 4]
+- Pick min (1) → result: [1], remaining: [2, 3, 4]
+- Pick max (4) → result: [1, 4], remaining: [2, 3]
+- Pick min (2) → result: [1, 4, 2], remaining: [3]
+- Pick max (3) → result: [1, 4, 2, 3], remaining: []
+
+Here's my implementation:
+
+```python
+def strange_sort_list(lst):
+    '''
+    Given list of integers, return list in strange order.
+    Strange sorting, is when you start with the minimum value,
+    then maximum of the remaining integers, then minimum and so on.
+
+    Examples:
+    strange_sort_list([1, 2, 3, 4]) == [1, 4, 2, 3]
+    strange_sort_list([5, 5, 5, 5]) == [5, 5, 5, 5]
+    strange_sort_list([]) == []
+    '''
+    if not lst:
+        return []
+    
+    # Create a copy to avoid modifying the original list
+    remaining = lst.copy()
+    result = []
+    pick_min = True  # Start with minimum
+    
+    while remaining:
+        if pick_min:
+            value = min(remaining)
+        else:
+            value = max(remaining)
+        
+        result.append(value)
+        remaining.remove(value)  # Remove first occurrence of the value
+        pick_min = not pick_min  # Alternate between min and max
+    
+    return result
+```
+
+The algorithm works as follows:
+1. Handle the empty list case
+2. Create a copy of the input list to avoid modifying the original
+3. Use a boolean flag to alternate between picking minimum and maximum values
+4. In each iteration, find the appropriate value (min or max), add it to the result, remove it from the remaining list, and toggle the flag
+5. Continue until all elements are processed
+
+This handles all the edge cases including empty lists and lists with duplicate values.

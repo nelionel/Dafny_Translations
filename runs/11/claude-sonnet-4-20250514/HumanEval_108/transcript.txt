@@ -1,0 +1,70 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def count_nums(arr):
+    """
+    Write a function count_nums which takes an array of integers and returns
+    the number of elements which has a sum of digits > 0.
+    If a number is negative, then its first signed digit will be negative:
+    e.g. -123 has signed digits -1, 2, and 3.
+    >>> count_nums([]) == 0
+    >>> count_nums([-1, 11, -11]) == 1
+    >>> count_nums([1, 1, 2]) == 3
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. For each number in the array, calculate the sum of its digits
+2. Handle negative numbers specially - the first digit keeps the negative sign, rest are positive
+3. Count how many numbers have a digit sum > 0
+
+Let me trace through the examples:
+- `[]` → 0 (empty array)
+- `[-1, 11, -11]` → 1 
+  - -1: digit sum = -1 (≤ 0)
+  - 11: digit sum = 1 + 1 = 2 (> 0) ✓
+  - -11: digit sum = -1 + 1 = 0 (≤ 0)
+- `[1, 1, 2]` → 3 (all positive numbers have digit sum > 0)
+
+```python
+def count_nums(arr):
+    """
+    Write a function count_nums which takes an array of integers and returns
+    the number of elements which has a sum of digits > 0.
+    If a number is negative, then its first signed digit will be negative:
+    e.g. -123 has signed digits -1, 2, and 3.
+    >>> count_nums([]) == 0
+    >>> count_nums([-1, 11, -11]) == 1
+    >>> count_nums([1, 1, 2]) == 3
+    """
+    def digit_sum(n):
+        if n == 0:
+            return 0
+        
+        # Convert to string to easily access digits
+        s = str(abs(n))
+        
+        # Calculate sum of digits
+        total = sum(int(digit) for digit in s)
+        
+        # If original number was negative, make the first digit negative
+        if n < 0:
+            first_digit = int(s[0])
+            total = total - 2 * first_digit  # Subtract twice to make it negative
+        
+        return total
+    
+    count = 0
+    for num in arr:
+        if digit_sum(num) > 0:
+            count += 1
+    
+    return count
+```

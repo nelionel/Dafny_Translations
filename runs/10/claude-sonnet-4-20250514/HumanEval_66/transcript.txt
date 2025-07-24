@@ -1,0 +1,60 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def digitSum(s):
+    """Task
+    Write a function that takes a string as input and returns the sum of the upper characters only'
+    ASCII codes.
+
+    Examples:
+        digitSum("") => 0
+        digitSum("abAB") => 131
+        digitSum("abcCd") => 67
+        digitSum("helloE") => 69
+        digitSum("woArBld") => 131
+        digitSum("aAaaaXa") => 153
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to:
+
+1. Take a string as input
+2. Find all uppercase characters in the string
+3. Sum their ASCII values
+4. Return the total sum
+
+Let me trace through the examples:
+- `digitSum("abAB")` => A=65, B=66, so 65+66=131 ✓
+- `digitSum("abcCd")` => C=67, so 67 ✓
+- `digitSum("helloE")` => E=69, so 69 ✓
+
+```python
+def digitSum(s):
+    """Task
+    Write a function that takes a string as input and returns the sum of the upper characters only'
+    ASCII codes.
+
+    Examples:
+        digitSum("") => 0
+        digitSum("abAB") => 131
+        digitSum("abcCd") => 67
+        digitSum("helloE") => 69
+        digitSum("woArBld") => 131
+        digitSum("aAaaaXa") => 153
+    """
+    total = 0
+    for char in s:
+        if char.isupper():
+            total += ord(char)
+    return total
+```
+
+The function works by:
+1. Initializing a total sum to 0
+2. Iterating through each character in the input string
+3. Checking if the character is uppercase using `char.isupper()`
+4. If it is uppercase, adding its ASCII value (obtained with `ord(char)`) to the total
+5. Returning the final sum

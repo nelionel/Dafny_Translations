@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/75
+Entry Point: is_multiply_prime
+Stop Reason: end_turn
+Input Tokens: 133
+Output Tokens: 830

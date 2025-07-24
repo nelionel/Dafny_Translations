@@ -1,0 +1,54 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def can_arrange(arr):
+    """Create a function which returns the largest index of an element which
+    is not greater than or equal to the element immediately preceding it. If
+    no such element exists then return -1. The given array will not contain
+    duplicate values.
+
+    Examples:
+    can_arrange([1,2,4,3,5]) = 3
+    can_arrange([1,2,3]) = -1
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the largest index where an element is not greater than or equal to the element before it. In other words, I'm looking for the rightmost position where `arr[i] < arr[i-1]`.
+
+Let me trace through the examples:
+- `[1,2,4,3,5]`: At index 3, we have 3 < 4 (the previous element), so this violates the condition. This is the largest such index.
+- `[1,2,3]`: This array is in non-decreasing order, so no element violates the condition.
+
+Here's my implementation:
+
+```python
+def can_arrange(arr):
+    """Create a function which returns the largest index of an element which
+    is not greater than or equal to the element immediately preceding it. If
+    no such element exists then return -1. The given array will not contain
+    duplicate values.
+
+    Examples:
+    can_arrange([1,2,4,3,5]) = 3
+    can_arrange([1,2,3]) = -1
+    """
+    # Start from the end and work backwards to find the largest index
+    for i in range(len(arr) - 1, 0, -1):
+        # Check if current element is less than the previous element
+        if arr[i] < arr[i - 1]:
+            return i
+    
+    # If no such element is found, return -1
+    return -1
+```
+
+The algorithm works by:
+1. Starting from the last index and moving backwards (since we want the largest index)
+2. For each position `i` (starting from 1), checking if `arr[i] < arr[i-1]`
+3. Returning the first index we find that satisfies this condition (which will be the largest since we're going backwards)
+4. If no such index is found, returning -1
+
+This approach has O(n) time complexity and O(1) space complexity.

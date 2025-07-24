@@ -1,0 +1,13 @@
+--- Solution Translation (Attempts: 1) ---
+Input: 1386
+Output: 1612 / 16384
+
+--- Test Translation (Attempts: 1) ---
+Input: 1336
+Output: 1302 / 16384
+
+--- Evaluation Results ---
+Compilation: passed
+Testing: 15/15 passed
+Verification: failed
+Validation: improper specs (Attempts: 5)

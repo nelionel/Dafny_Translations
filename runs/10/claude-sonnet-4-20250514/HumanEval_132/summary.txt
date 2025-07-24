@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/132
+Entry Point: is_nested
+Stop Reason: end_turn
+Input Tokens: 200
+Output Tokens: 478

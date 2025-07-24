@@ -1,0 +1,40 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+temp_compile.dfy(2,23): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section quantifier instantiation rules in the reference manual.
+  |
+2 |     ensures result == (forall i :: 0 <= i <= |brackets| ==> 
+  |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 3
+STDOUT:
+temp_test.dfy(2,23): Warning: Could not find a trigger for this quantifier. Without a trigger, the quantifier may cause brittle verification. To silence this warning, add an explicit trigger using the {:trigger} attribute. For more information, see the section quantifier instantiation rules in the reference manual.
+  |
+2 |     ensures result == (forall i :: 0 <= i <= |brackets| ==> 
+  |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Dafny program verifier did not attempt verification
+Translation was aborted because warnings were found and --allow-warnings was not specified
+
+STDERR:
+
+Testing result: 0/0 passed
+
+=== DAFNY VERIFICATION ===
+Skipped due to failing tests.
+=== SPEC VALIDATION ===
+Spec validation attempts: 2
+Has proper specs: True
+- Attempt 1: Specs need improvement
+- Attempt 2: Proper specs found

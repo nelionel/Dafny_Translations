@@ -1,0 +1,93 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def eat(number, need, remaining):
+    """
+    You're a hungry rabbit, and you already have eaten a certain number of carrots,
+    but now you need to eat more carrots to complete the day's meals.
+    you should return an array of [ total number of eaten carrots after your meals,
+                                    the number of carrots left after your meals ]
+    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.
+    
+    Example:
+    * eat(5, 6, 10) -> [11, 4]
+    * eat(4, 8, 9) -> [12, 1]
+    * eat(1, 10, 10) -> [11, 0]
+    * eat(2, 11, 5) -> [7, 0]
+    
+    Variables:
+    @number : integer
+        the number of carrots that you have eaten.
+    @need : integer
+        the number of carrots that you need to eat.
+    @remaining : integer
+        the number of remaining carrots thet exist in stock
+    
+    Constrain:
+    * 0 <= number <= 1000
+    * 0 <= need <= 1000
+    * 0 <= remaining <= 1000
+
+    Have fun :)
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Calculate how many carrots the rabbit can actually eat (limited by need and remaining)
+2. Return the total carrots eaten and the remaining carrots after eating
+
+Let me trace through the examples:
+- `eat(5, 6, 10)`: Already ate 5, needs 6 more, has 10 available → can eat all 6 needed → total = 5+6=11, remaining = 10-6=4
+- `eat(4, 8, 9)`: Already ate 4, needs 8 more, has 9 available → can eat all 8 needed → total = 4+8=12, remaining = 9-8=1
+- `eat(1, 10, 10)`: Already ate 1, needs 10 more, has 10 available → can eat all 10 needed → total = 1+10=11, remaining = 10-10=0
+- `eat(2, 11, 5)`: Already ate 2, needs 11 more, has 5 available → can only eat 5 (limited by stock) → total = 2+5=7, remaining = 5-5=0
+
+```python
+def eat(number, need, remaining):
+    """
+    You're a hungry rabbit, and you already have eaten a certain number of carrots,
+    but now you need to eat more carrots to complete the day's meals.
+    you should return an array of [ total number of eaten carrots after your meals,
+                                    the number of carrots left after your meals ]
+    if there are not enough remaining carrots, you will eat all remaining carrots, but will still be hungry.
+    
+    Example:
+    * eat(5, 6, 10) -> [11, 4]
+    * eat(4, 8, 9) -> [12, 1]
+    * eat(1, 10, 10) -> [11, 0]
+    * eat(2, 11, 5) -> [7, 0]
+    
+    Variables:
+    @number : integer
+        the number of carrots that you have eaten.
+    @need : integer
+        the number of carrots that you need to eat.
+    @remaining : integer
+        the number of remaining carrots thet exist in stock
+    
+    Constrain:
+    * 0 <= number <= 1000
+    * 0 <= need <= 1000
+    * 0 <= remaining <= 1000
+
+    Have fun :)
+    """
+    # Calculate how many carrots we can actually eat
+    # This is the minimum of what we need and what's available
+    carrots_to_eat = min(need, remaining)
+    
+    # Calculate total carrots eaten (already eaten + newly eaten)
+    total_eaten = number + carrots_to_eat
+    
+    # Calculate remaining carrots after eating
+    carrots_left = remaining - carrots_to_eat
+    
+    return [total_eaten, carrots_left]
+```

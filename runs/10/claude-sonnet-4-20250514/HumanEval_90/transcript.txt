@@ -1,0 +1,66 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def next_smallest(lst):
+    """
+    You are given a list of integers.
+    Write a function next_smallest() that returns the 2nd smallest element of the list.
+    Return None if there is no such element.
+    
+    next_smallest([1, 2, 3, 4, 5]) == 2
+    next_smallest([5, 1, 4, 3, 2]) == 2
+    next_smallest([]) == None
+    next_smallest([1, 1]) == None
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the 2nd smallest element in a list of integers. The key insight is that I need to find the second smallest *unique* value, not just the second element when sorted.
+
+Let me analyze the examples:
+- `[1, 2, 3, 4, 5]` → 2 (smallest is 1, second smallest is 2)
+- `[5, 1, 4, 3, 2]` → 2 (same as above, just unsorted)
+- `[]` → None (empty list has no elements)
+- `[1, 1]` → None (only one unique value, so no second smallest)
+
+Here's my implementation:
+
+```python
+def next_smallest(lst):
+    """
+    You are given a list of integers.
+    Write a function next_smallest() that returns the 2nd smallest element of the list.
+    Return None if there is no such element.
+    
+    next_smallest([1, 2, 3, 4, 5]) == 2
+    next_smallest([5, 1, 4, 3, 2]) == 2
+    next_smallest([]) == None
+    next_smallest([1, 1]) == None
+    """
+    if len(lst) < 2:
+        return None
+    
+    # Remove duplicates and sort
+    unique_sorted = sorted(set(lst))
+    
+    # If we have less than 2 unique elements, return None
+    if len(unique_sorted) < 2:
+        return None
+    
+    # Return the second smallest unique element
+    return unique_sorted[1]
+```
+
+The algorithm works as follows:
+1. First check if the list has fewer than 2 elements - if so, return None
+2. Convert the list to a set to remove duplicates, then sort it
+3. Check if we have at least 2 unique elements - if not, return None
+4. Return the element at index 1 (the second smallest unique value)
+
+This handles all the edge cases:
+- Empty lists
+- Lists with only one element
+- Lists with duplicate values where there's only one unique value
+- Normal cases with multiple unique values

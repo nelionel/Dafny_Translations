@@ -1,0 +1,52 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def digits(n):
+    """Given a positive integer n, return the product of the odd digits.
+    Return 0 if all digits are even.
+    For example:
+    digits(1)  == 1
+    digits(4)  == 0
+    digits(235) == 15
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Extract each digit from the positive integer n
+2. Check if each digit is odd
+3. Calculate the product of all odd digits
+4. Return 0 if there are no odd digits
+
+Let me trace through the examples:
+- `digits(1)`: digit 1 is odd, so product = 1
+- `digits(4)`: digit 4 is even, so return 0
+- `digits(235)`: digits 2(even), 3(odd), 5(odd), so product = 3 × 5 = 15
+
+```python
+def digits(n):
+    """Given a positive integer n, return the product of the odd digits.
+    Return 0 if all digits are even.
+    For example:
+    digits(1)  == 1
+    digits(4)  == 0
+    digits(235) == 15
+    """
+    product = 1
+    has_odd_digit = False
+    
+    # Convert to string to easily iterate through digits
+    for digit_char in str(n):
+        digit = int(digit_char)
+        
+        # Check if digit is odd
+        if digit % 2 == 1:
+            product *= digit
+            has_odd_digit = True
+    
+    # Return 0 if no odd digits were found
+    return product if has_odd_digit else 0
+```

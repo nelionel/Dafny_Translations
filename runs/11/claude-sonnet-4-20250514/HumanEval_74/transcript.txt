@@ -1,0 +1,62 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def total_match(lst1, lst2):
+    '''
+    Write a function that accepts two lists of strings and returns the list that has 
+    total number of chars in the all strings of the list less than the other list.
+
+    if the two lists have the same number of chars, return the first list.
+
+    Examples
+    total_match([], []) ➞ []
+    total_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']
+    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']
+    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']
+    total_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']
+    '''
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Calculate the total number of characters in all strings for each list
+2. Return the list with fewer total characters
+3. If both lists have the same total characters, return the first list
+4. Handle edge cases like empty lists
+
+Let me trace through the examples:
+- `total_match([], [])` → both empty, return first list: `[]`
+- `total_match(['hi', 'admin'], ['hI', 'Hi'])` → list1: 2+5=7 chars, list2: 2+2=4 chars, return list2: `['hI', 'Hi']`
+- `total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project'])` → list1: 2+5=7 chars, list2: 2+2+5+7=16 chars, return list1: `['hi', 'admin']`
+
+```python
+def total_match(lst1, lst2):
+    '''
+    Write a function that accepts two lists of strings and returns the list that has 
+    total number of chars in the all strings of the list less than the other list.
+
+    if the two lists have the same number of chars, return the first list.
+
+    Examples
+    total_match([], []) ➞ []
+    total_match(['hi', 'admin'], ['hI', 'Hi']) ➞ ['hI', 'Hi']
+    total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) ➞ ['hi', 'admin']
+    total_match(['hi', 'admin'], ['hI', 'hi', 'hi']) ➞ ['hI', 'hi', 'hi']
+    total_match(['4'], ['1', '2', '3', '4', '5']) ➞ ['4']
+    '''
+    # Calculate total characters in each list
+    total_chars_lst1 = sum(len(string) for string in lst1)
+    total_chars_lst2 = sum(len(string) for string in lst2)
+    
+    # Return the list with fewer characters, or first list if equal
+    if total_chars_lst1 <= total_chars_lst2:
+        return lst1
+    else:
+        return lst2
+```

@@ -1,0 +1,43 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def greatest_common_divisor(a: int, b: int) -> int:
+    """ Return a greatest common divisor of two integers a and b
+    >>> greatest_common_divisor(3, 5)
+    1
+    >>> greatest_common_divisor(25, 15)
+    5
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement a function that finds the greatest common divisor (GCD) of two integers. The most efficient approach is to use Euclid's algorithm, which is based on the principle that gcd(a, b) = gcd(b, a mod b).
+
+```python
+def greatest_common_divisor(a: int, b: int) -> int:
+    """ Return a greatest common divisor of two integers a and b
+    >>> greatest_common_divisor(3, 5)
+    1
+    >>> greatest_common_divisor(25, 15)
+    5
+    """
+    # Handle the case where one or both numbers are zero
+    a, b = abs(a), abs(b)
+    
+    # Euclid's algorithm
+    while b != 0:
+        a, b = b, a % b
+    
+    return a
+```
+
+The algorithm works as follows:
+1. First, I take the absolute values of both numbers to handle negative inputs
+2. Then I repeatedly apply the division algorithm: replace the pair (a, b) with (b, a mod b)
+3. Continue until b becomes 0
+4. At that point, a contains the GCD
+
+This implementation handles edge cases like negative numbers and zeros correctly, and runs in O(log(min(a, b))) time complexity.

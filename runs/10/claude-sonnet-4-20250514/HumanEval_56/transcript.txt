@@ -1,0 +1,72 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def correct_bracketing(brackets: str):
+    """ brackets is a string of "<" and ">".
+    return True if every opening bracket has a corresponding closing bracket.
+
+    >>> correct_bracketing("<")
+    False
+    >>> correct_bracketing("<>")
+    True
+    >>> correct_bracketing("<<><>>")
+    True
+    >>> correct_bracketing("><<>")
+    False
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to check if every opening bracket "<" has a corresponding closing bracket ">", and they are properly nested.
+
+The key insight is to use a counter approach:
+- Increment counter for each opening bracket "<"
+- Decrement counter for each closing bracket ">"
+- If counter ever goes negative, we have a closing bracket without a matching opening bracket
+- At the end, counter should be zero for all brackets to be matched
+
+```python
+def correct_bracketing(brackets: str):
+    """ brackets is a string of "<" and ">".
+    return True if every opening bracket has a corresponding closing bracket.
+
+    >>> correct_bracketing("<")
+    False
+    >>> correct_bracketing("<>")
+    True
+    >>> correct_bracketing("<<><>>")
+    True
+    >>> correct_bracketing("><<>")
+    False
+    """
+    counter = 0
+    
+    for bracket in brackets:
+        if bracket == "<":
+            counter += 1
+        elif bracket == ">":
+            counter -= 1
+            # If counter goes negative, we have more closing than opening brackets
+            if counter < 0:
+                return False
+    
+    # All brackets are matched if counter is zero
+    return counter == 0
+```
+
+The algorithm works as follows:
+1. Initialize a counter to 0
+2. For each character in the string:
+   - If it's "<", increment the counter (opening bracket)
+   - If it's ">", decrement the counter (closing bracket)
+   - If counter becomes negative, return False (more closing than opening brackets)
+3. Return True if counter is 0 (all brackets matched), False otherwise
+
+This handles all the test cases:
+- `"<"`: counter ends at 1, returns False
+- `"<>"`: counter goes 1→0, returns True
+- `"<<><>>"`: counter goes 1→2→1→0→1→0, returns True
+- `"><<>"`: counter goes -1 (immediately returns False)

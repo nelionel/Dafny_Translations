@@ -1,0 +1,56 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """ For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+    1.0
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement a function that calculates the Mean Absolute Deviation (MAD) around the mean of a dataset.
+
+The formula is: MAD = average |x - x_mean|
+
+Here's my step-by-step approach:
+1. Calculate the mean of the input numbers
+2. Calculate the absolute difference between each number and the mean
+3. Return the average of these absolute differences
+
+```python
+from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """ For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+    >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+    1.0
+    """
+    # Calculate the mean of the numbers
+    mean = sum(numbers) / len(numbers)
+    
+    # Calculate the absolute deviations from the mean
+    absolute_deviations = [abs(x - mean) for x in numbers]
+    
+    # Return the mean of the absolute deviations
+    return sum(absolute_deviations) / len(absolute_deviations)
+```
+
+Let me verify this with the given example:
+- Input: [1.0, 2.0, 3.0, 4.0]
+- Mean: (1.0 + 2.0 + 3.0 + 4.0) / 4 = 2.5
+- Absolute deviations: [|1.0-2.5|, |2.0-2.5|, |3.0-2.5|, |4.0-2.5|] = [1.5, 0.5, 0.5, 1.5]
+- MAD: (1.5 + 0.5 + 0.5 + 1.5) / 4 = 4.0 / 4 = 1.0 ✓

@@ -1,0 +1,56 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def how_many_times(string: str, substring: str) -> int:
+    """ Find how many times a given substring can be found in the original string. Count overlaping cases.
+    >>> how_many_times('', 'a')
+    0
+    >>> how_many_times('aaa', 'a')
+    3
+    >>> how_many_times('aaaa', 'aa')
+    3
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to count overlapping occurrences of a substring within a string.
+
+Let me analyze the examples:
+- `how_many_times('', 'a')` → 0 (empty string has no occurrences)
+- `how_many_times('aaa', 'a')` → 3 (three 'a's at positions 0, 1, 2)
+- `how_many_times('aaaa', 'aa')` → 3 (overlapping 'aa' at positions 0-1, 1-2, 2-3)
+
+The key insight is that we need to check every possible starting position in the string, not just non-overlapping matches.
+
+```python
+def how_many_times(string: str, substring: str) -> int:
+    """ Find how many times a given substring can be found in the original string. Count overlaping cases.
+    >>> how_many_times('', 'a')
+    0
+    >>> how_many_times('aaa', 'a')
+    3
+    >>> how_many_times('aaaa', 'aa')
+    3
+    """
+    if not substring:  # Handle empty substring case
+        return 0
+    
+    count = 0
+    # Check each possible starting position
+    for i in range(len(string) - len(substring) + 1):
+        if string[i:i + len(substring)] == substring:
+            count += 1
+    
+    return count
+```
+
+The algorithm works by:
+1. Handling the edge case where the substring is empty (returns 0)
+2. Iterating through each possible starting position in the string where the substring could fit
+3. For each position, checking if the substring matches starting at that position
+4. Counting all matches, including overlapping ones
+
+The range goes from 0 to `len(string) - len(substring) + 1` to ensure we don't go out of bounds when slicing the string.

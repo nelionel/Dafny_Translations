@@ -1,0 +1,197 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python code to the Dafny verification language. Your task is to translate the provided Python function into a Dafny method that is both verifiable and compilable. Pay close attention to types, specifications, and providing concrete implementations for all methods.
+
+
+
+=============== USER ===============
+I will provide you with a Python function and its documentation. Please translate the Python function into a Dafny method.
+
+**Python Function and Documentation:**
+```python
+from typing import List, Tuple
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """ From a given list of integers, generate a list of rolling maximum element found until given moment
+    in the sequence.
+    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+    [1, 2, 3, 3, 3, 4, 4]
+    """
+
+from typing import List, Tuple
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """ From a given list of integers, generate a list of rolling maximum element found until given moment
+    in the sequence.
+    >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+    [1, 2, 3, 3, 3, 4, 4]
+    """
+    if not numbers:
+        return []
+    
+    result = []
+    current_max = numbers[0]
+    
+    for num in numbers:
+        current_max = max(current_max, num)
+        result.append(current_max)
+    
+    return result
+```
+
+**Your Task:**
+1.  **Reasoning (in a <thinking> block):**
+    *   Analyze the Python code and its types. How will you map Python types (like lists of floats) to Dafny types (like `seq<real>`)?
+    *   Analyze the function's logic. What are the pre-conditions (`requires`) and post-conditions (`ensures`)?
+    *   Identify any loops and determine their invariants.
+    *   Think about termination conditions for any recursive calls or loops.
+2.  **Dafny Implementation (in a ```dafny ... ``` block):**
+    *   Write the complete Dafny method, including its signature, `requires` clauses, `ensures` clauses, and the method body.
+    *   **The return type of the main method must be a basic Dafny type.** Use `int`, `real`, `bool`, `string`, or a sequence of these types (e.g., `seq<int>`). Do not use custom `datatype`s in the return signature. If the Python code implies an optional return (e.g. returning `None`), you should return a sensible default for the basic type instead (e.g. `false`, `-1`, or an empty sequence `[]`).
+    *   The Dafny method name must be exactly the same as the Python function name: `rolling_max`. Do not change the casing.
+    *   **All methods must have a concrete implementation (a body).** The `{:axiom}` attribute is forbidden for defining standard functions. However, if the problem's solution relies on an unproven mathematical conjecture (e.g., the Goldbach Conjecture, P vs NP), you may state the conjecture as an `axiom`. If you do so, you **must** include a comment identifying the conjecture (e.g., `// Axiom for the Twin Prime Conjecture`). Do not use axioms to avoid implementing solvable algorithms.
+    *   **Provide explicit termination proofs.** For any recursive function, you must include a `decreases` clause. Do **not** use `decreases *`. For functions that operate on a sequence, the termination metric is almost always the length of the sequence (e.g., `decreases my_sequence`). For functions on integers, it is the integer itself (e.g., `decreases n`).
+    *   **Do not use Dafny reserved keywords as variable names.** Avoid names like: `abstract, allocated, as, assert, assume, bool, break, by, calc, case, char, class, codatatype, const, constructor, datatype, decreases, else, ensures, exists, export, extends, false, forall, fresh, function, ghost, if, imap, import, in, include, int, invariant, is, iset, iterator, label, lemma, map, match, method, modifies, modify, module, multiset, nameonly, nat, new, newtype, null, object, object?, old, opened, ORDINAL, predicate, print, provides,reads, real, refines, requires, return, returns, reveal, reveals, seq, set, static, string, then, this, trait, true, twostate, type, unchanged, var, while, witness, yield, yields`. For example, instead of `var array`, use `var arr`.
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function:
+
+1. **Function behavior**: 
+   - Takes a list of integers
+   - Returns a list of integers where each element is the maximum value seen up to that point in the input sequence
+   - If the input is empty, returns an empty list
+
+2. **Types**: 
+   - Input: `List[int]` -> Dafny: `seq<int>`
+   - Output: `List[int]` -> Dafny: `seq<int>`
+
+3. **Logic analysis**:
+   - If input is empty, return empty sequence
+   - Otherwise, iterate through the input, keeping track of the running maximum
+   - For each element, update the current maximum and append it to result
+
+4. **Pre-conditions**: None specific, but we need to handle empty sequences
+
+5. **Post-conditions**:
+   - Result length equals input length
+   - Each element in result is the maximum of all elements up to that position in input
+   - Result is non-decreasing (each element >= previous element)
+
+6. **Loop invariants**:
+   - result.Length == index (where index is current position)
+   - current_max is the maximum of numbers[0..index-1]
+   - All elements in result are non-decreasing
+   - Each result[i] is the maximum of numbers[0..i]
+
+Let me write the Dafny implementation:
+
+```dafny
+method rolling_max(numbers: seq<int>) returns (result: seq<int>)
+    ensures |result| == |numbers|
+    ensures forall i :: 0 <= i < |result| ==> result[i] == max_up_to(numbers, i)
+    ensures forall i :: 0 <= i < |result| - 1 ==> result[i] <= result[i+1]
+{
+    if |numbers| == 0 {
+        return [];
+    }
+    
+    result := [];
+    var current_max := numbers[0];
+    var index := 0;
+    
+    while index < |numbers|
+        invariant 0 <= index <= |numbers|
+        invariant |result| == index
+        invariant index > 0 ==> current_max == max_up_to(numbers, index-1)
+        invariant forall i :: 0 <= i < index ==> result[i] == max_up_to(numbers, i)
+        invariant forall i :: 0 <= i < index - 1 ==> result[i] <= result[i+1]
+    {
+        if index == 0 {
+            current_max := numbers[index];
+            result := result + [current_max];
+            index := index + 1;
+        }
+
+I'll continue the rewrite by focusing on the core logic of initializing the first element and preparing for subsequent iterations. The implementation sets up the initial state by capturing the first element as the current maximum and adding it to the result sequence. This prepares the groundwork for processing subsequent elements in the rolling maximum calculation.
+
+--- RESPONSE ---
+<thinking>
+Let me analyze the Python function:
+
+1. **Function behavior**: 
+   - Takes a list of integers and returns a list where each element is the maximum value seen up to that point
+   - If input is empty, returns empty list
+   - Example: [1, 2, 3, 2, 3, 4, 2] → [1, 2, 3, 3, 3, 4, 4]
+
+2. **Types mapping**: 
+   - Python `List[int]` → Dafny `seq<int>`
+
+3. **Logic analysis**:
+   - Handle empty sequence case
+   - Iterate through input, maintaining running maximum
+   - Append current maximum to result at each step
+
+4. **Specifications**:
+   - Pre-conditions: None needed
+   - Post-conditions: 
+     - Result length equals input length
+     - Each element is the maximum of prefix up to that position
+     - Result is non-decreasing
+
+5. **Loop invariants**:
+   - Result length equals current index
+   - Current max is maximum of elements seen so far
+   - Each result element is correct maximum for its prefix
+   - Result sequence is non-decreasing
+
+I'll need a helper function to define "maximum up to position i" for the specification.
+</thinking>
+
+```dafny
+method rolling_max(numbers: seq<int>) returns (result: seq<int>)
+    ensures |result| == |numbers|
+    ensures forall i :: 0 <= i < |result| ==> result[i] == max_up_to(numbers, i)
+    ensures forall i :: 0 <= i < |result| - 1 ==> result[i] <= result[i+1]
+{
+    if |numbers| == 0 {
+        return [];
+    }
+    
+    result := [];
+    var current_max := numbers[0];
+    var index := 0;
+    
+    while index < |numbers|
+        invariant 0 <= index <= |numbers|
+        invariant |result| == index
+        invariant index > 0 ==> current_max == max_up_to(numbers, index-1)
+        invariant forall i :: 0 <= i < index ==> result[i] == max_up_to(numbers, i)
+        invariant forall i :: 0 <= i < index - 1 ==> result[i] <= result[i+1]
+        decreases |numbers| - index
+    {
+        if index == 0 {
+            current_max := numbers[0];
+        } else {
+            current_max := if numbers[index] > current_max then numbers[index] else current_max;
+        }
+        result := result + [current_max];
+        index := index + 1;
+    }
+}
+
+function max_up_to(numbers: seq<int>, i: int): int
+    requires 0 <= i < |numbers|
+    decreases i
+{
+    if i == 0 then 
+        numbers[0]
+    else
+        var prev_max := max_up_to(numbers, i-1);
+        if numbers[i] > prev_max then numbers[i] else prev_max
+}
+```
+

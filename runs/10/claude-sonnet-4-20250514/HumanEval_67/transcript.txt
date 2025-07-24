@@ -1,0 +1,68 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def fruit_distribution(s,n):
+    """
+    In this task, you will be given a string that represents a number of apples and oranges 
+    that are distributed in a basket of fruit this basket contains 
+    apples, oranges, and mango fruits. Given the string that represents the total number of 
+    the oranges and apples and an integer that represent the total number of the fruits 
+    in the basket return the number of the mango fruits in the basket.
+    for examble:
+    fruit_distribution("5 apples and 6 oranges", 19) ->19 - 5 - 6 = 8
+    fruit_distribution("0 apples and 1 oranges",3) -> 3 - 0 - 1 = 2
+    fruit_distribution("2 apples and 3 oranges", 100) -> 100 - 2 - 3 = 95
+    fruit_distribution("100 apples and 1 oranges",120) -> 120 - 100 - 1 = 19
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Parse the string to extract the numbers of apples and oranges
+2. Subtract these from the total number of fruits to get the number of mangoes
+
+I'll use regular expressions to extract the numbers from the string.
+
+```python
+import re
+
+def fruit_distribution(s, n):
+    """
+    In this task, you will be given a string that represents a number of apples and oranges 
+    that are distributed in a basket of fruit this basket contains 
+    apples, oranges, and mango fruits. Given the string that represents the total number of 
+    the oranges and apples and an integer that represent the total number of the fruits 
+    in the basket return the number of the mango fruits in the basket.
+    for examble:
+    fruit_distribution("5 apples and 6 oranges", 19) ->19 - 5 - 6 = 8
+    fruit_distribution("0 apples and 1 oranges",3) -> 3 - 0 - 1 = 2
+    fruit_distribution("2 apples and 3 oranges", 100) -> 100 - 2 - 3 = 95
+    fruit_distribution("100 apples and 1 oranges",120) -> 120 - 100 - 1 = 19
+    """
+    # Extract all numbers from the string
+    numbers = re.findall(r'\d+', s)
+    
+    # Convert to integers and sum them (these are apples and oranges)
+    total_apples_oranges = sum(int(num) for num in numbers)
+    
+    # Calculate mangoes by subtracting apples and oranges from total fruits
+    mangoes = n - total_apples_oranges
+    
+    return mangoes
+```
+
+The solution works as follows:
+
+1. `re.findall(r'\d+', s)` finds all sequences of digits in the string
+2. These numbers represent the counts of apples and oranges
+3. I sum these numbers to get the total count of apples and oranges
+4. I subtract this sum from the total number of fruits `n` to get the number of mangoes
+
+This approach handles the examples correctly:
+- `fruit_distribution("5 apples and 6 oranges", 19)` → 19 - 5 - 6 = 8
+- `fruit_distribution("0 apples and 1 oranges", 3)` → 3 - 0 - 1 = 2
+- `fruit_distribution("2 apples and 3 oranges", 100)` → 100 - 2 - 3 = 95
+- `fruit_distribution("100 apples and 1 oranges", 120)` → 120 - 100 - 1 = 19

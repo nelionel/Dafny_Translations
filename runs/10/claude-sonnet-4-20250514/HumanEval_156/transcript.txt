@@ -1,0 +1,72 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def int_to_mini_roman(number):
+    """
+    Given a positive integer, obtain its roman numeral equivalent as a string,
+    and return it in lowercase.
+    Restrictions: 1 <= num <= 1000
+
+    Examples:
+    >>> int_to_mini_roman(19) == 'xix'
+    >>> int_to_mini_roman(152) == 'clii'
+    >>> int_to_mini_roman(426) == 'cdxxvi'
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to convert integers to Roman numerals and return them in lowercase. I'll use the standard Roman numeral system with subtractive notation (like IV for 4, IX for 9, etc.).
+
+```python
+def int_to_mini_roman(number):
+    """
+    Given a positive integer, obtain its roman numeral equivalent as a string,
+    and return it in lowercase.
+    Restrictions: 1 <= num <= 1000
+
+    Examples:
+    >>> int_to_mini_roman(19) == 'xix'
+    >>> int_to_mini_roman(152) == 'clii'
+    >>> int_to_mini_roman(426) == 'cdxxvi'
+    """
+    # Define the Roman numeral values and their corresponding symbols
+    # Listed in descending order to handle subtractive cases properly
+    values = [
+        1000, 900, 500, 400,
+        100, 90, 50, 40,
+        10, 9, 5, 4,
+        1
+    ]
+    
+    symbols = [
+        'M', 'CM', 'D', 'CD',
+        'C', 'XC', 'L', 'XL',
+        'X', 'IX', 'V', 'IV',
+        'I'
+    ]
+    
+    result = ""
+    
+    # Process each value-symbol pair
+    for i in range(len(values)):
+        # Add the symbol as many times as the value fits into the number
+        count = number // values[i]
+        if count > 0:
+            result += symbols[i] * count
+            number -= values[i] * count
+    
+    return result.lower()
+```
+
+The algorithm works by:
+
+1. Creating parallel arrays of Roman numeral values and their symbols, ordered from largest to smallest
+2. Including subtractive combinations (like CM=900, CD=400, XC=90, etc.) to handle cases where smaller numerals precede larger ones
+3. For each value, determining how many times it fits into the remaining number
+4. Adding the corresponding symbol that many times to the result
+5. Subtracting the used value from the number
+6. Converting the final result to lowercase
+
+This handles all the standard Roman numeral rules including subtractive notation, and works for all numbers from 1 to 1000 as specified.

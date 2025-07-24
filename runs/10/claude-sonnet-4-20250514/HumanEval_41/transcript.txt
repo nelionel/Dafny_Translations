@@ -1,0 +1,54 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def car_race_collision(n: int):
+    """
+    Imagine a road that's a perfectly straight infinitely long line.
+    n cars are driving left to right;  simultaneously, a different set of n cars
+    are driving right to left.   The two sets of cars start out being very far from
+    each other.  All cars move in the same speed.  Two cars are said to collide
+    when a car that's moving left to right hits a car that's moving right to left.
+    However, the cars are infinitely sturdy and strong; as a result, they continue moving
+    in their trajectory as if they did not collide.
+
+    This function outputs the number of such collisions.
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to think about what happens when two sets of cars moving in opposite directions pass through each other.
+
+Let me break this down:
+- We have n cars moving left to right
+- We have n cars moving right to left
+- All cars move at the same speed
+- Cars are infinitely sturdy and continue moving after collision
+- We need to count the total number of collisions
+
+The key insight is that since all cars move at the same speed and the cars are infinitely sturdy (they don't stop or change direction after collision), every car moving left to right will eventually collide with every car moving right to left exactly once.
+
+This is because:
+1. Each left-to-right car will meet each right-to-left car exactly once as they pass through each other
+2. The cars don't stop or change direction after collision, so they don't collide multiple times
+3. The order of cars within each group doesn't matter since they all move at the same speed
+
+Therefore, the total number of collisions is simply n × n = n².
+
+```python
+def car_race_collision(n: int):
+    """
+    Imagine a road that's a perfectly straight infinitely long line.
+    n cars are driving left to right;  simultaneously, a different set of n cars
+    are driving right to left.   The two sets of cars start out being very far from
+    each other.  All cars move in the same speed.  Two cars are said to collide
+    when a car that's moving left to right hits a car that's moving right to left.
+    However, the cars are infinitely sturdy and strong; as a result, they continue moving
+    in their trajectory as if they did not collide.
+
+    This function outputs the number of such collisions.
+    """
+    return n * n
+```

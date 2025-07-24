@@ -1,0 +1,79 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def fib4(n: int):
+    """The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:
+    fib4(0) -> 0
+    fib4(1) -> 0
+    fib4(2) -> 2
+    fib4(3) -> 0
+    fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).
+    Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.
+    >>> fib4(5)
+    4
+    >>> fib4(6)
+    8
+    >>> fib4(7)
+    14
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to implement the Fib4 sequence without recursion. The sequence is defined with base cases for n=0,1,2,3 and then each subsequent term is the sum of the previous 4 terms.
+
+Since recursion is not allowed, I'll use an iterative approach with a sliding window to keep track of the last 4 values.
+
+```python
+def fib4(n: int):
+    """The Fib4 number sequence is a sequence similar to the Fibbonacci sequnece that's defined as follows:
+    fib4(0) -> 0
+    fib4(1) -> 0
+    fib4(2) -> 2
+    fib4(3) -> 0
+    fib4(n) -> fib4(n-1) + fib4(n-2) + fib4(n-3) + fib4(n-4).
+    Please write a function to efficiently compute the n-th element of the fib4 number sequence.  Do not use recursion.
+    >>> fib4(5)
+    4
+    >>> fib4(6)
+    8
+    >>> fib4(7)
+    14
+    """
+    # Base cases
+    if n == 0:
+        return 0
+    elif n == 1:
+        return 0
+    elif n == 2:
+        return 2
+    elif n == 3:
+        return 0
+    
+    # For n >= 4, we need to compute iteratively
+    # Keep track of the last 4 values
+    a, b, c, d = 0, 0, 2, 0  # fib4(0), fib4(1), fib4(2), fib4(3)
+    
+    # Compute fib4(4) through fib4(n)
+    for i in range(4, n + 1):
+        next_val = a + b + c + d
+        # Slide the window: move each value one position left
+        a, b, c, d = b, c, d, next_val
+    
+    return d
+```
+
+The algorithm works as follows:
+
+1. Handle the base cases directly (n = 0, 1, 2, 3)
+2. For n ≥ 4, initialize variables `a`, `b`, `c`, `d` with the first 4 Fib4 values
+3. Iteratively compute each subsequent value as the sum of the previous 4 values
+4. Use a sliding window approach where we shift the values and update the rightmost position
+5. Return the final computed value
+
+This approach has O(n) time complexity and O(1) space complexity, making it efficient for large values of n.

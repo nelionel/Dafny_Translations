@@ -1,0 +1,43 @@
+=== DAFNY COMPILATION ===
+COMMAND: dafny build --no-verify --allow-warnings temp_compile.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+
+STDERR:
+
+Compilation result: passed
+
+=== DAFNY TESTING ===
+COMMAND: dafny test --no-verify temp_test.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier did not attempt verification
+test_0: PASSED
+test_1: PASSED
+test_2: PASSED
+test_3: PASSED
+test_4: PASSED
+test_5: PASSED
+
+STDERR:
+
+Testing result: 6/6 passed
+
+=== DAFNY VERIFICATION ===
+VERIFYING: runs/10/claude-sonnet-4-20250514/HumanEval_72/dafny_files/actual_dafny_files/solution.dfy
+COMMAND: dafny verify solution.dfy
+Return code: 0
+STDOUT:
+
+Dafny program verifier finished with 3 verified, 0 errors
+
+STDERR:
+
+Verification result: passed
+=== SPEC VALIDATION ===
+Spec validation attempts: 1
+Has proper specs: True
+- Attempt 1: Proper specs found

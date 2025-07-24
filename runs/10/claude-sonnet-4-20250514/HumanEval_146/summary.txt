@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/146
+Entry Point: specialFilter
+Stop Reason: end_turn
+Input Tokens: 168
+Output Tokens: 513

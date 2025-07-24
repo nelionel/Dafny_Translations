@@ -1,0 +1,239 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `select_words`.
+
+**Python Test Code:**
+```python
+def check(candidate):
+
+    # Check some simple cases
+    assert candidate("Mary had a little lamb", 4) == ["little"], "First test error: " + str(candidate("Mary had a little lamb", 4))      
+    assert candidate("Mary had a little lamb", 3) == ["Mary", "lamb"], "Second test error: " + str(candidate("Mary had a little lamb", 3))  
+    assert candidate("simple white space", 2) == [], "Third test error: " + str(candidate("simple white space", 2))      
+    assert candidate("Hello world", 4) == ["world"], "Fourth test error: " + str(candidate("Hello world", 4))  
+    assert candidate("Uncle sam", 3) == ["Uncle"], "Fifth test error: " + str(candidate("Uncle sam", 3))
+
+
+    # Check some edge cases that are easy to work out by hand.
+    assert candidate("", 4) == [], "1st edge test error: " + str(candidate("", 4))
+    assert candidate("a b c d e f", 1) == ["b", "c", "d", "f"], "2nd edge test error: " + str(candidate("a b c d e f", 1))
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+function IsVowel(c: char): bool
+{
+    c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u' ||
+    c == 'A' || c == 'E' || c == 'I' || c == 'O' || c == 'U'
+}
+
+function IsAlpha(c: char): bool
+{
+    ('a' <= c <= 'z') || ('A' <= c <= 'Z')
+}
+
+function CountConsonants(word: string): nat
+{
+    if |word| == 0 then 0
+    else 
+        var count := if IsAlpha(word[0]) && !IsVowel(word[0]) then 1 else 0;
+        count + CountConsonants(word[1..])
+}
+
+method SplitBySpaces(s: string) returns (words: seq<string>)
+{
+    words := [];
+    if |s| == 0 {
+        return;
+    }
+    
+    var i := 0;
+    var start := 0;
+    
+    // Skip leading spaces
+    while i < |s| && s[i] == ' '
+        invariant 0 <= i <= |s|
+        decreases |s| - i
+    {
+        i := i + 1;
+    }
+    
+    start := i;
+    
+    while i <= |s|
+        invariant 0 <= start <= i <= |s|
+        invariant forall w :: w in words ==> |w| > 0
+        decreases |s| - i + 1
+    {
+        if i == |s| || s[i] == ' ' {
+            if start < i {
+                var word := s[start..i];
+                words := words + [word];
+            }
+            
+            // Skip spaces
+            while i < |s| && s[i] == ' '
+                invariant i <= |s|
+                decreases |s| - i
+            {
+                i := i + 1;
+            }
+            start := i;
+        } else {
+            i := i + 1;
+        }
+    }
+}
+
+method select_words(s: string, n: nat) returns (result: seq<string>)
+    ensures |result| >= 0
+{
+    if |s| == 0 {
+        result := [];
+        return;
+    }
+    
+    var words := SplitBySpaces(s);
+    result := [];
+    
+    var i := 0;
+    while i < |words|
+        invariant 0 <= i <= |words|
+        invariant |result| >= 0
+        decreases |words| - i
+    {
+        var consonantCount := CountConsonants(words[i]);
+        if consonantCount == n {
+            result := result + [words[i]];
+        }
+        i := i + 1;
+    }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`select_words`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `select_words` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `select_words` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Looking at the Python test code and the Dafny solution:
+
+1. The method to test is `select_words(s: string, n: nat) returns (result: seq<string>)`
+2. The Python tests are:
+   - `candidate("Mary had a little lamb", 4) == ["little"]`
+   - `candidate("Mary had a little lamb", 3) == ["Mary", "lamb"]`
+   - `candidate("simple white space", 2) == []`
+   - `candidate("Hello world", 4) == ["world"]`
+   - `candidate("Uncle sam", 3) == ["Uncle"]`
+   - `candidate("", 4) == []`
+   - `candidate("a b c d e f", 1) == ["b", "c", "d", "f"]`
+
+I need to create a dummy implementation with the same signature and then translate each assert into a Dafny test method.
+
+Looking at the signature from the solution:
+```dafny
+method select_words(s: string, n: nat) returns (result: seq<string>)
+```
+
+For the dummy, I'll return an empty sequence.
+
+For the tests, I need to convert Python lists to Dafny sequences:
+- `["little"]` becomes `["little"]`
+- `["Mary", "lamb"]` becomes `["Mary", "lamb"]`
+- `[]` becomes `[]`
+- etc.
+
+--- RESPONSE ---
+<dummy>
+method select_words(s: string, n: nat) returns (result: seq<string>)
+{
+    result := [];
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := select_words("Mary had a little lamb", 4);
+    expect result == ["little"];
+}
+
+method {:test} test_1()
+{
+    var result := select_words("Mary had a little lamb", 3);
+    expect result == ["Mary", "lamb"];
+}
+
+method {:test} test_2()
+{
+    var result := select_words("simple white space", 2);
+    expect result == [];
+}
+
+method {:test} test_3()
+{
+    var result := select_words("Hello world", 4);
+    expect result == ["world"];
+}
+
+method {:test} test_4()
+{
+    var result := select_words("Uncle sam", 3);
+    expect result == ["Uncle"];
+}
+
+method {:test} test_5()
+{
+    var result := select_words("", 4);
+    expect result == [];
+}
+
+method {:test} test_6()
+{
+    var result := select_words("a b c d e f", 1);
+    expect result == ["b", "c", "d", "f"];
+}
+```
+

@@ -1,0 +1,61 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def prime_length(string):
+    """Write a function that takes a string and returns True if the string
+    length is a prime number or False otherwise
+    Examples
+    prime_length('Hello') == True
+    prime_length('abcdcba') == True
+    prime_length('kittens') == True
+    prime_length('orange') == False
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+1. Get the length of the input string
+2. Check if that length is a prime number
+3. Return True if prime, False otherwise
+
+A prime number is a natural number greater than 1 that has no positive divisors other than 1 and itself.
+
+```python
+def prime_length(string):
+    """Write a function that takes a string and returns True if the string
+    length is a prime number or False otherwise
+    Examples
+    prime_length('Hello') == True
+    prime_length('abcdcba') == True
+    prime_length('kittens') == True
+    prime_length('orange') == False
+    """
+    def is_prime(n):
+        """Helper function to check if a number is prime"""
+        if n < 2:
+            return False
+        if n == 2:
+            return True
+        if n % 2 == 0:
+            return False
+        
+        # Check odd divisors up to sqrt(n)
+        for i in range(3, int(n**0.5) + 1, 2):
+            if n % i == 0:
+                return False
+        return True
+    
+    length = len(string)
+    return is_prime(length)
+```
+
+Let me verify with the examples:
+- `prime_length('Hello')` → length = 5 → 5 is prime → True ✓
+- `prime_length('abcdcba')` → length = 7 → 7 is prime → True ✓
+- `prime_length('kittens')` → length = 7 → 7 is prime → True ✓
+- `prime_length('orange')` → length = 6 → 6 is not prime (6 = 2×3) → False ✓

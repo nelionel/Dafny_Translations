@@ -1,0 +1,63 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List, Optional
+
+
+def longest(strings: List[str]) -> Optional[str]:
+    """ Out of list of strings, return the longest one. Return the first one in case of multiple
+    strings of the same length. Return None in case the input list is empty.
+    >>> longest([])
+
+    >>> longest(['a', 'b', 'c'])
+    'a'
+    >>> longest(['a', 'bb', 'ccc'])
+    'ccc'
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to:
+
+1. Return `None` if the input list is empty
+2. Find the longest string in the list
+3. If there are multiple strings of the same maximum length, return the first one
+
+```python
+from typing import List, Optional
+
+
+def longest(strings: List[str]) -> Optional[str]:
+    """ Out of list of strings, return the longest one. Return the first one in case of multiple
+    strings of the same length. Return None in case the input list is empty.
+    >>> longest([])
+
+    >>> longest(['a', 'b', 'c'])
+    'a'
+    >>> longest(['a', 'bb', 'ccc'])
+    'ccc'
+    """
+    if not strings:
+        return None
+    
+    longest_string = strings[0]
+    max_length = len(strings[0])
+    
+    for string in strings[1:]:
+        if len(string) > max_length:
+            max_length = len(string)
+            longest_string = string
+    
+    return longest_string
+```
+
+The implementation:
+- First checks if the list is empty and returns `None` if so
+- Initializes the first string as the current longest
+- Iterates through the remaining strings, updating the longest string only when finding a strictly longer one
+- This ensures that in case of ties, the first occurrence is returned
+- Returns the longest string found

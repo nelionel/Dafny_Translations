@@ -1,0 +1,225 @@
+=============== SYSTEM ===============
+You are an expert programmer specializing in translating Python tests to the Dafny verification language. Your task is to translate Python `assert` statements into Dafny test methods and provide a minimal dummy implementation for compilation checking.
+
+
+
+=============== USER ===============
+I need you to translate Python test assertions into Dafny test methods.
+
+**The Method to Test:**
+The Dafny method you need to test is named `sort_even`.
+
+**Python Test Code:**
+```python
+
+
+METADATA = {}
+
+
+def check(candidate):
+    assert tuple(candidate([1, 2, 3])) == tuple([1, 2, 3])
+    assert tuple(candidate([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])) == tuple([-10, 3, -5, 2, -3, 3, 5, 0, 9, 1, 123])
+    assert tuple(candidate([5, 8, -12, 4, 23, 2, 3, 11, 12, -10])) == tuple([-12, 8, 3, 4, 5, 2, 12, 11, 23, -10])
+
+
+```
+
+**Dafny Solution Code (that these tests should test):**
+```dafny
+method sort_even(l: seq<int>) returns (result: seq<int>)
+    ensures |result| == |l|
+    ensures forall i :: 0 <= i < |l| && i % 2 == 1 ==> result[i] == l[i]
+    ensures is_sorted_even_indices(result)
+    ensures same_even_elements(l, result)
+{
+    if |l| == 0 {
+        result := [];
+        return;
+    }
+    
+    // Extract values at even indices
+    var even_values := extract_even_values(l);
+    
+    // Sort the even values
+    var sorted_even := sort_sequence(even_values);
+    
+    // Build result sequence
+    result := [];
+    var even_index := 0;
+    var i := 0;
+    
+    while i < |l|
+        invariant 0 <= i <= |l|
+        invariant |result| == i
+        invariant 0 <= even_index <= (i + 1) / 2
+        invariant even_index == (i + 1) / 2
+        invariant forall k :: 0 <= k < i && k % 2 == 1 ==> result[k] == l[k]
+        invariant forall k :: 0 <= k < i && k % 2 == 0 ==> k / 2 < |sorted_even| && result[k] == sorted_even[k / 2]
+        decreases |l| - i
+    {
+        if i % 2 == 0 {
+            // Even index - use sorted even value
+            result := result + [sorted_even[even_index]];
+            even_index := even_index + 1;
+        } else {
+            // Odd index - use original value
+            result := result + [l[i]];
+        }
+        i := i + 1;
+    }
+}
+
+function extract_even_values(l: seq<int>): seq<int>
+{
+    if |l| == 0 then []
+    else if |l| == 1 then [l[0]]
+    else [l[0]] + extract_even_values(l[2..])
+}
+
+predicate is_sorted_even_indices(s: seq<int>)
+{
+    forall i, j :: 0 <= i < j < |s| && i % 2 == 0 && j % 2 == 0 ==> s[i] <= s[j]
+}
+
+predicate same_even_elements(original: seq<int>, result: seq<int>)
+    requires |original| == |result|
+{
+    multiset(extract_even_values(original)) == multiset(extract_even_values(result))
+}
+
+method sort_sequence(s: seq<int>) returns (sorted_s: seq<int>)
+    ensures |sorted_s| == |s|
+    ensures multiset(sorted_s) == multiset(s)
+    ensures forall i, j :: 0 <= i < j < |sorted_s| ==> sorted_s[i] <= sorted_s[j]
+{
+    sorted_s := s;
+    var i := 0;
+    
+    while i < |sorted_s|
+        invariant 0 <= i <= |sorted_s|
+        invariant |sorted_s| == |s|
+        invariant multiset(sorted_s) == multiset(s)
+        invariant forall x, y :: 0 <= x < y < i ==> sorted_s[x] <= sorted_s[y]
+        decreases |sorted_s| - i
+    {
+        var j := i + 1;
+        while j < |sorted_s|
+            invariant i < j <= |sorted_s|
+            invariant |sorted_s| == |s|
+            invariant multiset(sorted_s) == multiset(s)
+            invariant forall x, y :: 0 <= x < y < i ==> sorted_s[x] <= sorted_s[y]
+            invariant forall k :: i < k < j ==> sorted_s[i] <= sorted_s[k]
+            decreases |sorted_s| - j
+        {
+            if sorted_s[j] < sorted_s[i] {
+                var temp := sorted_s[i];
+                sorted_s := sorted_s[i := sorted_s[j]][j := temp];
+            }
+            j := j + 1;
+        }
+        i := i + 1;
+    }
+}
+```
+
+**Your Task:**
+1. **Analyze the tests and solution:**
+   - Note the exact name (`sort_even`) and signature of the Dafny method from the provided solution code.
+
+2. **Create a minimal dummy implementation** (in a `<dummy>` block):
+   - Create a dummy version of the `sort_even` Dafny method.
+   - The dummy should have the same signature as the method in the full Dafny solution and return appropriate default values (0 for int, false for bool, [] for sequences, etc.).
+   - This dummy is ONLY for validating that the test code compiles correctly.
+
+3. **Translate the tests** (in a ```dafny ... ``` block):
+   - For each `assert` statement in the Python code, create a Dafny test method with `{:test}` attribute.
+   - **All generated test methods must have a complete body and be runnable.**
+   - Name them `test_0`, `test_1`, etc.
+   - Convert scientific notation (e.g., 1e-6) to decimal form (e.g., 0.000001).
+   - Each test method should:
+     a. Call the `sort_even` Dafny method and assign the result to a variable.
+     b. Use `expect` to check if the result matches the expected value.
+
+**Example:** If Python has `assert add(2, 3) == 5`, the method to test is `add`, and the Dafny solution has `function add(a: int, b: int): int`, then:
+<dummy>
+function add(a: int, b: int): int
+{
+    0
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := add(2, 3);
+    expect result == 5;
+}
+```
+
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python test assertions and the Dafny solution.
+
+Python tests:
+1. `assert tuple(candidate([1, 2, 3])) == tuple([1, 2, 3])`
+2. `assert tuple(candidate([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10])) == tuple([-10, 3, -5, 2, -3, 3, 5, 0, 9, 1, 123])`
+3. `assert tuple(candidate([5, 8, -12, 4, 23, 2, 3, 11, 12, -10])) == tuple([-12, 8, 3, 4, 5, 2, 12, 11, 23, -10])`
+
+From the Dafny solution, I can see the method signature:
+```dafny
+method sort_even(l: seq<int>) returns (result: seq<int>)
+```
+
+So it takes a sequence of integers and returns a sequence of integers.
+
+For the dummy implementation, I need to create a simple version that returns an empty sequence or the input sequence:
+
+```dafny
+method sort_even(l: seq<int>) returns (result: seq<int>)
+{
+    result := l;
+}
+```
+
+Now for the tests, I need to convert each assertion to a Dafny test method:
+
+1. Test with `[1, 2, 3]` expecting `[1, 2, 3]`
+2. Test with `[5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]` expecting `[-10, 3, -5, 2, -3, 3, 5, 0, 9, 1, 123]`
+
+
+3. Test with `[5, 8, -12, 4, 23, 2, 3, 11, 12, -10]` expecting `[-12, 8, 3, 4, 5, 2, 12, 11, 23, -10]`
+
+I'll create a Dafny test method for the third test case. The input sequence contains mixed positive and negative integers, requiring careful verification of the sorting logic. I'll write a method that calls `sort_even` and uses `expect` to validate the output matches the expected sequence.
+
+--- RESPONSE ---
+Looking at the Python test assertions and the Dafny solution, I can see that the method `sort_even` takes a sequence of integers and returns a sequence of integers.
+
+<dummy>
+method sort_even(l: seq<int>) returns (result: seq<int>)
+{
+    result := l;
+}
+</dummy>
+
+```dafny
+method {:test} test_0()
+{
+    var result := sort_even([1, 2, 3]);
+    expect result == [1, 2, 3];
+}
+
+method {:test} test_1()
+{
+    var result := sort_even([5, 3, -5, 2, -3, 3, 9, 0, 123, 1, -10]);
+    expect result == [-10, 3, -5, 2, -3, 3, 5, 0, 9, 1, 123];
+}
+
+method {:test} test_2()
+{
+    var result := sort_even([5, 8, -12, 4, 23, 2, 3, 11, 12, -10]);
+    expect result == [-12, 8, 3, 4, 5, 2, 12, 11, 23, -10];
+}
+```
+

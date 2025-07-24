@@ -1,0 +1,68 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+def find_max(words):
+    """Write a function that accepts a list of strings.
+    The list contains different words. Return the word with maximum number
+    of unique characters. If multiple strings have maximum number of unique
+    characters, return the one which comes first in lexicographical order.
+
+    find_max(["name", "of", "string"]) == "string"
+    find_max(["name", "enam", "game"]) == "enam"
+    find_max(["aaaaaaa", "bb" ,"cc"]) == ""aaaaaaa"
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to:
+
+1. Find the word with the maximum number of unique characters
+2. If there's a tie, return the lexicographically first word
+3. Handle edge cases like empty lists
+
+Let me trace through the examples:
+- `["name", "of", "string"]`: "name" has 4 unique chars, "of" has 2, "string" has 6 → return "string"
+- `["name", "enam", "game"]`: all have 4 unique chars, lexicographically "enam" < "game" < "name" → return "enam"
+- `["aaaaaaa", "bb", "cc"]`: "aaaaaaa" has 1 unique char, "bb" has 1, "cc" has 1, lexicographically "aaaaaaa" comes first → return "aaaaaaa"
+
+```python
+def find_max(words):
+    """Write a function that accepts a list of strings.
+    The list contains different words. Return the word with maximum number
+    of unique characters. If multiple strings have maximum number of unique
+    characters, return the one which comes first in lexicographical order.
+
+    find_max(["name", "of", "string"]) == "string"
+    find_max(["name", "enam", "game"]) == "enam"
+    find_max(["aaaaaaa", "bb" ,"cc"]) == "aaaaaaa"
+    """
+    if not words:
+        return ""
+    
+    max_unique_count = 0
+    result = ""
+    
+    for word in words:
+        unique_count = len(set(word))
+        
+        # If this word has more unique characters, it's our new best
+        if unique_count > max_unique_count:
+            max_unique_count = unique_count
+            result = word
+        # If it has the same number of unique characters, check lexicographical order
+        elif unique_count == max_unique_count:
+            if word < result:
+                result = word
+    
+    return result
+```
+
+The algorithm works as follows:
+1. Handle empty input by returning empty string
+2. Initialize variables to track the maximum unique character count and the result
+3. For each word, count unique characters using `len(set(word))`
+4. If a word has more unique characters than the current maximum, update both the count and result
+5. If a word has the same number of unique characters as the current maximum, compare lexicographically and update if it comes first
+6. Return the final result

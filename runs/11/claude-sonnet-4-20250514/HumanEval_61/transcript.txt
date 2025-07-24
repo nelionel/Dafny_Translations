@@ -1,0 +1,73 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+
+
+def correct_bracketing(brackets: str):
+    """ brackets is a string of "(" and ")".
+    return True if every opening bracket has a corresponding closing bracket.
+
+    >>> correct_bracketing("(")
+    False
+    >>> correct_bracketing("()")
+    True
+    >>> correct_bracketing("(()())")
+    True
+    >>> correct_bracketing(")(()")
+    False
+    """
+
+
+======THINKING======
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to check if brackets are properly balanced. This means:
+1. Every opening bracket "(" has a corresponding closing bracket ")"
+2. At no point should there be more closing brackets than opening brackets (which would mean a closing bracket appears before its matching opening bracket)
+
+I can solve this by keeping a counter that increments for opening brackets and decrements for closing brackets. If the counter ever goes negative, it means we have a closing bracket without a matching opening bracket. At the end, the counter should be zero for properly balanced brackets.
+
+```python
+def correct_bracketing(brackets: str):
+    """ brackets is a string of "(" and ")".
+    return True if every opening bracket has a corresponding closing bracket.
+
+    >>> correct_bracketing("(")
+    False
+    >>> correct_bracketing("()")
+    True
+    >>> correct_bracketing("(()())")
+    True
+    >>> correct_bracketing(")(()")
+    False
+    """
+    balance = 0
+    
+    for bracket in brackets:
+        if bracket == "(":
+            balance += 1
+        elif bracket == ")":
+            balance -= 1
+            # If balance goes negative, we have more closing than opening brackets
+            if balance < 0:
+                return False
+    
+    # Return True only if all brackets are matched (balance is 0)
+    return balance == 0
+```
+
+The algorithm works as follows:
+- Initialize a balance counter to 0
+- For each character in the string:
+  - If it's "(", increment the balance
+  - If it's ")", decrement the balance
+  - If balance becomes negative at any point, return False (more closing than opening brackets)
+- At the end, return True only if balance is 0 (all brackets matched)
+
+This handles all the test cases:
+- `"("` → balance ends at 1, returns False
+- `"()"` → balance ends at 0, returns True  
+- `"(()())"` → balance ends at 0, returns True
+- `")(())"` → balance goes negative after first character, returns False

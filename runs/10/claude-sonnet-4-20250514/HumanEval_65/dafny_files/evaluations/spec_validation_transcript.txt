@@ -1,0 +1,807 @@
+=============== SYSTEM ===============
+You are an expert in formal verification and Dafny specifications. Your task is to analyze whether Dafny method specifications properly describe the behavior of the corresponding Python function.
+
+You will be given:
+1. A Python function with its behavior
+2. A Dafny method translation with specifications (requires, ensures clauses)
+
+Your job is to determine if the Dafny specifications fully and accurately capture the Python function's behavior. If not, you should improve the specifications.
+
+IMPORTANT: You must respond with EXACTLY one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" - if the specifications correctly describe the function
+- "THE SCRIPT HAD NOT A PROPER SPEC" - if the specifications need improvement
+
+After this phrase, provide the complete Dafny code (either unchanged or with improved specifications).
+
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def circular_shift(x, shift):
+    """Circular shift the digits of the integer x, shift the digits right by shift
+    and return the result as a string.
+    If shift > number of digits, return digits reversed.
+    >>> circular_shift(12, 1)
+    "21"
+    >>> circular_shift(12, 2)
+    "12"
+    """
+    # Convert to string to work with digits
+    digits = str(abs(x))  # Use abs to handle negative numbers
+    n = len(digits)
+    
+    # If shift is greater than number of digits, return reversed digits
+    if shift > n:
+        return digits[::-1]
+    
+    # Handle case where shift is 0 or multiple of n
+    if shift == 0 or n == 0:
+        return digits
+    
+    # Normalize shift to be within range [0, n)
+    shift = shift % n
+    
+    # Perform circular right shift
+    # Right shift by 'shift' means taking last 'shift' digits and moving them to front
+    return digits[-shift:] + digits[:-shift]
+```
+
+**Current Dafny Code:**
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+{
+    // Convert integer to string of digits using absolute value
+    var absX := if x >= 0 then x else -x;
+    var digits := "";
+    
+    if absX == 0 {
+        digits := "0";
+    } else {
+        var temp := absX;
+        while temp > 0
+            invariant temp >= 0
+            decreases temp
+        {
+            var digit := temp % 10;
+            var digitChar := ('0' as int + digit) as char;
+            digits := [digitChar] + digits;
+            temp := temp / 10;
+        }
+    }
+    
+    var n := |digits|;
+    
+    // If shift is greater than number of digits, return reversed digits
+    if shift > n {
+        result := "";
+        var i := n - 1;
+        while i >= 0
+            invariant -1 <= i < n
+            invariant |result| == n - 1 - i
+            decreases i + 1
+        {
+            result := result + [digits[i]];
+            i := i - 1;
+        }
+        return;
+    }
+    
+    // Handle case where shift is 0 or n is 0
+    if shift == 0 || n == 0 {
+        result := digits;
+        return;
+    }
+    
+    // Normalize shift to be within range [0, n)
+    var normalizedShift := shift % n;
+    
+    // Perform circular right shift
+    // Right shift by 'normalizedShift' means taking last 'normalizedShift' digits 
+    // and moving them to front
+    result := digits[n - normalizedShift..] + digits[..n - normalizedShift];
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+ 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the current Dafny code.
+
+Python function behavior:
+1. Takes an integer x and shift amount
+2. Converts x to string using abs(x) to handle negative numbers
+3. If shift > number of digits, returns digits reversed
+4. If shift == 0 or n == 0, returns digits as is
+5. Otherwise, normalizes shift to [0, n) and performs circular right shift
+
+Current Dafny code:
+- Has no requires clauses
+- Has no ensures clauses
+- The implementation looks correct but there are no specifications
+
+The Dafny code is missing all specifications! It should have:
+
+1. Requires clauses: None needed really, the function should work for any int values
+2. Ensures clauses that describe:
+   - The result is a string
+   - If shift > |string representation of abs(x)|, result is the reversed string of digits
+   - If shift == 0, result is the string representation of abs(x)
+   - Otherwise, result is the circular right shift of the digits
+
+Let me write proper specifications:
+
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+    ensures var digits := if x == 0 then "0" else int_to_string(abs(x))
+    ensures var n := |digits|
+    ensures shift > n ==> result == reverse_string(digits)
+    ensures shift <= n && (shift == 0 || n == 0) ==> result == digits  
+    ensures shift <= n && shift > 0 && n > 0 ==> 
+        var normalized_shift := shift % n
+        result == digits[n - normalized_shift..] + digits[..n - normalized_shift]
+```
+
+Wait, I need to be more careful. The specifications need to be written in terms that Dafny can understand. I also need to define helper functions or express this more directly.
+
+Actually, let me think about this more systematically. 
+
+I'll focus on the core transformation steps. The function needs to handle three primary scenarios: complete reversal, no shift, and partial circular shift. I'll break down the logic into clear, testable conditions that capture the essence of digit manipulation. The goal is to create a specification that precisely describes the string transformation while allowing flexibility in input values.
+
+--- RESPONSE ---
+THE SCRIPT HAD NOT A PROPER SPEC
+
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+    ensures var digits := if x == 0 then "0" else int_to_string(if x >= 0 then x else -x)
+    ensures var n := |digits|
+    ensures shift > n ==> result == reverse_string(digits)
+    ensures shift <= n && shift == 0 ==> result == digits
+    ensures shift <= n && n == 0 ==> result == digits
+    ensures shift <= n && shift > 0 && n > 0 ==> 
+        (var normalized_shift := shift % n;
+         result == digits[n - normalized_shift..] + digits[..n - normalized_shift])
+{
+    // Convert integer to string of digits using absolute value
+    var absX := if x >= 0 then x else -x;
+    var digits := "";
+    
+    if absX == 0 {
+        digits := "0";
+    } else {
+        var temp := absX;
+        while temp > 0
+            invariant temp >= 0
+            decreases temp
+        {
+            var digit := temp % 10;
+            var digitChar := ('0' as int + digit) as char;
+            digits := [digitChar] + digits;
+            temp := temp / 10;
+        }
+    }
+    
+    var n := |digits|;
+    
+    // If shift is greater than number of digits, return reversed digits
+    if shift > n {
+        result := "";
+        var i := n - 1;
+        while i >= 0
+            invariant -1 <= i < n
+            invariant |result| == n - 1 - i
+            decreases i + 1
+        {
+            result := result + [digits[i]];
+            i := i - 1;
+        }
+        return;
+    }
+    
+    // Handle case where shift is 0 or n is 0
+    if shift == 0 || n == 0 {
+        result := digits;
+        return;
+    }
+    
+    // Normalize shift to be within range [0, n)
+    var normalizedShift := shift % n;
+    
+    // Perform circular right shift
+    // Right shift by 'normalizedShift' means taking last 'normalizedShift' digits 
+    // and moving them to front
+    result := digits[n - normalizedShift..] + digits[..n - normalizedShift];
+}
+
+function int_to_string(x: int): string
+    requires x >= 0
+{
+    if x == 0 then "0"
+    else int_to_string_helper(x)
+}
+
+function int_to_string_helper(x: int): string
+    requires x > 0
+    decreases x
+{
+    if x < 10 then [('0' as int + x) as char]
+    else int_to_string_helper(x / 10) + [('0' as int + (x % 10)) as char]
+}
+
+function reverse_string(s: string): string
+{
+    if |s| == 0 then ""
+    else reverse_string(s[1..]) + [s[0]]
+}
+```
+
+
+=============== SYSTEM ===============
+COMPILATION FAILED: 
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def circular_shift(x, shift):
+    """Circular shift the digits of the integer x, shift the digits right by shift
+    and return the result as a string.
+    If shift > number of digits, return digits reversed.
+    >>> circular_shift(12, 1)
+    "21"
+    >>> circular_shift(12, 2)
+    "12"
+    """
+    # Convert to string to work with digits
+    digits = str(abs(x))  # Use abs to handle negative numbers
+    n = len(digits)
+    
+    # If shift is greater than number of digits, return reversed digits
+    if shift > n:
+        return digits[::-1]
+    
+    # Handle case where shift is 0 or multiple of n
+    if shift == 0 or n == 0:
+        return digits
+    
+    # Normalize shift to be within range [0, n)
+    shift = shift % n
+    
+    # Perform circular right shift
+    # Right shift by 'shift' means taking last 'shift' digits and moving them to front
+    return digits[-shift:] + digits[:-shift]
+```
+
+**Current Dafny Code:**
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+{
+    // Convert integer to string of digits using absolute value
+    var absX := if x >= 0 then x else -x;
+    var digits := "";
+    
+    if absX == 0 {
+        digits := "0";
+    } else {
+        var temp := absX;
+        while temp > 0
+            invariant temp >= 0
+            decreases temp
+        {
+            var digit := temp % 10;
+            var digitChar := ('0' as int + digit) as char;
+            digits := [digitChar] + digits;
+            temp := temp / 10;
+        }
+    }
+    
+    var n := |digits|;
+    
+    // If shift is greater than number of digits, return reversed digits
+    if shift > n {
+        result := "";
+        var i := n - 1;
+        while i >= 0
+            invariant -1 <= i < n
+            invariant |result| == n - 1 - i
+            decreases i + 1
+        {
+            result := result + [digits[i]];
+            i := i - 1;
+        }
+        return;
+    }
+    
+    // Handle case where shift is 0 or n is 0
+    if shift == 0 || n == 0 {
+        result := digits;
+        return;
+    }
+    
+    // Normalize shift to be within range [0, n)
+    var normalizedShift := shift % n;
+    
+    // Perform circular right shift
+    // Right shift by 'normalizedShift' means taking last 'normalizedShift' digits 
+    // and moving them to front
+    result := digits[n - normalizedShift..] + digits[..n - normalizedShift];
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+
+
+This is attempt 2 to improve the specifications. Please analyze the current version and improve it further if needed. 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the current Dafny code to see if the specifications are correct.
+
+Looking at the Python function:
+1. It takes an integer x and shift amount
+2. It converts x to string using abs(x) - so it works with absolute value
+3. If shift > number of digits, it returns reversed digits
+4. If shift == 0 or n == 0, it returns original digits
+5. Otherwise it normalizes shift to [0, n) and performs circular right shift
+
+Now looking at the Dafny code - I notice there are NO specifications at all! There are no `requires` or `ensures` clauses. The method just has the implementation but no formal specifications.
+
+This is clearly missing proper specs. I need to add:
+
+1. `requires` clauses - what are the preconditions?
+   - Looking at the Python code, it seems to handle all integer inputs, so maybe no specific requires needed for the input values themselves
+   - But we might want to ensure shift >= 0 or handle negative shifts properly
+
+2. `ensures` clauses - what should the result satisfy?
+   - The result should be a string
+   - The result should have the same length as the string representation of abs(x) (except in reverse case)
+   - When shift > number of digits, result should be the reverse of the digits
+   - When shift == 0, result should be the original digits
+   - Otherwise, result should be the circular right shift
+
+Let me look at the Python function behavior more carefully:
+
+```python
+def circular_shift(x, shift):
+    digits = str(abs(x))  # Use abs to handle negative numbers
+    n = len(digits)
+    
+    # If shift is greater than number of digits, return reversed digits
+    if shift > n:
+        return digits[::-1]
+    
+    # Handle case where shift is 0 or multiple of n
+    if shift == 0 or n == 0:
+        return digits
+    
+    # Normalize shift to be within range [0, n)
+    shift = shift % n
+    
+    # Perform circular right shift
+    return digits[-shift:] + digits[:-shift]
+```
+
+I'll focus on the key implementation details. The function handles different scenarios systematically:
+- Always uses absolute value of input
+- Manages edge cases like zero-length or zero-shift
+- Normalizes shift using modulo operation
+- Performs circular right shift by splitting and recombining string
+
+The core logic involves carefully managing string manipulation based on shift amount, ensuring predictable behavior across various input scenarios.
+
+Specifications will capture nuanced shifting behaviors, including handling large shifts and preserving original string characteristics. The modulo approach elegantly manages both positive and negative shift values.
+
+--- RESPONSE ---
+THE SCRIPT HAD NOT A PROPER SPEC
+
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+    ensures var digits := if x == 0 then "0" else int_to_string(if x >= 0 then x else -x);
+            var n := |digits|;
+            if shift > n then
+                result == reverse_string(digits)
+            else if shift == 0 || n == 0 then
+                result == digits
+            else
+                var normalizedShift := shift % n;
+                result == digits[n - normalizedShift..] + digits[..n - normalizedShift]
+    ensures |result| == |if x == 0 then "0" else int_to_string(if x >= 0 then x else -x)|
+{
+    // Convert integer to string of digits using absolute value
+    var absX := if x >= 0 then x else -x;
+    var digits := "";
+    
+    if absX == 0 {
+        digits := "0";
+    } else {
+        var temp := absX;
+        while temp > 0
+            invariant temp >= 0
+            decreases temp
+        {
+            var digit := temp % 10;
+            var digitChar := ('0' as int + digit) as char;
+            digits := [digitChar] + digits;
+            temp := temp / 10;
+        }
+    }
+    
+    var n := |digits|;
+    
+    // If shift is greater than number of digits, return reversed digits
+    if shift > n {
+        result := "";
+        var i := n - 1;
+        while i >= 0
+            invariant -1 <= i < n
+            invariant |result| == n - 1 - i
+            decreases i + 1
+        {
+            result := result + [digits[i]];
+            i := i - 1;
+        }
+        return;
+    }
+    
+    // Handle case where shift is 0 or n is 0
+    if shift == 0 || n == 0 {
+        result := digits;
+        return;
+    }
+    
+    // Normalize shift to be within range [0, n)
+    var normalizedShift := shift % n;
+    
+    // Perform circular right shift
+    // Right shift by 'normalizedShift' means taking last 'normalizedShift' digits 
+    // and moving them to front
+    result := digits[n - normalizedShift..] + digits[..n - normalizedShift];
+}
+
+function int_to_string(x: int): string
+    requires x >= 0
+{
+    if x == 0 then "0"
+    else int_to_string_helper(x)
+}
+
+function int_to_string_helper(x: int): string
+    requires x > 0
+    decreases x
+{
+    if x < 10 then
+        [('0' as int + x) as char]
+    else
+        int_to_string_helper(x / 10) + [('0' as int + (x % 10)) as char]
+}
+
+function reverse_string(s: string): string
+{
+    if |s| == 0 then ""
+    else reverse_string(s[1..]) + [s[0]]
+}
+```
+
+
+=============== USER ===============
+Please analyze whether the Dafny specifications properly describe the Python function behavior.
+
+**Python Function:**
+```python
+def circular_shift(x, shift):
+    """Circular shift the digits of the integer x, shift the digits right by shift
+    and return the result as a string.
+    If shift > number of digits, return digits reversed.
+    >>> circular_shift(12, 1)
+    "21"
+    >>> circular_shift(12, 2)
+    "12"
+    """
+    # Convert to string to work with digits
+    digits = str(abs(x))  # Use abs to handle negative numbers
+    n = len(digits)
+    
+    # If shift is greater than number of digits, return reversed digits
+    if shift > n:
+        return digits[::-1]
+    
+    # Handle case where shift is 0 or multiple of n
+    if shift == 0 or n == 0:
+        return digits
+    
+    # Normalize shift to be within range [0, n)
+    shift = shift % n
+    
+    # Perform circular right shift
+    # Right shift by 'shift' means taking last 'shift' digits and moving them to front
+    return digits[-shift:] + digits[:-shift]
+```
+
+**Current Dafny Code:**
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+    ensures var digits := if x == 0 then "0" else int_to_string(if x >= 0 then x else -x);
+            var n := |digits|;
+            if shift > n then
+                result == reverse_string(digits)
+            else if shift == 0 || n == 0 then
+                result == digits
+            else
+                var normalizedShift := shift % n;
+                result == digits[n - normalizedShift..] + digits[..n - normalizedShift]
+    ensures |result| == |if x == 0 then "0" else int_to_string(if x >= 0 then x else -x)|
+{
+    // Convert integer to string of digits using absolute value
+    var absX := if x >= 0 then x else -x;
+    var digits := "";
+    
+    if absX == 0 {
+        digits := "0";
+    } else {
+        var temp := absX;
+        while temp > 0
+            invariant temp >= 0
+            decreases temp
+        {
+            var digit := temp % 10;
+            var digitChar := ('0' as int + digit) as char;
+            digits := [digitChar] + digits;
+            temp := temp / 10;
+        }
+    }
+    
+    var n := |digits|;
+    
+    // If shift is greater than number of digits, return reversed digits
+    if shift > n {
+        result := "";
+        var i := n - 1;
+        while i >= 0
+            invariant -1 <= i < n
+            invariant |result| == n - 1 - i
+            decreases i + 1
+        {
+            result := result + [digits[i]];
+            i := i - 1;
+        }
+        return;
+    }
+    
+    // Handle case where shift is 0 or n is 0
+    if shift == 0 || n == 0 {
+        result := digits;
+        return;
+    }
+    
+    // Normalize shift to be within range [0, n)
+    var normalizedShift := shift % n;
+    
+    // Perform circular right shift
+    // Right shift by 'normalizedShift' means taking last 'normalizedShift' digits 
+    // and moving them to front
+    result := digits[n - normalizedShift..] + digits[..n - normalizedShift];
+}
+
+function int_to_string(x: int): string
+    requires x >= 0
+{
+    if x == 0 then "0"
+    else int_to_string_helper(x)
+}
+
+function int_to_string_helper(x: int): string
+    requires x > 0
+    decreases x
+{
+    if x < 10 then
+        [('0' as int + x) as char]
+    else
+        int_to_string_helper(x / 10) + [('0' as int + (x % 10)) as char]
+}
+
+function reverse_string(s: string): string
+{
+    if |s| == 0 then ""
+    else reverse_string(s[1..]) + [s[0]]
+}
+```
+
+**Analysis Task:**
+1. Compare the Python function's behavior with the Dafny specifications
+2. Check if the `requires` clauses capture all preconditions
+3. Check if the `ensures` clauses capture all postconditions and behavior
+4. Verify that the specifications fully describe what the function does
+
+**Response Format:**
+Start with exactly one of these phrases:
+- "THE SCRIPT HAS PROPER SPECS" (if specifications are adequate)
+- "THE SCRIPT HAD NOT A PROPER SPEC" (if specifications need improvement)
+
+Then provide the complete Dafny code. If improving specifications:
+- Add missing `requires` clauses for preconditions
+- Add missing `ensures` clauses for postconditions
+- Ensure specifications capture the function's complete behavior
+- Preserve the existing method implementation unchanged
+
+
+
+This is attempt 3 to improve the specifications. Please analyze the current version and improve it further if needed. 
+
+
+=============== ASSISTANT ===============
+--- THINKING ---
+Let me analyze the Python function and the Dafny specifications to see if they match properly.
+
+**Python function behavior:**
+1. Takes integer `x` and integer `shift`
+2. Converts `abs(x)` to string to get digits
+3. If `shift > len(digits)`, returns reversed digits
+4. If `shift == 0` or `len(digits) == 0`, returns original digits
+5. Otherwise, normalizes shift with `shift % n` and performs circular right shift
+6. Returns result as string
+
+Let me trace through the examples:
+- `circular_shift(12, 1)`: digits = "12", n = 2, shift = 1 <= n, normalized_shift = 1, result = digits[-1:] + digits[:-1] = "2" + "1" = "21" ✓
+- `circular_shift(12, 2)`: digits = "12", n = 2, shift = 2 <= n (not >), normalized_shift = 2 % 2 = 0, since shift != 0 and n != 0, we do the circular shift: digits[-0:] + digits[:-0] = digits[2:] + digits[:2] = "" + "12" = "12" ✓
+
+Wait, let me check this again. In Python:
+- `digits[-0:]` is the same as `digits[0:]` which is the entire string
+- `digits[:-0]` is the same as `digits[:0]` which is empty string
+
+Actually, let me re-examine this. When `shift % n == 0`, we get `normalizedShift = 0`.
+- `digits[-0:]` = `digits[len(digits):]` = `digits[2:]` = ""
+- `digits[:-0]` = `digits[:len(digits)]` = `digits[:2]` = "12"
+
+
+- Result confirms the circular shift works as expected, maintaining the original string when shift is a multiple of the string length
+
+I'll now examine the Dafny specification to verify the implementation details and ensure the logic matches the Python function's behavior. The specification provides a precise mathematical description of the circular shift operation, breaking down each possible scenario systematically.
+
+The key observations align with Python's implementation: handling zero cases, reversing for large shifts, preserving original string for zero or empty shifts, and performing modulo-based rotation for standard shifts.
+
+The slice operations in both Python and Dafny effectively extract the same substring segments, ensuring equivalent string manipulation across the two implementations. The normalization process maintains consistent behavior by selecting the last and first portions of the string based on the shift value.
+
+The length preservation clause appears valid, confirming the rotation mechanism maintains the original string's character count.
+
+When examining the zero-shift scenario, the operations result in returning the original string, which aligns with expected circular shift behavior. However, a subtle distinction emerges in how zero conditions are handled, potentially requiring careful verification of the implementation's edge case management.
+
+Tracing through specific examples reveals nuanced shift scenarios:
+- For `circular_shift(12, 4)`, the result is the reversed string "21"
+- With `circular_shift(123, 6)`, the reversed string "321" is returned
+- In `circular_shift(123, 3)`, the normalized shift becomes zero, suggesting a potential implementation complexity
+
+The modulo operation plays a critical role in determining the final shifted string, with the implementation needing to handle various input combinations precisely.
+
+The specifications appear robust, with no explicit input restrictions in either Python or Dafny implementations, indicating a flexible design approach.
+
+--- RESPONSE ---
+THE SCRIPT HAS PROPER SPECS
+
+```dafny
+method circular_shift(x: int, shift: int) returns (result: string)
+    ensures var digits := if x == 0 then "0" else int_to_string(if x >= 0 then x else -x);
+            var n := |digits|;
+            if shift > n then
+                result == reverse_string(digits)
+            else if shift == 0 || n == 0 then
+                result == digits
+            else
+                var normalizedShift := shift % n;
+                result == digits[n - normalizedShift..] + digits[..n - normalizedShift]
+    ensures |result| == |if x == 0 then "0" else int_to_string(if x >= 0 then x else -x)|
+{
+    // Convert integer to string of digits using absolute value
+    var absX := if x >= 0 then x else -x;
+    var digits := "";
+    
+    if absX == 0 {
+        digits := "0";
+    } else {
+        var temp := absX;
+        while temp > 0
+            invariant temp >= 0
+            decreases temp
+        {
+            var digit := temp % 10;
+            var digitChar := ('0' as int + digit) as char;
+            digits := [digitChar] + digits;
+            temp := temp / 10;
+        }
+    }
+    
+    var n := |digits|;
+    
+    // If shift is greater than number of digits, return reversed digits
+    if shift > n {
+        result := "";
+        var i := n - 1;
+        while i >= 0
+            invariant -1 <= i < n
+            invariant |result| == n - 1 - i
+            decreases i + 1
+        {
+            result := result + [digits[i]];
+            i := i - 1;
+        }
+        return;
+    }
+    
+    // Handle case where shift is 0 or n is 0
+    if shift == 0 || n == 0 {
+        result := digits;
+        return;
+    }
+    
+    // Normalize shift to be within range [0, n)
+    var normalizedShift := shift % n;
+    
+    // Perform circular right shift
+    // Right shift by 'normalizedShift' means taking last 'normalizedShift' digits 
+    // and moving them to front
+    result := digits[n - normalizedShift..] + digits[..n - normalizedShift];
+}
+
+function int_to_string(x: int): string
+    requires x >= 0
+{
+    if x == 0 then "0"
+    else int_to_string_helper(x)
+}
+
+function int_to_string_helper(x: int): string
+    requires x > 0
+    decreases x
+{
+    if x < 10 then
+        [('0' as int + x) as char]
+    else
+        int_to_string_helper(x / 10) + [('0' as int + (x % 10)) as char]
+}
+
+function reverse_string(s: string): string
+{
+    if |s| == 0 then ""
+    else reverse_string(s[1..]) + [s[0]]
+}
+```
+

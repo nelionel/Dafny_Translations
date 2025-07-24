@@ -1,0 +1,57 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List
+
+
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """ Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
+    >>> intersperse([], 4)
+    []
+    >>> intersperse([1, 2, 3], 4)
+    [1, 4, 2, 4, 3]
+    """
+
+
+======MODEL OUTPUT======
+Looking at this function, I need to insert a delimiter between every two consecutive elements in the input list.
+
+Let me analyze the examples:
+- Empty list `[]` with delimiter `4` returns `[]`
+- List `[1, 2, 3]` with delimiter `4` returns `[1, 4, 2, 4, 3]`
+
+The pattern is: for each element except the last one, add the element followed by the delimiter.
+
+```python
+from typing import List
+
+
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """ Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
+    >>> intersperse([], 4)
+    []
+    >>> intersperse([1, 2, 3], 4)
+    [1, 4, 2, 4, 3]
+    """
+    if not numbers:
+        return []
+    
+    result = []
+    for i, num in enumerate(numbers):
+        result.append(num)
+        # Add delimiter after each element except the last one
+        if i < len(numbers) - 1:
+            result.append(delimeter)
+    
+    return result
+```
+
+The implementation works as follows:
+1. If the input list is empty, return an empty list
+2. Iterate through each number in the input list with its index
+3. Add the current number to the result
+4. If it's not the last element, add the delimiter after it
+5. Return the result list
+
+This correctly handles both edge cases (empty list) and the normal case of interspersing elements.

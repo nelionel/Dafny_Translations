@@ -1,0 +1,6 @@
+Model: claude-sonnet-4-20250514
+Task ID: HumanEval/51
+Entry Point: remove_vowels
+Stop Reason: end_turn
+Input Tokens: 187
+Output Tokens: 329

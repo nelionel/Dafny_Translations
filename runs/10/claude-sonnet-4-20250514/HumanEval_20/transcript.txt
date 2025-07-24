@@ -1,0 +1,60 @@
+======SYSTEM PROMPT======
+You are a Python coding assistant. Your task is to write a Python script with the full implementation of the function described in the user prompt. The implementation should be inside a markdown code block.
+
+======USER PROMPT======
+from typing import List, Tuple
+
+
+def find_closest_elements(numbers: List[float]) -> Tuple[float, float]:
+    """ From a supplied list of numbers (of length at least two) select and return two that are the closest to each
+    other and return them in order (smaller number, larger number).
+    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])
+    (2.0, 2.2)
+    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])
+    (2.0, 2.0)
+    """
+
+
+======MODEL OUTPUT======
+Looking at this problem, I need to find the two numbers in the list that have the smallest absolute difference between them, and return them in ascending order.
+
+Here's my approach:
+1. Compare every pair of numbers in the list
+2. Keep track of the pair with the minimum difference
+3. Return the pair in sorted order (smaller first, larger second)
+
+```python
+from typing import List, Tuple
+
+
+def find_closest_elements(numbers: List[float]) -> Tuple[float, float]:
+    """ From a supplied list of numbers (of length at least two) select and return two that are the closest to each
+    other and return them in order (smaller number, larger number).
+    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.2])
+    (2.0, 2.2)
+    >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])
+    (2.0, 2.0)
+    """
+    min_diff = float('inf')
+    closest_pair = None
+    
+    # Compare every pair of numbers
+    for i in range(len(numbers)):
+        for j in range(i + 1, len(numbers)):
+            diff = abs(numbers[i] - numbers[j])
+            if diff < min_diff:
+                min_diff = diff
+                closest_pair = (numbers[i], numbers[j])
+    
+    # Return the pair in sorted order (smaller first, larger second)
+    return tuple(sorted(closest_pair))
+```
+
+The algorithm works as follows:
+1. Initialize `min_diff` to infinity and `closest_pair` to None
+2. Use nested loops to compare each pair of numbers exactly once (i < j ensures we don't compare the same pair twice)
+3. For each pair, calculate the absolute difference
+4. If this difference is smaller than our current minimum, update both `min_diff` and `closest_pair`
+5. Finally, return the closest pair sorted in ascending order using `sorted()`
+
+The time complexity is O(n²) where n is the length of the input list, and the space complexity is O(1) (excluding the input).

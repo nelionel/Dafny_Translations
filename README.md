@@ -43,55 +43,68 @@ export ANTHROPIC_API_KEY=your_key_here
 
 ### Usage
 
-#### Start Small: Test with a Few Problems
+#### Start Small: Two Essential Tests
 
-Before running the full evaluation, it's recommended to test with a small number of problems to verify everything works correctly:
+Before running the full pipeline, test both modes with a small number of problems to verify everything works correctly:
 
+**Test 1: Evaluation Only (Using Existing Translations)**
 ```bash
-# Test with just 5 problems (evaluation only, using existing translations)
+# Test evaluation pipeline with 5 existing translations
 python -m Dafny_Translations.main 10 --eval-only --max-problems 5
 # OR if you need to specify Python 3:
 python3 -m Dafny_Translations.main 10 --eval-only --max-problems 5
 ```
 
-**What to expect after running this test:**
-- **Terminal output**: You'll see a progress bar and summary statistics (compilation rate, test passing rate, verification rate)
+**Test 2: Full Translation Pipeline (Create New Translations)**
+```bash
+# Test full translation pipeline with spec validation on 10 problems
+python -m Dafny_Translations.main 11 --max-problems 10 --validate-specs --parallel 3
+# OR with Python 3:
+python3 -m Dafny_Translations.main 11 --max-problems 10 --validate-specs --parallel 3
+```
+
+**What to expect after running these tests:**
+
+*After Test 1:*
+- **Terminal output**: Progress bar, compilation/test/verification rates for existing translations
 - **Generated files**: Look in `Dafny_Translations/runs/10/claude-sonnet-4-20250514/` for:
   - `dafny_evaluation_summary.png` - Visual summary of results
   - `dafny_summary/compiled.txt` - List of successfully compiled problems
   - `dafny_summary/tested.txt` - Test results summary
   - `dafny_summary/verified.txt` - Formal verification results
 
-#### Full Evaluation
+*After Test 2:*
+- **Terminal output**: Progress bar showing translation → evaluation → spec validation phases
+- **New translations**: Look in `Dafny_Translations/runs/11/claude-sonnet-4-20250514/HumanEval_X/dafny_files/` for:
+  - `actual_dafny_files/solution.dfy` - Generated Dafny solution
+  - `actual_dafny_files/test.dfy` - Generated Dafny tests
+  - `transcripts/solution_transcript.txt` - Translation conversation logs
+  - `transcripts/spec_validation_transcript.txt` - Spec validation logs
+  - `evaluations/dafny_outputs.txt` - Compilation and execution logs
 
-Once you've verified the small test works, run the complete evaluation:
+#### Full Production Runs
 
+Once both tests work successfully:
+
+**Evaluate All Existing Translations:**
 ```bash
-# Evaluate all 164 existing translations
+# Complete evaluation of all 164 problems
 python -m Dafny_Translations.main 10 --eval-only
 # OR with Python 3:
 python3 -m Dafny_Translations.main 10 --eval-only
 ```
 
-#### Generate New Translations
-
-To create new Dafny translations from Python problems:
-
+**Generate New Complete Translation Set:**
 ```bash
-# Full translation pipeline for a new run (start with a few problems)
-python -m Dafny_Translations.main 11 --max-problems 5
+# Full translation pipeline for all problems
+python -m Dafny_Translations.main 12
 # OR with Python 3:
-python3 -m Dafny_Translations.main 11 --max-problems 5
+python3 -m Dafny_Translations.main 12
 
-# Full translation pipeline (all problems)
-python -m Dafny_Translations.main 11
+# With specification validation (recommended but slower)
+python -m Dafny_Translations.main 12 --validate-specs
 # OR with Python 3:
-python3 -m Dafny_Translations.main 11
-
-# With specification validation (more thorough but slower)
-python -m Dafny_Translations.main 11 --validate-specs
-# OR with Python 3:
-python3 -m Dafny_Translations.main 11 --validate-specs
+python3 -m Dafny_Translations.main 12 --validate-specs
 ```
 
 #### Advanced Configuration
